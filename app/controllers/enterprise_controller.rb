@@ -15,7 +15,7 @@ class EnterpriseController < ApplicationController
     @modules = [
       { title: "Empresas", description: "Administra clientes corporativos, sucursales y estados operativos.", href: companies_path, icon: "building" },
       { title: "Cuentas", description: "Centraliza cuentas comerciales, financieras y de control interno.", href: accounts_path, icon: "wallet" },
-      { title: "Servicios / Productos", description: "Organiza el portafolio comercial y los paquetes activos.", href: services_path, icon: "box" },
+      { title: "Productos y Servicios", description: "Organiza el catálogo comercial de cobros, licencias y cargos recurrentes.", href: productos_servicios_path, icon: "box" },
       { title: "Costos", description: "Supervisa egresos, centros de costo y márgenes proyectados.", href: costs_path, icon: "coins" },
       { title: "Cobros", description: "Da seguimiento a cartera, vencimientos y recuperaciones.", href: collections_path, icon: "receipt" },
       { title: "Facturación", description: "Monitorea emisión, estados y cumplimiento de facturas.", href: invoices_path, icon: "invoice" },
@@ -67,11 +67,11 @@ class EnterpriseController < ApplicationController
     )
   end
 
-  def services
+  def productos_servicios
     set_module_page(
-      key: :services,
-      title: "Servicios / Productos",
-      description: "Presenta el catálogo comercial y los servicios disponibles para operación y facturación.",
+      key: :productos_servicios,
+      title: "Productos y Servicios",
+      description: "Presenta el catálogo de productos, servicios, licencias y cargos preparados para cobros y facturación.",
       action_label: "Nuevo servicio",
       filters: ["Categoría", "Estado", "Modalidad"],
       table_columns: ["Servicio", "Categoría", "Plan", "Estado", "Precio base"],
@@ -82,6 +82,42 @@ class EnterpriseController < ApplicationController
       ],
       empty_title: "Catálogo en preparación",
       empty_description: "Aquí podremos conectar los servicios, productos y paquetes reutilizables del sistema."
+    )
+  end
+
+  def parametros
+    set_module_page(
+      key: :parametros,
+      title: "Parámetros",
+      description: "Administra parámetros operativos, reglas base y preferencias configurables del sistema.",
+      action_label: "Nuevo parámetro",
+      filters: ["Área", "Tipo", "Estado"],
+      table_columns: ["Parámetro", "Sección", "Valor", "Estado", "Actualización"],
+      rows: [
+        ["Moneda base", "Finanzas", "GTQ", "Activo", "05 Jul 2026"],
+        ["Ciclo de cobro", "Cobros", "Mensual", "Activo", "04 Jul 2026"],
+        ["Zona horaria", "Sistema", "America/Guatemala", "Activo", "03 Jul 2026"]
+      ],
+      empty_title: "Parámetros listos para configurarse",
+      empty_description: "Esta base visual está preparada para recibir parámetros persistidos cuando entremos a la lógica operativa."
+    )
+  end
+
+  def auditoria
+    set_module_page(
+      key: :auditoria,
+      title: "Auditoría",
+      description: "Consulta eventos, cambios críticos y trazabilidad operativa del sistema.",
+      action_label: "Exportar auditoría",
+      filters: ["Usuario", "Módulo", "Fecha"],
+      table_columns: ["Evento", "Módulo", "Usuario", "Fecha", "Estado"],
+      rows: [
+        ["Actualización de rol", "Roles y Permisos", "Root Sistema", "05 Jul 2026", "Registrado"],
+        ["Cambio de empresa", "Empresas", "Administrador", "04 Jul 2026", "Registrado"],
+        ["Guardado de permisos", "Usuarios", "Administrador", "04 Jul 2026", "Registrado"]
+      ],
+      empty_title: "Auditoría visual preparada",
+      empty_description: "La vista ya está lista para enlazar eventos reales y trazabilidad transaccional."
     )
   end
 

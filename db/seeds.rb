@@ -45,13 +45,25 @@ rol_administrador.save!
 UsuarioRol.find_or_create_by!(usuario: usuario_root, rol: rol_administrador)
 
 [
-  { codigo: "DASHBOARD", nombre: "Dashboard", descripcion: "Panel principal del sistema.", ruta: "/dashboard" },
-  { codigo: "ADMINISTRACION", nombre: "Administración", descripcion: "Sección principal administrativa.", ruta: nil },
-  { codigo: "COMPANIAS", nombre: "Compañías", descripcion: "Gestión de compañías.", ruta: "/companies" },
-  { codigo: "USUARIOS", nombre: "Usuarios", descripcion: "Gestión de usuarios.", ruta: "/usuarios" },
-  { codigo: "ROLES", nombre: "Roles y Permisos", descripcion: "Gestión de roles y permisos.", ruta: "/roles" }
+  { codigo: "DASHBOARD", nombre: "Dashboard", descripcion: "Panel principal del sistema.", ruta: "/dashboard", grupo: "General" },
+  { codigo: "ADMINISTRACION", nombre: "Administración", descripcion: "Sección principal administrativa.", ruta: nil, grupo: "Administración" },
+  { codigo: "COMPANIAS", nombre: "Compañías", descripcion: "Gestión de compañías.", ruta: "/companies", grupo: "Administración" },
+  { codigo: "USUARIOS", nombre: "Usuarios", descripcion: "Gestión de usuarios.", ruta: "/usuarios", grupo: "Administración" },
+  { codigo: "ROLES", nombre: "Roles y Permisos", descripcion: "Gestión de roles y permisos.", ruta: "/roles", grupo: "Administración" },
+  { codigo: "MONEDAS", nombre: "Monedas", descripcion: "Catálogo de monedas del sistema.", ruta: "/monedas", grupo: "Administración" },
+  { codigo: "MODULOS_SISTEMA", nombre: "Módulos del Sistema", descripcion: "Registro técnico de módulos para navegación y permisos.", ruta: "/modulos_sistema", grupo: "Administración" },
+  { codigo: "PRODUCTOS_SERVICIOS", nombre: "Productos y Servicios", descripcion: "Catálogo de productos, servicios, licencias y cargos para cobros y facturación.", ruta: "/productos_servicios", grupo: "Cobros" }
 ].each do |attrs|
-  modulo = ModuloSistema.find_or_initialize_by(codigo: attrs[:codigo])
+  modulo = if attrs[:codigo] == "PRODUCTOS_SERVICIOS"
+             ModuloSistema.where(codigo: ["PRODUCTOS_SERVICIOS", "SERVICES", "PRODUCTOS", "SERVICIOS"]).or(
+               ModuloSistema.where(ruta: ["/services", "/productos_servicios"])
+             ).or(
+               ModuloSistema.where(nombre: ["Servicios / Productos", "Productos y Servicios"])
+             ).first_or_initialize
+           else
+             ModuloSistema.find_or_initialize_by(codigo: attrs[:codigo])
+           end
+
   modulo.assign_attributes(attrs.merge(activo: true))
   modulo.save!
 
@@ -65,4 +77,14 @@ UsuarioRol.find_or_create_by!(usuario: usuario_root, rol: rol_administrador)
     puede_configurar: true
   )
   permiso.save!
+end
+
+[
+  { codigo: 320, nombre: "Quetzal", simbolo: "Q", activo: true },
+  { codigo: 840, nombre: "Dólar estadounidense", simbolo: "$", activo: true },
+  { codigo: 978, nombre: "Euro", simbolo: "EUR", activo: true }
+].each do |attrs|
+  moneda = Moneda.find_or_initialize_by(codigo: attrs[:codigo])
+  moneda.assign_attributes(attrs)
+  moneda.save!
 end

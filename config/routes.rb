@@ -16,19 +16,28 @@ Rails.application.routes.draw do
   delete "logout", to: "sesiones#destroy"
 
   get "dashboard", to: "enterprise#dashboard"
+  get "productos_servicios", to: "enterprise#productos_servicios"
+  get "services", to: redirect("/productos_servicios")
+  get "parametros", to: "enterprise#parametros"
+  get "auditoria", to: "enterprise#auditoria"
+  resources :monedas
   resources :companies, except: [:destroy] do
     member do
       get :configuration
     end
   end
-  resources :usuarios
+  resources :usuarios do
+    member do
+      patch :permisos
+    end
+  end
   resources :roles do
     member do
       match :permisos, via: %i[get patch]
     end
   end
+  resources :modulos_sistema
   get "accounts", to: "enterprise#accounts"
-  get "services", to: "enterprise#services"
   get "costs", to: "enterprise#costs"
   get "collections", to: "enterprise#collections"
   get "invoices", to: "enterprise#invoices"
