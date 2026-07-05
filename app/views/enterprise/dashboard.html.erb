@@ -1,0 +1,94 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Executive Overview</p>
+      <h1><%= @page_title %></h1>
+      <p><%= @page_description %></p>
+    </div>
+    <%= render "shared/button", label: @page_action[:label], href: @page_action[:href], variant: "primary" %>
+  </div>
+
+  <div class="kpi-grid">
+    <% @kpis.each do |kpi| %>
+      <%= render "shared/kpi_card", kpi: kpi %>
+    <% end %>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-main-stack">
+      <div class="panel chart-panel chart-panel-wide">
+        <div class="panel-header">
+          <div>
+            <h2>Ingresos vs Gastos</h2>
+            <p>Comparativo mensual consolidado</p>
+          </div>
+          <%= render "shared/badge", text: "Actualizado hoy", tone: "info" %>
+        </div>
+        <%= render "shared/chart_placeholder", title: "Bar chart", subtitle: "Ingresos vs Gastos", type: "bars" %>
+      </div>
+
+      <div class="dashboard-split">
+        <div class="panel chart-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Distribución de cobros</h2>
+              <p>Cartera por estado de recuperación</p>
+            </div>
+            <%= render "shared/badge", text: "Cobranza", tone: "primary" %>
+          </div>
+          <%= render "shared/chart_placeholder", title: "Donut chart", subtitle: "Distribución de cobros", type: "donut" %>
+        </div>
+
+        <div class="panel chart-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Tendencia mensual</h2>
+              <p>Evolución de facturación y utilidad</p>
+            </div>
+            <%= render "shared/badge", text: "12 meses", tone: "success" %>
+          </div>
+          <%= render "shared/chart_placeholder", title: "Line chart", subtitle: "Tendencia mensual", type: "line" %>
+        </div>
+      </div>
+    </div>
+
+    <aside class="dashboard-side-stack">
+      <div class="panel activity-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Actividad reciente</h2>
+            <p>Eventos relevantes del día</p>
+          </div>
+        </div>
+        <div class="activity-list">
+          <% @recent_activity.each do |activity| %>
+            <article class="activity-item">
+              <div class="activity-dot"></div>
+              <div>
+                <h3><%= activity[:item] %></h3>
+                <p><%= activity[:detail] %></p>
+              </div>
+              <%= render "shared/badge", text: activity[:status], tone: activity[:tone] %>
+            </article>
+          <% end %>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="page-subsection">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Módulos</p>
+        <h2>Accesos rápidos</h2>
+      </div>
+      <p class="section-caption">Base visual lista para crecer hacia operaciones, finanzas y administración.</p>
+    </div>
+
+    <div class="module-grid">
+      <% @modules.each do |mod| %>
+        <%= render "shared/module_card", module_item: mod %>
+      <% end %>
+    </div>
+  </section>
+</section>

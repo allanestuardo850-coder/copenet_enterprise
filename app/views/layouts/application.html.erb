@@ -23,7 +23,16 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="app-body" data-controller="shell" data-shell-sidebar-open-class="is-open" data-shell-menu-open-class="is-open" data-shell-dark-class="theme-dark">
+    <div class="app-shell">
+      <%= render "shared/sidebar" %>
+
+      <div class="app-main">
+        <%= render "shared/header" %>
+        <main class="app-content">
+          <%= yield %>
+        </main>
+      </div>
+    </div>
   </body>
 </html>

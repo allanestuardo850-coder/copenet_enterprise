@@ -1,0 +1,26 @@
+<aside class="sidebar" data-shell-target="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-mark">C</div>
+    <div>
+      <strong>Copenet Enterprise</strong>
+      <span>Visual Base</span>
+    </div>
+    <button class="icon-button mobile-only" type="button" data-action="shell#closeSidebar">
+      <%= icon("chevron") %>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav" aria-label="Main navigation">
+    <% @navigation_items.each do |item| %>
+      <%= render "shared/sidebar_item", item: item, active: item[:key] == @current_page %>
+    <% end %>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-card">
+      <p class="eyebrow">Enterprise Ready</p>
+      <strong>Modo visual inicial</strong>
+      <span>Listo para integrar módulos administrativos y financieros.</span>
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,28 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="icon-button mobile-only" type="button" data-action="shell#toggleSidebar">
+      <%= icon("menu") %>
+    </button>
+    <div class="search-shell">
+      <span class="search-icon"><%= icon("search") %></span>
+      <input type="search" placeholder="Buscar empresas, cuentas o reportes" aria-label="Buscar en la plataforma">
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <button class="icon-button" type="button" data-action="shell#toggleTheme">
+      <span class="theme-icons">
+        <%= icon("sun") %>
+        <%= icon("moon") %>
+      </span>
+      <span data-shell-target="themeLabel">Light</span>
+    </button>
+
+    <button class="icon-button notification-button" type="button">
+      <%= icon("bell") %>
+      <span class="notification-ping"></span>
+    </button>
+
+    <%= render "shared/user_menu" %>
+  </div>
+</header>

@@ -1,0 +1,11 @@
+<article class="kpi-card kpi-card-<%= kpi[:tone] %>">
+  <div class="kpi-meta">
+    <span class="kpi-title"><%= kpi[:title] %></span>
+    <%= render "shared/badge", text: kpi[:change], tone: kpi[:tone] %>
+  </div>
+  <strong class="kpi-value"><%= kpi[:value] %></strong>
+  <p class="kpi-footer">
+    <span class="trend trend-<%= kpi[:trend] %>"><%= kpi[:trend] == "up" ? "▲" : "▼" %></span>
+    Rendimiento frente al periodo anterior
+  </p>
+</article>

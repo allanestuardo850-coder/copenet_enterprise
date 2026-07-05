@@ -1,0 +1,59 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Enterprise Module</p>
+      <h1><%= @page_title %></h1>
+      <p><%= @page_description %></p>
+    </div>
+    <%= render "shared/button", label: @page_action[:label], href: @page_action[:href], variant: "primary" %>
+  </div>
+
+  <div class="panel filters-panel">
+    <div class="filters-bar">
+      <div class="search-placeholder">
+        <span class="search-icon"><%= icon("search") %></span>
+        <span>Buscar en <%= @page_title.downcase %></span>
+      </div>
+      <div class="filter-chip-list">
+        <% @page_filters.each do |filter| %>
+          <button class="filter-chip" type="button"><%= filter %></button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="module-page-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Vista general</h2>
+          <p>Datos de demostración para la base visual del módulo</p>
+        </div>
+        <%= render "shared/badge", text: "Demo data", tone: "info" %>
+      </div>
+      <%= render "shared/table_placeholder", columns: @table_columns, rows: @table_rows %>
+    </div>
+
+    <div class="module-page-side">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Estado del módulo</h2>
+            <p>Preparado para integración futura</p>
+          </div>
+        </div>
+        <%= render "shared/empty_state", title: @empty_state[:title], description: @empty_state[:description] %>
+      </div>
+
+      <div class="panel chart-panel">
+        <div class="panel-header">
+          <div>
+            <h2>Tendencia visual</h2>
+            <p>Placeholder adaptable por módulo</p>
+          </div>
+        </div>
+        <%= render "shared/chart_placeholder", title: "Visual preview", subtitle: @page_title, type: "line" %>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,27 @@
+<div class="chart-placeholder chart-placeholder-<%= type %>">
+  <div class="chart-surface">
+    <% if type == "bars" %>
+      <div class="bar-group"><span style="height: 68%"></span><span style="height: 48%"></span></div>
+      <div class="bar-group"><span style="height: 82%"></span><span style="height: 55%"></span></div>
+      <div class="bar-group"><span style="height: 76%"></span><span style="height: 44%"></span></div>
+      <div class="bar-group"><span style="height: 92%"></span><span style="height: 60%"></span></div>
+      <div class="bar-group"><span style="height: 72%"></span><span style="height: 50%"></span></div>
+      <div class="bar-group"><span style="height: 86%"></span><span style="height: 58%"></span></div>
+    <% elsif type == "donut" %>
+      <div class="donut-ring"></div>
+      <div class="donut-legend">
+        <span><i class="legend-dot legend-primary"></i>Cobrado</span>
+        <span><i class="legend-dot legend-info"></i>En gestión</span>
+        <span><i class="legend-dot legend-warning"></i>Vencido</span>
+      </div>
+    <% else %>
+      <svg viewBox="0 0 320 140" class="line-chart" aria-hidden="true">
+        <path d="M8 104 C44 98, 56 76, 90 80 S148 120, 182 82 242 38, 312 56" />
+      </svg>
+    <% end %>
+  </div>
+  <div class="chart-caption">
+    <strong><%= title %></strong>
+    <span><%= subtitle %></span>
+  </div>
+</div>

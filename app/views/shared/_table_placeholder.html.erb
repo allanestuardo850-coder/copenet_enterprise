@@ -1,0 +1,26 @@
+<div class="table-shell">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <% columns.each do |column| %>
+          <th><%= column %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% rows.each do |row| %>
+        <tr>
+          <% row.each_with_index do |cell, index| %>
+            <td>
+              <% if index == row.length - 2 %>
+                <%= render "shared/badge", text: cell, tone: status_badge_tone(cell) %>
+              <% else %>
+                <%= cell %>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

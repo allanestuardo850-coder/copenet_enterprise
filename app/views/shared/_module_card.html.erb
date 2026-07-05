@@ -1,0 +1,11 @@
+<article class="module-card">
+  <div class="module-card-icon"><%= icon(module_item[:icon]) %></div>
+  <div class="module-card-body">
+    <h3><%= module_item[:title] %></h3>
+    <p><%= module_item[:description] %></p>
+  </div>
+  <a href="<%= module_item[:href] %>" class="module-card-link">
+    Abrir módulo
+    <span><%= icon("chevron") %></span>
+  </a>
+</article>
