@@ -1,0 +1,85 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Configuración de Empresa</h1>
+      <p>Administra los parámetros operativos, fiscales y de certificación de la empresa.</p>
+    </div>
+    <div class="page-actions-inline">
+      <%= link_to "Editar empresa", edit_company_path(@company), class: "ui-button ui-button-primary" %>
+      <%= link_to "Volver a Empresas", companies_path, class: "ui-button ui-button-secondary" %>
+    </div>
+  </div>
+
+  <div class="dashboard-main-stack">
+    <section class="panel detail-section">
+      <div class="panel-header">
+        <div>
+          <h2>Información General</h2>
+          <p>Datos base para la administración de la empresa.</p>
+        </div>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-item"><span>Nombre Comercial</span><strong><%= @company.commercial_name.presence || "-" %></strong></div>
+        <div class="detail-item"><span>Razón Social</span><strong><%= @company.legal_name.presence || "-" %></strong></div>
+        <div class="detail-item"><span>NIT</span><strong><%= @company.tax_id.presence || "-" %></strong></div>
+        <div class="detail-item"><span>Tipo de Empresa</span><strong><%= @company.company_type.presence || "-" %></strong></div>
+      </div>
+    </section>
+
+    <section class="panel detail-section">
+      <div class="panel-header">
+        <div>
+          <h2>Configuración FEL / INFILE</h2>
+          <p>Parámetros de certificación actualmente registrados.</p>
+        </div>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-item"><span>Prefijo INFILE</span><strong><%= @company.infile_prefix.presence || "-" %></strong></div>
+        <div class="detail-item"><span>Llave INFILE</span><strong><%= @company.infile_key.presence || "-" %></strong></div>
+        <div class="detail-item"><span>Prefijo Firma</span><strong><%= @company.infile_signature_prefix.presence || "-" %></strong></div>
+        <div class="detail-item"><span>Llave Firma</span><strong><%= @company.infile_signature_key.presence || "-" %></strong></div>
+      </div>
+    </section>
+
+    <section class="panel detail-section">
+      <div class="panel-header">
+        <div>
+          <h2>Datos Fiscales</h2>
+          <p>Información fiscal y escenario de certificación.</p>
+        </div>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-item"><span>Afiliación IVA</span><strong><%= @company.vat_affiliation.presence || "-" %></strong></div>
+        <div class="detail-item"><span>Código Escenario</span><strong><%= @company.fel_scenario_code.presence || "-" %></strong></div>
+        <div class="detail-item detail-item-full"><span>Token FEL</span><strong><%= @company.fel_token.presence || "-" %></strong></div>
+      </div>
+    </section>
+
+    <section class="panel detail-section">
+      <div class="panel-header">
+        <div>
+          <h2>Notificaciones</h2>
+          <p>Canales para avisos operativos y fiscales.</p>
+        </div>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-item detail-item-full"><span>Correo Electrónico de Notificaciones</span><strong><%= @company.notification_email.presence || "-" %></strong></div>
+      </div>
+    </section>
+
+    <section class="panel detail-section">
+      <div class="panel-header">
+        <div>
+          <h2>Parámetros Operativos</h2>
+          <p>Espacio reservado para parámetros internos adicionales.</p>
+        </div>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-item"><span>Estado</span><strong><%= @company.status.presence || "-" %></strong></div>
+        <div class="detail-item"><span>Activa</span><strong><%= @company.active? ? "Sí" : "No" %></strong></div>
+        <div class="detail-item detail-item-full"><span>Placeholder</span><strong>Próximamente se integrarán parámetros operativos adicionales.</strong></div>
+      </div>
+    </section>
+  </div>
+</section>

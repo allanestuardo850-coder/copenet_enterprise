@@ -28,6 +28,16 @@ module EnterpriseHelper
     classes.join(" ")
   end
 
+  def sidebar_section_classes(open)
+    classes = ["sidebar-section"]
+    classes << "is-open" if open
+    classes.join(" ")
+  end
+
+  def navigation_section_open?(item, current_page)
+    item.fetch(:children, []).any? { |child| child[:key] == current_page }
+  end
+
   def badge_classes(tone = "primary")
     "badge badge-#{tone}"
   end

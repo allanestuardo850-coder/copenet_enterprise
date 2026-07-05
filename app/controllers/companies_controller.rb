@@ -1,0 +1,130 @@
+class CompaniesController < ApplicationController
+  before_action :set_navigation
+  before_action :set_company, only: %i[show edit update configuration]
+
+  def index
+    @current_page = :companies
+    @page_title = "Empresas"
+    @page_description = nil
+    @filters = {
+      query: params[:query].to_s.strip,
+      status: params[:status].to_s.strip,
+      certification: params[:certification].to_s.strip
+    }
+
+    @companies = Company.order(:commercial_name, :legal_name)
+    @companies = apply_filters(@companies)
+  end
+
+  def show
+    @current_page = :companies
+  end
+
+  def new
+    @current_page = :companies
+    @company = Company.new(active: true, status: "Activa")
+  end
+
+  def create
+    @current_page = :companies
+    @company = Company.new(company_params)
+
+    if @company.save
+      redirect_to @company, notice: "Empresa creada correctamente."
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+    @current_page = :companies
+  end
+
+  def update
+    @current_page = :companies
+
+    if @company.update(company_params)
+      redirect_to @company, notice: "Empresa actualizada correctamente."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def configuration
+    @current_page = :companies
+  end
+
+  private
+
+  def set_company
+    @company = Company.find(params[:id])
+  end
+
+  def company_params
+    params.require(:company).permit(
+      :commercial_name,
+      :legal_name,
+      :tax_id,
+      :company_type,
+      :email,
+      :phone,
+      :address,
+      :status,
+      :active,
+      :infile_prefix,
+      :infile_key,
+      :infile_signature_prefix,
+      :infile_signature_key,
+      :vat_affiliation,
+      :fel_token,
+      :fel_scenario_code,
+      :notification_email
+    )
+  end
+
+  def apply_filters(scope)
+    scope = scope.where(
+      "commercial_name ILIKE :term OR legal_name ILIKE :term OR tax_id ILIKE :term OR email ILIKE :term",
+      term: "%#{@filters[:query]}%"
+    ) if @filters[:query].present?
+
+    scope = case @filters[:status]
+            when "active" then scope.where(active: true)
+            when "inactive" then scope.where(active: false)
+            when "draft" then scope.where(status: "Borrador")
+            else scope
+            end
+
+    scope = case @filters[:certification]
+            when "configured"
+              scope.where.not(fel_token: [nil, ""]).where.not(infile_prefix: [nil, ""])
+            when "pending"
+              scope.where("fel_token IS NULL OR fel_token = '' OR infile_prefix IS NULL OR infile_prefix = ''")
+            else scope
+            end
+
+    scope
+  end
+
+  def set_navigation
+    @navigation_items = [
+      { key: :dashboard, label: "Dashboard", path: dashboard_path, icon: "dashboard" },
+      {
+        key: :administration,
+        label: "Administración",
+        icon: "settings",
+        children: [
+          { key: :companies, label: "Empresas", path: companies_path, icon: "building" }
+        ]
+      },
+      { key: :accounts, label: "Cuentas", path: accounts_path, icon: "wallet" },
+      { key: :services, label: "Servicios / Productos", path: services_path, icon: "box" },
+      { key: :costs, label: "Costos", path: costs_path, icon: "coins" },
+      { key: :collections, label: "Cobros", path: collections_path, icon: "receipt" },
+      { key: :invoices, label: "Facturación", path: invoices_path, icon: "invoice" },
+      { key: :contracts, label: "Contratos", path: contracts_path, icon: "contract" },
+      { key: :reports, label: "Reportes", path: reports_path, icon: "report" },
+      { key: :settings, label: "Configuración", path: settings_path, icon: "settings" }
+    ]
+  end
+end

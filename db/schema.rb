@@ -10,8 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 0) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_05_133000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
+  create_table "companies", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.text "address"
+    t.string "commercial_name"
+    t.string "company_type"
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "fel_scenario_code"
+    t.string "fel_token"
+    t.string "infile_key"
+    t.string "infile_prefix"
+    t.string "infile_signature_key"
+    t.string "infile_signature_prefix"
+    t.string "legal_name"
+    t.string "notification_email"
+    t.string "phone"
+    t.string "status"
+    t.string "tax_id"
+    t.datetime "updated_at", null: false
+    t.string "vat_affiliation"
+    t.index ["commercial_name"], name: "index_companies_on_commercial_name"
+    t.index ["legal_name"], name: "index_companies_on_legal_name"
+    t.index ["tax_id"], name: "index_companies_on_tax_id"
+  end
 end

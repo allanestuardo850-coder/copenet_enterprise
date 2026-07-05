@@ -25,6 +25,14 @@ export default class extends Controller {
     this.menuTarget.classList.remove(this.menuOpenClass)
   }
 
+  toggleSection(event) {
+    const section = event.currentTarget.closest(".sidebar-section")
+    if (!section) return
+
+    const isOpen = section.classList.toggle("is-open")
+    event.currentTarget.setAttribute("aria-expanded", isOpen ? "true" : "false")
+  }
+
   toggleTheme() {
     const isDark = document.documentElement.classList.toggle(this.darkClass)
     localStorage.setItem("copenet-theme", isDark ? "dark" : "light")

@@ -200,7 +200,14 @@ class EnterpriseController < ApplicationController
   def set_navigation
     @navigation_items = [
       { key: :dashboard, label: "Dashboard", path: dashboard_path, icon: "dashboard" },
-      { key: :companies, label: "Empresas", path: companies_path, icon: "building" },
+      {
+        key: :administration,
+        label: "Administración",
+        icon: "settings",
+        children: [
+          { key: :companies, label: "Empresas", path: companies_path, icon: "building" }
+        ]
+      },
       { key: :accounts, label: "Cuentas", path: accounts_path, icon: "wallet" },
       { key: :services, label: "Servicios / Productos", path: services_path, icon: "box" },
       { key: :costs, label: "Costos", path: costs_path, icon: "coins" },

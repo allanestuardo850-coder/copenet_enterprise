@@ -12,7 +12,23 @@
 
   <nav class="sidebar-nav" aria-label="Main navigation">
     <% @navigation_items.each do |item| %>
-      <%= render "shared/sidebar_item", item: item, active: item[:key] == @current_page %>
+      <% if item[:children].present? %>
+        <% open = navigation_section_open?(item, @current_page) %>
+        <div class="<%= sidebar_section_classes(open) %>">
+          <button class="sidebar-section-trigger" type="button" data-action="shell#toggleSection" aria-expanded="<%= open %>">
+            <span class="sidebar-item-icon"><%= icon(item[:icon]) %></span>
+            <span class="sidebar-item-label"><%= item[:label] %></span>
+            <span class="sidebar-section-chevron"><%= icon("chevron") %></span>
+          </button>
+          <div class="sidebar-subnav">
+            <% item[:children].each do |child| %>
+              <%= render "shared/sidebar_item", item: child, active: child[:key] == @current_page %>
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <%= render "shared/sidebar_item", item: item, active: item[:key] == @current_page %>
+      <% end %>
     <% end %>
   </nav>
 

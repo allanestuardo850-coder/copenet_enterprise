@@ -1,0 +1,12 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Nueva Empresa</p>
+      <h1>Crear empresa</h1>
+      <p>Registra la información general y la configuración FEL / INFILE de la empresa.</p>
+    </div>
+    <%= link_to "Volver al listado", companies_path, class: "ui-button ui-button-secondary" %>
+  </div>
+
+  <%= render "form", company: @company %>
+</section>

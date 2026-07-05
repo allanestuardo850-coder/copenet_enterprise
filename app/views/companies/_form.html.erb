@@ -1,0 +1,133 @@
+<%= form_with model: company, class: "company-form" do |form| %>
+  <% if company.errors.any? %>
+    <section class="panel form-errors">
+      <div class="panel-header">
+        <div>
+          <h2>Corrige los siguientes campos</h2>
+          <p>La empresa no pudo guardarse todavía.</p>
+        </div>
+      </div>
+      <ul class="error-list">
+        <% company.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <section class="panel form-section">
+    <div class="panel-header">
+      <div>
+        <p class="eyebrow">Sección 1</p>
+        <h2>Información General</h2>
+        <p>Datos principales de identificación y operación de la empresa.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <%= form.label :commercial_name, "Nombre Comercial" %>
+        <%= form.text_field :commercial_name, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :legal_name, "Razón Social" %>
+        <%= form.text_field :legal_name, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :tax_id, "NIT" %>
+        <%= form.text_field :tax_id, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :company_type, "Tipo de Empresa" %>
+        <%= form.text_field :company_type, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :email, "Correo Electrónico" %>
+        <%= form.email_field :email, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :phone, "Teléfono" %>
+        <%= form.telephone_field :phone, class: "text-input" %>
+      </div>
+
+      <div class="field-group field-group-full">
+        <%= form.label :address, "Dirección" %>
+        <%= form.text_area :address, rows: 4, class: "text-input text-area" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :status, "Estado" %>
+        <%= form.text_field :status, class: "text-input" %>
+      </div>
+
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :active %>
+          <span>Activa</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel form-section">
+    <div class="panel-header">
+      <div>
+        <p class="eyebrow">Sección 2</p>
+        <h2>Configuración FEL / INFILE</h2>
+        <p>Parámetros internos de certificación por empresa. Queda lista para aplicar enmascarado más adelante.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <%= form.label :infile_prefix, "Prefijo INFILE" %>
+        <%= form.text_field :infile_prefix, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :infile_key, "Llave INFILE" %>
+        <%= form.text_field :infile_key, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :infile_signature_prefix, "Prefijo Firma" %>
+        <%= form.text_field :infile_signature_prefix, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :infile_signature_key, "Llave Firma" %>
+        <%= form.text_field :infile_signature_key, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :vat_affiliation, "Afiliación IVA" %>
+        <%= form.text_field :vat_affiliation, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :fel_token, "Token FEL" %>
+        <%= form.text_field :fel_token, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :fel_scenario_code, "Código Escenario" %>
+        <%= form.text_field :fel_scenario_code, class: "text-input" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :notification_email, "Correo Electrónico de Notificaciones" %>
+        <%= form.email_field :notification_email, class: "text-input" %>
+      </div>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <%= form.submit company.persisted? ? "Actualizar empresa" : "Guardar empresa", class: "ui-button ui-button-primary submit-button" %>
+    <%= link_to "Cancelar", company.persisted? ? company_path(company) : companies_path, class: "ui-button ui-button-secondary" %>
+  </div>
+<% end %>

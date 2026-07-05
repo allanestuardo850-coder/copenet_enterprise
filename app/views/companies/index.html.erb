@@ -1,0 +1,83 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1><%= @page_title %></h1>
+      <% if @page_description.present? %>
+        <p><%= @page_description %></p>
+      <% end %>
+    </div>
+    <%= link_to "Nueva empresa", new_company_path, class: "ui-button ui-button-primary" %>
+  </div>
+
+  <div class="panel filters-panel">
+    <%= form_with url: companies_path, method: :get, class: "filters-form" do %>
+      <div class="filters-bar">
+        <label class="search-shell inline-search-shell">
+          <span class="search-icon"><%= icon("search") %></span>
+          <%= text_field_tag :query, @filters[:query], placeholder: "Buscar por nombre, NIT o correo" %>
+        </label>
+        <div class="filter-chip-list filter-select-list">
+          <%= select_tag :status,
+                         options_for_select([["Todos los estados", ""], ["Activas", "active"], ["Inactivas", "inactive"], ["Borrador", "draft"]], @filters[:status]),
+                         class: "filter-select" %>
+          <%= select_tag :certification,
+                         options_for_select([["Toda la certificación", ""], ["Con FEL configurado", "configured"], ["Configuración pendiente", "pending"]], @filters[:certification]),
+                         class: "filter-select" %>
+          <%= submit_tag "Aplicar filtros", class: "ui-button ui-button-primary submit-button" %>
+          <%= link_to "Limpiar", companies_path, class: "ui-button ui-button-secondary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Listado de empresas</h2>
+        <p>Entrada principal para administrar configuraciones generales, fiscales y operativas.</p>
+      </div>
+      <%= render "shared/badge", text: "#{@companies.size} registros", tone: "info" %>
+    </div>
+
+    <% if @companies.any? %>
+      <div class="table-shell">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nombre Comercial</th>
+              <th>Razón Social</th>
+              <th>NIT</th>
+              <th>Estado</th>
+              <th>Correo Notificaciones</th>
+              <th>Código Escenario</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @companies.each do |company| %>
+              <tr>
+                <td><%= company.commercial_name %></td>
+                <td><%= company.legal_name %></td>
+                <td><%= company.tax_id %></td>
+                <td><%= render "shared/badge", text: company.status.presence || (company.active? ? "Activa" : "Inactiva"), tone: company.active? ? "success" : "warning" %></td>
+                <td><%= company.notification_email.presence || "Sin configurar" %></td>
+                <td><%= company.fel_scenario_code.presence || "Sin definir" %></td>
+                <td class="table-actions">
+                  <%= link_to "Ver", company_path(company), class: "table-link" %>
+                  <%= link_to "Editar", edit_company_path(company), class: "table-link" %>
+                  <%= link_to "Configurar", configuration_company_path(company), class: "table-link" %>
+                  <button type="button" class="table-link table-link-danger button-link">Eliminar</button>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state",
+                 title: "No hay empresas registradas",
+                 description: "Crea la primera empresa para comenzar a cargar su configuración general y FEL / INFILE." %>
+    <% end %>
+  </div>
+</section>

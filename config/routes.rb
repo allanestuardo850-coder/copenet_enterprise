@@ -12,7 +12,11 @@ Rails.application.routes.draw do
   root "enterprise#dashboard"
 
   get "dashboard", to: "enterprise#dashboard"
-  get "companies", to: "enterprise#companies"
+  resources :companies, except: [:destroy] do
+    member do
+      get :configuration
+    end
+  end
   get "accounts", to: "enterprise#accounts"
   get "services", to: "enterprise#services"
   get "costs", to: "enterprise#costs"
