@@ -1,0 +1,35 @@
+<%= form_with model: rol, class: "company-form" do |form| %>
+  <% if rol.errors.any? %>
+    <section class="panel form-errors">
+      <ul class="error-list">
+        <% rol.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <section class="panel form-section">
+    <div class="form-grid">
+      <div class="field-group">
+        <%= form.label :nombre, "Nombre" %>
+        <%= form.text_field :nombre, class: "text-input" %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :activo %>
+          <span>Activo</span>
+        </label>
+      </div>
+      <div class="field-group field-group-full">
+        <%= form.label :descripcion, "Descripción" %>
+        <%= form.text_area :descripcion, rows: 4, class: "text-input text-area" %>
+      </div>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <%= form.submit rol.persisted? ? "Actualizar Rol" : "Guardar Rol", class: "ui-button ui-button-primary submit-button" %>
+    <%= link_to "Cancelar", rol.persisted? ? rol_path(rol) : roles_path, class: "ui-button ui-button-secondary" %>
+  </div>
+<% end %>

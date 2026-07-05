@@ -1,0 +1,47 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Permisos de <%= @rol.nombre %></h1>
+      <p>Gestiona acceso dinámico por módulo para este rol.</p>
+    </div>
+    <%= link_to "Volver al rol", rol_path(@rol), class: "ui-button ui-button-secondary" %>
+  </div>
+
+  <div class="panel">
+    <%= form_with url: permisos_role_path(@rol), method: :patch do %>
+      <div class="table-shell">
+        <table class="data-table permisos-table">
+          <thead>
+            <tr>
+              <th>Módulo</th>
+              <th>Ver</th>
+              <th>Crear</th>
+              <th>Editar</th>
+              <th>Eliminar</th>
+              <th>Exportar</th>
+              <th>Configurar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @modulo_sistemas.each do |modulo| %>
+              <% permiso = @permisos_por_modulo[modulo.id] %>
+              <tr>
+                <td><%= modulo.nombre %></td>
+                <td><%= check_box_tag "permisos[#{modulo.id}][puede_ver]", "1", permiso&.puede_ver? %></td>
+                <td><%= check_box_tag "permisos[#{modulo.id}][puede_crear]", "1", permiso&.puede_crear? %></td>
+                <td><%= check_box_tag "permisos[#{modulo.id}][puede_editar]", "1", permiso&.puede_editar? %></td>
+                <td><%= check_box_tag "permisos[#{modulo.id}][puede_eliminar]", "1", permiso&.puede_eliminar? %></td>
+                <td><%= check_box_tag "permisos[#{modulo.id}][puede_exportar]", "1", permiso&.puede_exportar? %></td>
+                <td><%= check_box_tag "permisos[#{modulo.id}][puede_configurar]", "1", permiso&.puede_configurar? %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="form-actions top-spacing">
+        <%= submit_tag "Guardar Permisos", class: "ui-button ui-button-primary submit-button" %>
+      </div>
+    <% end %>
+  </div>
+</section>

@@ -1,0 +1,11 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Nuevo Rol</h1>
+      <p>Crea un rol base para asignación de usuarios.</p>
+    </div>
+    <%= link_to "Volver", roles_path, class: "ui-button ui-button-secondary" %>
+  </div>
+  <%= render "form", rol: @rol %>
+</section>

@@ -1,0 +1,11 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Editar Usuario</h1>
+      <p>Actualiza datos, credenciales y roles del usuario.</p>
+    </div>
+    <%= link_to "Ver detalle", usuario_path(@usuario), class: "ui-button ui-button-secondary" %>
+  </div>
+  <%= render "form", usuario: @usuario %>
+</section>

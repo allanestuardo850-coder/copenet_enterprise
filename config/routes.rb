@@ -11,10 +11,20 @@ Rails.application.routes.draw do
 
   root "enterprise#dashboard"
 
+  get "login", to: "sesiones#new"
+  post "login", to: "sesiones#create"
+  delete "logout", to: "sesiones#destroy"
+
   get "dashboard", to: "enterprise#dashboard"
   resources :companies, except: [:destroy] do
     member do
       get :configuration
+    end
+  end
+  resources :usuarios
+  resources :roles do
+    member do
+      match :permisos, via: %i[get patch]
     end
   end
   get "accounts", to: "enterprise#accounts"

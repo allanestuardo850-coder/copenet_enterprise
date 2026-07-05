@@ -1,0 +1,37 @@
+<section class="login-shell">
+  <div class="login-brand-panel">
+    <div class="login-brand-mark">C</div>
+    <p class="eyebrow">Copenet Enterprise</p>
+    <h1>Control empresarial con una base moderna y segura</h1>
+    <p>Plataforma empresarial para administración, costos, cobros y control operativo.</p>
+    <div class="login-pattern"></div>
+  </div>
+
+  <div class="login-form-panel">
+    <div class="login-form-card">
+      <div class="login-heading">
+        <h2>Iniciar Sesión</h2>
+        <p>Accede al panel administrativo con tu cuenta interna.</p>
+      </div>
+
+      <%= form_with url: login_path, class: "login-form" do |form| %>
+        <div class="field-group">
+          <%= form.label :email, "Correo Electrónico" %>
+          <%= form.email_field :email, class: "text-input", autofocus: true, required: true %>
+        </div>
+
+        <div class="field-group">
+          <%= form.label :password, "Contraseña" %>
+          <%= form.password_field :password, class: "text-input", required: true %>
+        </div>
+
+        <label class="checkbox-label login-checkbox">
+          <%= check_box_tag :remember_me, "1", false %>
+          <span>Recordarme en este equipo</span>
+        </label>
+
+        <%= form.submit "Iniciar Sesión", class: "ui-button ui-button-primary submit-button login-submit" %>
+      <% end %>
+    </div>
+  </div>
+</section>

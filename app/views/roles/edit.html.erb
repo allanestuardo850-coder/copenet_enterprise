@@ -1,0 +1,11 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Editar Rol</h1>
+      <p>Actualiza datos generales del rol.</p>
+    </div>
+    <%= link_to "Ver detalle", rol_path(@rol), class: "ui-button ui-button-secondary" %>
+  </div>
+  <%= render "form", rol: @rol %>
+</section>

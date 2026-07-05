@@ -1,0 +1,53 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Usuarios</h1>
+      <p>Gestiona cuentas internas, acceso root y asignación de roles.</p>
+    </div>
+    <%= link_to "Nuevo Usuario", new_usuario_path, class: "ui-button ui-button-primary" %>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Listado de usuarios</h2>
+        <p>Administración inicial de usuarios y acceso al sistema.</p>
+      </div>
+      <%= render "shared/badge", text: "#{@usuarios.size} registros", tone: "info" %>
+    </div>
+
+    <div class="table-shell">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Roles</th>
+            <th>Estado</th>
+            <th>Root</th>
+            <th>Último Acceso</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @usuarios.each do |usuario| %>
+            <tr>
+              <td><%= [usuario.nombre, usuario.apellido].join(" ") %></td>
+              <td><%= usuario.email %></td>
+              <td><%= usuario.roles.map(&:nombre).presence&.join(", ") || "Sin roles" %></td>
+              <td><%= render "shared/badge", text: usuario.activo? ? "Activo" : "Inactivo", tone: usuario.activo? ? "success" : "warning" %></td>
+              <td><%= render "shared/badge", text: usuario.root? ? "Sí" : "No", tone: usuario.root? ? "primary" : "info" %></td>
+              <td><%= usuario.ultimo_acceso_en&.strftime("%d/%m/%Y %H:%M") || "Sin acceso" %></td>
+              <td class="table-actions">
+                <%= link_to "Ver", usuario_path(usuario), class: "table-link" %>
+                <%= link_to "Editar", edit_usuario_path(usuario), class: "table-link" %>
+                <%= button_to "Eliminar", usuario_path(usuario), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este usuario?" } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

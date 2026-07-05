@@ -1,0 +1,11 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Nuevo Usuario</h1>
+      <p>Registra un nuevo usuario interno.</p>
+    </div>
+    <%= link_to "Volver", usuarios_path, class: "ui-button ui-button-secondary" %>
+  </div>
+  <%= render "form", usuario: @usuario %>
+</section>

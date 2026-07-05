@@ -1,0 +1,77 @@
+<%= form_with model: usuario, class: "company-form" do |form| %>
+  <% if usuario.errors.any? %>
+    <section class="panel form-errors">
+      <ul class="error-list">
+        <% usuario.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <section class="panel form-section">
+    <div class="panel-header">
+      <div>
+        <h2>Información del usuario</h2>
+        <p>Datos base y credenciales iniciales.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <%= form.label :nombre, "Nombre" %>
+        <%= form.text_field :nombre, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :apellido, "Apellido" %>
+        <%= form.text_field :apellido, class: "text-input" %>
+      </div>
+      <div class="field-group field-group-full">
+        <%= form.label :email, "Correo Electrónico" %>
+        <%= form.email_field :email, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :password, "Contraseña" %>
+        <%= form.password_field :password, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :password_confirmation, "Confirmar Contraseña" %>
+        <%= form.password_field :password_confirmation, class: "text-input" %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :activo %>
+          <span>Activo</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :root %>
+          <span>Root</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel form-section">
+    <div class="panel-header">
+      <div>
+        <h2>Roles</h2>
+        <p>Asigna uno o más roles disponibles.</p>
+      </div>
+    </div>
+    <div class="checkbox-list">
+      <% @roles.each do |rol| %>
+        <label class="checkbox-label checkbox-card">
+          <%= check_box_tag "usuario[rol_ids][]", rol.id, usuario.roles.include?(rol) %>
+          <span><%= rol.nombre %></span>
+        </label>
+      <% end %>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <%= form.submit usuario.persisted? ? "Actualizar Usuario" : "Guardar Usuario", class: "ui-button ui-button-primary submit-button" %>
+    <%= link_to "Cancelar", usuario.persisted? ? usuario_path(usuario) : usuarios_path, class: "ui-button ui-button-secondary" %>
+  </div>
+<% end %>

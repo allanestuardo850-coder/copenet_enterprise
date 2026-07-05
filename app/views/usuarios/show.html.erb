@@ -1,0 +1,43 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1><%= [@usuario.nombre, @usuario.apellido].join(" ") %></h1>
+      <p>Detalle del usuario y sus permisos derivados por roles.</p>
+    </div>
+    <div class="page-actions-inline">
+      <%= link_to "Editar", edit_usuario_path(@usuario), class: "ui-button ui-button-primary" %>
+      <%= link_to "Volver", usuarios_path, class: "ui-button ui-button-secondary" %>
+    </div>
+  </div>
+
+  <div class="module-page-grid">
+    <section class="panel">
+      <div class="detail-grid">
+        <div class="detail-item"><span>Nombre</span><strong><%= @usuario.nombre %></strong></div>
+        <div class="detail-item"><span>Apellido</span><strong><%= @usuario.apellido %></strong></div>
+        <div class="detail-item"><span>Correo</span><strong><%= @usuario.email %></strong></div>
+        <div class="detail-item"><span>Último Acceso</span><strong><%= @usuario.ultimo_acceso_en&.strftime("%d/%m/%Y %H:%M") || "-" %></strong></div>
+        <div class="detail-item"><span>Activo</span><strong><%= @usuario.activo? ? "Sí" : "No" %></strong></div>
+        <div class="detail-item"><span>Root</span><strong><%= @usuario.root? ? "Sí" : "No" %></strong></div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Roles asignados</h2>
+          <p>Roles activos del usuario.</p>
+        </div>
+      </div>
+      <div class="summary-stack">
+        <% @usuario.roles.each do |rol| %>
+          <div class="summary-card">
+            <strong><%= rol.nombre %></strong>
+            <span><%= rol.descripcion.presence || "Sin descripción" %></span>
+          </div>
+        <% end %>
+      </div>
+    </aside>
+  </div>
+</section>

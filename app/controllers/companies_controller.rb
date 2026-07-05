@@ -1,5 +1,4 @@
 class CompaniesController < ApplicationController
-  before_action :set_navigation
   before_action :set_company, only: %i[show edit update configuration]
 
   def index
@@ -104,27 +103,5 @@ class CompaniesController < ApplicationController
             end
 
     scope
-  end
-
-  def set_navigation
-    @navigation_items = [
-      { key: :dashboard, label: "Dashboard", path: dashboard_path, icon: "dashboard" },
-      {
-        key: :administration,
-        label: "Administración",
-        icon: "settings",
-        children: [
-          { key: :companies, label: "Empresas", path: companies_path, icon: "building" }
-        ]
-      },
-      { key: :accounts, label: "Cuentas", path: accounts_path, icon: "wallet" },
-      { key: :services, label: "Servicios / Productos", path: services_path, icon: "box" },
-      { key: :costs, label: "Costos", path: costs_path, icon: "coins" },
-      { key: :collections, label: "Cobros", path: collections_path, icon: "receipt" },
-      { key: :invoices, label: "Facturación", path: invoices_path, icon: "invoice" },
-      { key: :contracts, label: "Contratos", path: contracts_path, icon: "contract" },
-      { key: :reports, label: "Reportes", path: reports_path, icon: "report" },
-      { key: :settings, label: "Configuración", path: settings_path, icon: "settings" }
-    ]
   end
 end

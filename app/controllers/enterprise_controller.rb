@@ -1,6 +1,4 @@
 class EnterpriseController < ApplicationController
-  before_action :set_navigation
-
   def dashboard
     @current_page = :dashboard
     @page_title = "Dashboard"
@@ -196,28 +194,6 @@ class EnterpriseController < ApplicationController
   end
 
   private
-
-  def set_navigation
-    @navigation_items = [
-      { key: :dashboard, label: "Dashboard", path: dashboard_path, icon: "dashboard" },
-      {
-        key: :administration,
-        label: "Administración",
-        icon: "settings",
-        children: [
-          { key: :companies, label: "Empresas", path: companies_path, icon: "building" }
-        ]
-      },
-      { key: :accounts, label: "Cuentas", path: accounts_path, icon: "wallet" },
-      { key: :services, label: "Servicios / Productos", path: services_path, icon: "box" },
-      { key: :costs, label: "Costos", path: costs_path, icon: "coins" },
-      { key: :collections, label: "Cobros", path: collections_path, icon: "receipt" },
-      { key: :invoices, label: "Facturación", path: invoices_path, icon: "invoice" },
-      { key: :contracts, label: "Contratos", path: contracts_path, icon: "contract" },
-      { key: :reports, label: "Reportes", path: reports_path, icon: "report" },
-      { key: :settings, label: "Configuración", path: settings_path, icon: "settings" }
-    ]
-  end
 
   def set_module_page(key:, title:, description:, action_label:, filters:, table_columns:, rows:, empty_title:, empty_description:)
     @current_page = key

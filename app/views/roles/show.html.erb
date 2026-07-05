@@ -1,0 +1,41 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1><%= @rol.nombre %></h1>
+      <p><%= @rol.descripcion.presence || "Rol sin descripción." %></p>
+    </div>
+    <div class="page-actions-inline">
+      <%= link_to "Editar", edit_rol_path(@rol), class: "ui-button ui-button-primary" %>
+      <%= link_to "Permisos", permisos_role_path(@rol), class: "ui-button ui-button-secondary" %>
+      <%= link_to "Volver", roles_path, class: "ui-button ui-button-secondary" %>
+    </div>
+  </div>
+
+  <div class="module-page-grid">
+    <section class="panel">
+      <div class="detail-grid">
+        <div class="detail-item"><span>Nombre</span><strong><%= @rol.nombre %></strong></div>
+        <div class="detail-item"><span>Activo</span><strong><%= @rol.activo? ? "Sí" : "No" %></strong></div>
+        <div class="detail-item detail-item-full"><span>Descripción</span><strong><%= @rol.descripcion.presence || "-" %></strong></div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Usuarios asociados</h2>
+          <p>Usuarios con este rol activo.</p>
+        </div>
+      </div>
+      <div class="summary-stack">
+        <% @rol.usuarios.each do |usuario| %>
+          <div class="summary-card">
+            <strong><%= [usuario.nombre, usuario.apellido].join(" ") %></strong>
+            <span><%= usuario.email %></span>
+          </div>
+        <% end %>
+      </div>
+    </aside>
+  </div>
+</section>

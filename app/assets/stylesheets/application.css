@@ -75,6 +75,17 @@ body {
   line-height: 1.5;
 }
 
+.public-body {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.public-main {
+  width: 100%;
+  max-width: 1280px;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -420,6 +431,32 @@ html.theme-dark .topbar {
   display: block;
   padding: 10px 12px;
   border-radius: 12px;
+}
+
+.dropdown-form {
+  margin: 0;
+}
+
+.dropdown-button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--danger);
+  cursor: pointer;
+}
+
+.dropdown-button:hover {
+  background: var(--surface-soft);
+}
+
+.dropdown-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 .user-menu-dropdown a:hover {
@@ -860,6 +897,10 @@ html.theme-dark .topbar {
   margin-left: 0;
 }
 
+.inline-form {
+  display: inline;
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -897,6 +938,16 @@ html.theme-dark .topbar {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.checkbox-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.checkbox-card {
+  justify-content: flex-start;
 }
 
 .form-grid,
@@ -1017,6 +1068,123 @@ html.theme-dark .topbar {
   margin-top: 8px;
 }
 
+.login-shell {
+  min-height: calc(100vh - 48px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+  border-radius: 32px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+.login-brand-panel {
+  padding: 48px;
+  background:
+    radial-gradient(circle at top left, rgba(95, 152, 255, 0.34), transparent 26%),
+    radial-gradient(circle at bottom right, rgba(18, 55, 120, 0.28), transparent 32%),
+    linear-gradient(180deg, #0b2548 0%, #163c74 100%);
+  color: #eef5ff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-brand-panel .eyebrow {
+  color: #9ec0ff;
+}
+
+.login-brand-panel h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 4vw, 3.8rem);
+  line-height: 1.05;
+}
+
+.login-brand-panel p {
+  max-width: 32rem;
+  color: rgba(238, 245, 255, 0.82);
+}
+
+.login-brand-mark {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 20px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #6ba9ff, #d7e7ff);
+  color: #14386f;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.login-pattern {
+  margin-top: 36px;
+  height: 180px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08) 1px, transparent 1px, transparent 22px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06) 1px, transparent 1px, transparent 22px);
+}
+
+.login-form-panel {
+  display: grid;
+  place-items: center;
+  padding: 40px 32px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.94));
+}
+
+.login-form-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 32px;
+  border-radius: 28px;
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.login-heading h2 {
+  margin: 0;
+}
+
+.login-heading p {
+  margin: 10px 0 0;
+  color: var(--text-muted);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.login-checkbox {
+  justify-content: flex-start;
+}
+
+.login-submit {
+  width: 100%;
+  justify-content: center;
+}
+
+.top-spacing {
+  margin-top: 18px;
+}
+
+.permisos-table td {
+  text-align: center;
+}
+
+.permisos-table td:first-child,
+.permisos-table th:first-child {
+  text-align: left;
+}
+
 .empty-state-icon {
   width: 56px;
   height: 56px;
@@ -1042,6 +1210,10 @@ html.theme-dark .topbar {
 
   .dashboard-grid,
   .module-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .login-shell {
     grid-template-columns: 1fr;
   }
 }
@@ -1092,6 +1264,10 @@ html.theme-dark .topbar {
 
   .filters-bar {
     align-items: stretch;
+  }
+
+  .checkbox-list {
+    grid-template-columns: 1fr;
   }
 }
 

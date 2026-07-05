@@ -27,3 +27,42 @@ Company.find_or_initialize_by(tax_id: "103480861").tap do |company|
   company.notification_email = "notificaciones@copenet.com.gt"
   company.save!
 end
+
+usuario_root = Usuario.find_or_initialize_by(email: "root@copenet.com.gt")
+usuario_root.nombre = "Root"
+usuario_root.apellido = "Sistema"
+usuario_root.password = "Admin123!2026" if usuario_root.new_record?
+usuario_root.password_confirmation = "Admin123!2026" if usuario_root.new_record?
+usuario_root.activo = true
+usuario_root.root = true
+usuario_root.save!
+
+rol_administrador = Rol.find_or_initialize_by(nombre: "Administrador")
+rol_administrador.descripcion = "Rol administrador inicial del sistema."
+rol_administrador.activo = true
+rol_administrador.save!
+
+UsuarioRol.find_or_create_by!(usuario: usuario_root, rol: rol_administrador)
+
+[
+  { codigo: "DASHBOARD", nombre: "Dashboard", descripcion: "Panel principal del sistema.", ruta: "/dashboard" },
+  { codigo: "ADMINISTRACION", nombre: "Administración", descripcion: "Sección principal administrativa.", ruta: nil },
+  { codigo: "COMPANIAS", nombre: "Compañías", descripcion: "Gestión de compañías.", ruta: "/companies" },
+  { codigo: "USUARIOS", nombre: "Usuarios", descripcion: "Gestión de usuarios.", ruta: "/usuarios" },
+  { codigo: "ROLES", nombre: "Roles y Permisos", descripcion: "Gestión de roles y permisos.", ruta: "/roles" }
+].each do |attrs|
+  modulo = ModuloSistema.find_or_initialize_by(codigo: attrs[:codigo])
+  modulo.assign_attributes(attrs.merge(activo: true))
+  modulo.save!
+
+  permiso = Permiso.find_or_initialize_by(rol: rol_administrador, modulo_sistema: modulo)
+  permiso.assign_attributes(
+    puede_ver: true,
+    puede_crear: true,
+    puede_editar: true,
+    puede_eliminar: true,
+    puede_exportar: true,
+    puede_configurar: true
+  )
+  permiso.save!
+end
