@@ -1,0 +1,649 @@
+<%= form_with model: producto_servicio,
+              url: producto_servicio.persisted? ? productos_servicio_path(producto_servicio) : productos_servicios_path,
+              class: "company-form productos-servicios-form",
+              data: { controller: "tabs", tabs_default_value: "general" } do |form| %>
+  <div class="form-actions form-actions-top">
+    <%= form.submit producto_servicio.persisted? ? "Actualizar Producto o Servicio" : "Guardar Producto o Servicio", class: "ui-button ui-button-primary submit-button" %>
+    <%= link_to "Cancelar", producto_servicio.persisted? ? productos_servicio_path(producto_servicio) : productos_servicios_path, class: "ui-button ui-button-secondary" %>
+  </div>
+
+  <% if producto_servicio.errors.any? %>
+    <section class="panel form-errors">
+      <ul class="error-list">
+        <% producto_servicio.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <section class="panel product-tabs-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Configuración del catálogo</h2>
+        <p>Completa la información por pestañas para evitar un formulario largo y mejorar la edición.</p>
+      </div>
+      <%= render "shared/badge", text: producto_servicio.persisted? ? "Edición" : "Nuevo registro", tone: "info" %>
+    </div>
+
+    <div class="product-tabs" role="tablist" aria-label="Secciones del producto o servicio">
+      <button type="button" class="product-tab is-active" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch" role="tab" aria-selected="true">
+        <span class="product-tab-accent product-tab-accent-blue"></span>
+        <span class="product-tab-icon"><%= icon("box") %></span>
+        <span class="product-tab-copy">
+          <strong>Información General</strong>
+          <small>Identidad, código, vigencia y estado</small>
+        </span>
+        <span class="product-tab-step">01</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="comercial" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-cyan"></span>
+        <span class="product-tab-icon"><%= icon("coins") %></span>
+        <span class="product-tab-copy">
+          <strong>Comercial</strong>
+          <small>Portafolio, empresa, precio y margen</small>
+        </span>
+        <span class="product-tab-step">02</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="costos" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-rose"></span>
+        <span class="product-tab-icon"><%= icon("wallet") %></span>
+        <span class="product-tab-copy">
+          <strong>Costos</strong>
+          <small>Estructura extendida por componente y recurrencia</small>
+        </span>
+        <span class="product-tab-step">03</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="facturacion" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-violet"></span>
+        <span class="product-tab-icon"><%= icon("receipt") %></span>
+        <span class="product-tab-copy">
+          <strong>Cobro y Facturación</strong>
+          <small>Recurrencia, consumo y reglas de factura</small>
+        </span>
+        <span class="product-tab-step">04</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="operacion" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-green"></span>
+        <span class="product-tab-icon"><%= icon("contract") %></span>
+        <span class="product-tab-copy">
+          <strong>Operación</strong>
+          <small>Soporte, contrato y liquidación</small>
+        </span>
+        <span class="product-tab-step">05</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="fiscal" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-amber"></span>
+        <span class="product-tab-icon"><%= icon("settings") %></span>
+        <span class="product-tab-copy">
+          <strong>Fiscal y Visibilidad</strong>
+          <small>IVA, FEL, cuentas y exposición del catálogo</small>
+        </span>
+        <span class="product-tab-step">06</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="documentacion" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-slate"></span>
+        <span class="product-tab-icon"><%= icon("report") %></span>
+        <span class="product-tab-copy">
+          <strong>Documentación</strong>
+          <small>Archivos de soporte y material para cotización</small>
+        </span>
+        <span class="product-tab-step">07</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel is-active" data-tabs-target="panel" data-tab-id="general">
+    <div class="panel-header">
+      <div>
+        <h2>Información General</h2>
+        <p>Define la identidad principal, vigencia y estado del concepto cobrable.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <%= form.label :codigo, "Código" %>
+        <%= form.text_field :codigo, class: "text-input", readonly: true %>
+        <p class="field-help">Se genera automáticamente en formato correlativo `CO-00001-2026`.</p>
+      </div>
+      <div class="field-group">
+        <%= form.label :nombre, "Nombre" %>
+        <%= form.text_field :nombre, class: "text-input", placeholder: "Licencia SaaS Enterprise" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :nombre_corto, "Nombre Corto" %>
+        <%= form.text_field :nombre_corto, class: "text-input", placeholder: "Licencia Enterprise" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :estado_catalogo, "Estado" %>
+        <%= form.select :estado_catalogo, options_for_select(ProductoServicio::ESTADOS_CATALOGO, producto_servicio.estado_catalogo), {}, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :fecha_inicio_vigencia, "Inicio de Vigencia" %>
+        <%= form.date_field :fecha_inicio_vigencia, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :fecha_fin_vigencia, "Fin de Vigencia" %>
+        <%= form.date_field :fecha_fin_vigencia, class: "text-input" %>
+      </div>
+      <div class="field-group field-group-full">
+        <%= form.label :descripcion, "Descripción" %>
+        <%= form.text_area :descripcion, rows: 4, class: "text-input text-area", placeholder: "Describe el alcance comercial, operativo y financiero del producto o servicio." %>
+      </div>
+      <div class="field-group field-group-full">
+        <%= form.label :problema_resuelve, "Problema que Resuelve" %>
+        <%= form.text_area :problema_resuelve, rows: 4, class: "text-input text-area", placeholder: "Explica el dolor, necesidad o problema principal que este producto o servicio resuelve para el cliente." %>
+      </div>
+      <div class="field-group field-group-full">
+        <%= form.label :caso_uso, "Caso de Uso" %>
+        <%= form.text_area :caso_uso, rows: 4, class: "text-input text-area", placeholder: "Describe cómo se usa, en qué escenarios aplica y qué tipo de cliente debería recibir esta propuesta." %>
+      </div>
+      <div class="field-group field-group-full">
+        <%= form.label :incluye_cotizacion, "Qué Incluye la Cotización" %>
+        <%= form.text_area :incluye_cotizacion, rows: 4, class: "text-input text-area", placeholder: "Enumera entregables, alcance comercial, licencias, soporte, implementación o cualquier valor incluido en la propuesta." %>
+      </div>
+      <div class="field-group field-group-full">
+        <%= form.label :requisitos_cierre_venta, "Qué se Necesita para Cerrar la Venta" %>
+        <%= form.text_area :requisitos_cierre_venta, rows: 4, class: "text-input text-area", placeholder: "Indica validaciones, aprobaciones, requisitos documentales o pasos comerciales necesarios para cerrar la venta." %>
+      </div>
+      <div class="field-group checkbox-group field-group-full">
+        <label class="checkbox-label">
+          <%= form.check_box :activo %>
+          <span>Registro activo</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="comercial" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Clasificación y Comercial</h2>
+        <p>Ubica el producto en el portafolio y define precio, costo y empresa que facturará.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <%= form.label :tipo_producto, "Tipo de Producto" %>
+        <%= form.select :tipo_producto, options_for_select(ProductoServicio::TIPOS_PRODUCTO, producto_servicio.tipo_producto), { include_blank: "Selecciona un tipo" }, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :product_type, "Tipo funcional" %>
+        <%= form.select :product_type, options_for_select(ProductoServicio::PRODUCT_TYPES.map { |tipo| [tipo.humanize, tipo] }, producto_servicio.product_type), { include_blank: "Selecciona un tipo funcional" }, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :categoria, "Categoría" %>
+        <%= form.select :categoria, options_for_select(ProductoServicio::CATEGORIAS, producto_servicio.categoria), { include_blank: "Selecciona una categoría" }, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :subcategoria, "Subcategoría" %>
+        <%= form.text_field :subcategoria, class: "text-input", placeholder: "Procesamiento, Suscripción, Hardware..." %>
+      </div>
+      <div class="field-group">
+        <%= form.label :company_id, "Empresa que factura" %>
+        <%= form.select :company_id,
+                        options_for_select(@companies.map { |company| [company.commercial_name.presence || company.legal_name, company.id] }, producto_servicio.company_id),
+                        { include_blank: "Selecciona la empresa facturadora" },
+                        class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :modelo_cobro, "Modelo de Cobro" %>
+        <%= form.select :modelo_cobro, options_for_select(ProductoServicio::MODELOS_COBRO, producto_servicio.modelo_cobro), { include_blank: "Selecciona un modelo" }, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :moneda_id, "Moneda" %>
+        <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, producto_servicio.moneda_id), { include_blank: "Selecciona una moneda" }, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :precio_base, "Precio consolidado" %>
+        <%= form.number_field :precio_base, class: "text-input", step: "0.01", min: 0, readonly: true %>
+        <p class="field-help">Este valor se recalcula automáticamente al guardar, usando los ítems comerciales detallados abajo.</p>
+      </div>
+      <div class="field-group">
+        <%= form.label :costo_base, "Costo consolidado" %>
+        <%= form.number_field :costo_base, class: "text-input", step: "0.01", min: 0, readonly: true %>
+        <p class="field-help">Este valor se recalcula automáticamente al guardar, usando los costos detallados de la pestaña Costos.</p>
+      </div>
+      <div class="field-group">
+        <%= form.label :margen_objetivo, "Margen Objetivo %" %>
+        <%= form.number_field :margen_objetivo, class: "text-input", step: "0.01", min: 0, max: 100, placeholder: "25.00" %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :permite_descuento %>
+          <span>Permite descuento</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :no_charge_for_copenet %>
+          <span>No cobrar a clientes CopeNET</span>
+        </label>
+      </div>
+      <div class="field-group">
+        <%= form.label :porcentaje_descuento_maximo, "Descuento Máximo %" %>
+        <%= form.number_field :porcentaje_descuento_maximo, class: "text-input", step: "0.01", min: 0, max: 100, placeholder: "0.00" %>
+        <p class="field-help">Si desactivas el descuento, este valor se limpia automáticamente al guardar.</p>
+      </div>
+      <div class="field-group checkbox-group field-group-full">
+        <label class="checkbox-label">
+          <%= form.check_box :requiere_aprobacion_comercial %>
+          <span>Requiere aprobación comercial</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :is_development %>
+          <span>Es desarrollo</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :is_implementation %>
+          <span>Es implementación</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :is_license %>
+          <span>Es licencia</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="panel nested-panel precios-maestro-panel">
+      <div class="precios-maestro-summary">
+        <article class="mini-metric-card quote-metric-card">
+          <span>Total principal</span>
+          <strong><%= monto_producto(producto_servicio, total_precios_producto(producto_servicio)) %></strong>
+        </article>
+        <article class="mini-metric-card quote-metric-card">
+          <span>Margen promedio</span>
+          <strong><%= margen_promedio_producto(producto_servicio).present? ? "#{number_with_precision(margen_promedio_producto(producto_servicio), precision: 2)}%" : "-" %></strong>
+        </article>
+        <article class="mini-metric-card quote-metric-card">
+          <span>Totales por moneda</span>
+          <strong><%= resumen_totales_por_moneda(producto_servicio.producto_servicio_precios.reject(&:marked_for_destruction?).select(&:activo?), atributo: :precio, producto_servicio: producto_servicio) %></strong>
+        </article>
+      </div>
+
+      <div class="currency-summary-panel">
+        <strong>Resumen comercial por moneda</strong>
+        <div class="currency-summary-list">
+          <% totales_por_moneda(producto_servicio.producto_servicio_precios.reject(&:marked_for_destruction?).select(&:activo?), atributo: :precio, producto_servicio: producto_servicio).each do |item| %>
+            <span class="currency-summary-chip"><%= monto_en_moneda(item[:moneda], item[:total]) %></span>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="precios-builder" data-controller="producto-servicio-precios" data-producto-servicio-precios-index-value="<%= producto_servicio.producto_servicio_precios.size %>">
+        <div class="panel-header nested-panel-header">
+          <div>
+            <h2>Detalle de precios comerciales</h2>
+            <p>Agrega varios renglones de precio con su margen comercial para construir la propuesta base del producto o servicio.</p>
+          </div>
+          <button type="button" class="ui-button ui-button-primary ui-button-compact" data-action="producto-servicio-precios#add">
+            Agregar precio
+          </button>
+        </div>
+
+        <div class="precios-detalle-list" data-producto-servicio-precios-target="list">
+          <%= form.fields_for :producto_servicio_precios do |precio_form| %>
+            <%= render "producto_servicio_precio_fields", form: precio_form %>
+          <% end %>
+        </div>
+
+        <template data-producto-servicio-precios-target="template">
+          <%= form.fields_for :producto_servicio_precios, ProductoServicioPrecio.new(activo: true, cotizable: true, facturable: true, moneda_id: producto_servicio.moneda_id, recurrencia: producto_servicio.es_recurrente? ? (producto_servicio.recurrencia.presence || "Mensual") : "Unico", seccion_cotizacion: producto_servicio.es_recurrente? ? "Cargo mensual" : "Cargo inicial"), child_index: "NEW_RECORD" do |precio_form| %>
+            <%= render "producto_servicio_precio_fields", form: precio_form %>
+          <% end %>
+        </template>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="costos" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Costos Extendidos</h2>
+        <p>Agrega varios tipos de costo con nombre, descripción, monto y recurrencia para construir la estructura real del producto.</p>
+      </div>
+      <%= render "shared/badge", text: "#{producto_servicio.producto_servicio_costos.reject(&:marked_for_destruction?).size} costos", tone: "info" %>
+    </div>
+
+    <div class="panel nested-panel costos-maestro-panel">
+      <div class="costos-maestro-summary">
+        <article class="mini-metric-card quote-metric-card">
+          <span>Total principal</span>
+          <strong><%= monto_producto(producto_servicio, total_costos_producto(producto_servicio)) %></strong>
+        </article>
+        <article class="mini-metric-card quote-metric-card">
+          <span>Empresa que factura</span>
+          <strong><%= producto_servicio.company&.commercial_name || producto_servicio.company&.legal_name || "Pendiente" %></strong>
+        </article>
+        <article class="mini-metric-card quote-metric-card">
+          <span>Totales por moneda</span>
+          <strong><%= resumen_totales_por_moneda(producto_servicio.producto_servicio_costos.reject(&:marked_for_destruction?).select(&:activo?), atributo: :monto, producto_servicio: producto_servicio) %></strong>
+        </article>
+      </div>
+
+      <div class="currency-summary-panel">
+        <strong>Resumen de costos por moneda</strong>
+        <div class="currency-summary-list">
+          <% totales_por_moneda(producto_servicio.producto_servicio_costos.reject(&:marked_for_destruction?).select(&:activo?), atributo: :monto, producto_servicio: producto_servicio).each do |item| %>
+            <span class="currency-summary-chip"><%= monto_en_moneda(item[:moneda], item[:total]) %></span>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="costos-builder" data-controller="producto-servicio-costos" data-producto-servicio-costos-index-value="<%= producto_servicio.producto_servicio_costos.size %>">
+        <div class="panel-header nested-panel-header">
+          <div>
+            <h2>Detalle de costos</h2>
+            <p>Úsalo para separar licencias, implementación, soporte, infraestructura, comisiones u otros componentes.</p>
+          </div>
+          <button type="button" class="ui-button ui-button-primary ui-button-compact" data-action="producto-servicio-costos#add">
+            Agregar costo
+          </button>
+        </div>
+
+        <div class="costos-detalle-list" data-producto-servicio-costos-target="list">
+          <%= form.fields_for :producto_servicio_costos do |costo_form| %>
+            <%= render "producto_servicio_costo_fields", form: costo_form %>
+          <% end %>
+        </div>
+
+        <template data-producto-servicio-costos-target="template">
+          <%= form.fields_for :producto_servicio_costos, ProductoServicioCosto.new(activo: true, recurrencia: "Unico", moneda_id: producto_servicio.moneda_id), child_index: "NEW_RECORD" do |costo_form| %>
+            <%= render "producto_servicio_costo_fields", form: costo_form %>
+          <% end %>
+        </template>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="facturacion" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Cobro y Facturación</h2>
+        <p>Configura recurrencia, consumo, cargos y comportamiento de facturación.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :es_recurrente %>
+          <span>Es recurrente</span>
+        </label>
+      </div>
+      <div class="field-group">
+        <%= form.label :recurrencia, "Recurrencia" %>
+        <%= form.select :recurrencia, options_for_select(ProductoServicio::RECURRENCIAS, producto_servicio.recurrencia), { include_blank: "Selecciona recurrencia" }, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :dia_cobro, "Día de Cobro" %>
+        <%= form.number_field :dia_cobro, class: "text-input", min: 1, max: 31, placeholder: "15" %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :cobra_proporcional %>
+          <span>Cobra proporcional</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :requiere_consumo %>
+          <span>Requiere consumo</span>
+        </label>
+      </div>
+      <div class="field-group">
+        <%= form.label :unidad_cobro, "Unidad de Cobro" %>
+        <%= form.select :unidad_cobro, options_for_select(ProductoServicio::UNIDADES_COBRO, producto_servicio.unidad_cobro), { include_blank: "Selecciona unidad" }, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :cantidad_minima, "Cantidad Mínima" %>
+        <%= form.number_field :cantidad_minima, class: "text-input", step: "0.01", min: 0, placeholder: "0.00" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :cantidad_maxima, "Cantidad Máxima" %>
+        <%= form.number_field :cantidad_maxima, class: "text-input", step: "0.01", min: 0, placeholder: "0.00" %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :facturable %>
+          <span>Facturable</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :billable %>
+          <span>Billable</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :is_recurring_service %>
+          <span>Servicio recurrente</span>
+        </label>
+      </div>
+      <div class="field-group">
+        <%= form.label :tipo_facturacion, "Tipo de Facturación" %>
+        <%= form.select :tipo_facturacion, options_for_select(ProductoServicio::TIPOS_FACTURACION, producto_servicio.tipo_facturacion), { include_blank: "Selecciona tipo" }, class: "text-input" %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :agrupable_en_factura %>
+          <span>Agrupable en factura</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :requiere_descripcion_dinamica %>
+          <span>Requiere descripción dinámica</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="operacion" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Operación, Contrato y Liquidación</h2>
+        <p>Define activación, soporte, reglas contractuales y reparto financiero.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :requiere_activacion %>
+          <span>Requiere activación</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :requiere_soporte %>
+          <span>Requiere soporte</span>
+        </label>
+      </div>
+      <div class="field-group">
+        <%= form.label :nivel_servicio, "Nivel de Servicio" %>
+        <%= form.select :nivel_servicio, options_for_select(ProductoServicio::NIVELES_SERVICIO, producto_servicio.nivel_servicio), { include_blank: "Selecciona nivel" }, class: "text-input" %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :permite_suspension %>
+          <span>Permite suspensión</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :requiere_contrato %>
+          <span>Requiere contrato</span>
+        </label>
+      </div>
+      <div class="field-group">
+        <%= form.label :duracion_minima_meses, "Permanencia Mínima" %>
+        <%= form.number_field :duracion_minima_meses, class: "text-input", min: 0, step: 1, placeholder: "12" %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :permite_renovacion %>
+          <span>Permite renovación</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :liquidable %>
+          <span>Liquidable</span>
+        </label>
+      </div>
+      <div class="field-group">
+        <%= form.label :modelo_liquidacion, "Modelo de Liquidación" %>
+        <%= form.select :modelo_liquidacion, options_for_select(ProductoServicio::MODELOS_LIQUIDACION, producto_servicio.modelo_liquidacion), { include_blank: "Selecciona modelo" }, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :porcentaje_liquidacion, "Porcentaje de Liquidación %" %>
+        <%= form.number_field :porcentaje_liquidacion, class: "text-input", step: "0.01", min: 0, max: 100, placeholder: "0.00" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :base_liquidacion, "Base de Liquidación" %>
+        <%= form.select :base_liquidacion, options_for_select(ProductoServicio::BASES_LIQUIDACION, producto_servicio.base_liquidacion), { include_blank: "Selecciona base" }, class: "text-input" %>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="fiscal" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Fiscalidad, Contabilidad y Visibilidad</h2>
+        <p>Controla IVA, cuentas contables, FEL y exposición en módulos consumidores.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :contabilizable %>
+          <span>Contabilizable</span>
+        </label>
+      </div>
+      <div class="field-group">
+        <%= form.label :cuenta_ingreso_codigo, "Cuenta de Ingreso" %>
+        <%= form.text_field :cuenta_ingreso_codigo, class: "text-input", placeholder: "4101-01" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :centro_costo_codigo, "Centro de Costo" %>
+        <%= form.text_field :centro_costo_codigo, class: "text-input", placeholder: "COBROS-001" %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :afecto_iva %>
+          <span>Afecto a IVA</span>
+        </label>
+      </div>
+      <div class="field-group">
+        <%= form.label :tipo_impuesto, "Tipo de Impuesto" %>
+        <%= form.select :tipo_impuesto, options_for_select(ProductoServicio::TIPOS_IMPUESTO, producto_servicio.tipo_impuesto), { include_blank: "Selecciona impuesto" }, class: "text-input" %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :requiere_fel_detallado %>
+          <span>Requiere FEL detallado</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :visible_in_quote %>
+          <span>Visible en cotización</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :visible_en_crm %>
+          <span>Visible en CRM</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :visible_en_contratos %>
+          <span>Visible en contratos</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :visible_en_expedientes %>
+          <span>Visible en expedientes</span>
+        </label>
+      </div>
+      <div class="field-group">
+        <%= form.label :orden_visual, "Orden Visual" %>
+        <%= form.number_field :orden_visual, class: "text-input", min: 0, step: 1, placeholder: "10" %>
+      </div>
+      <div class="field-group checkbox-group field-group-full">
+        <label class="checkbox-label">
+          <%= form.check_box :permite_costo_variable %>
+          <span>Permite costo variable</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="documentacion" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Documentación Comercial y Técnica</h2>
+        <p>Adjunta fichas, PDFs, presentaciones, anexos o respaldo operativo que luego servirán para generar cotizaciones desde este módulo.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group field-group-full">
+        <%= form.label :documentos_comerciales, "Archivos de Documentación" %>
+        <div class="file-upload-panel">
+          <%= form.file_field :documentos_comerciales, multiple: true, class: "text-input", accept: ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg" %>
+          <p class="field-help">Puedes subir documentación comercial, técnica o de soporte para respaldar futuras cotizaciones.</p>
+        </div>
+      </div>
+
+      <div class="field-group field-group-full">
+        <div class="panel nested-panel attached-files-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Archivos cargados</h2>
+              <p>Material disponible actualmente en el producto o servicio.</p>
+            </div>
+            <%= render "shared/badge", text: "#{producto_servicio.documentos_comerciales.attachments.size} archivos", tone: "info" %>
+          </div>
+
+          <% if producto_servicio.documentos_comerciales.attached? %>
+            <div class="document-list">
+              <% producto_servicio.documentos_comerciales.each do |documento| %>
+                <div class="document-item">
+                  <span class="document-item-icon"><%= icon("report") %></span>
+                  <div class="document-item-copy">
+                    <strong><%= documento.filename %></strong>
+                    <small><%= number_to_human_size(documento.byte_size) %></small>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="empty-inline-state">
+              <strong>Aún no hay archivos adjuntos.</strong>
+              <span>Cuando cargues documentación aquí, también quedará disponible en la pantalla de cotización.</span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <%= form.submit producto_servicio.persisted? ? "Actualizar Producto o Servicio" : "Guardar Producto o Servicio", class: "ui-button ui-button-primary submit-button" %>
+    <%= link_to "Cancelar", producto_servicio.persisted? ? productos_servicio_path(producto_servicio) : productos_servicios_path, class: "ui-button ui-button-secondary" %>
+  </div>
+<% end %>

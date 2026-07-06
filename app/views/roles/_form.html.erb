@@ -1,4 +1,9 @@
 <%= form_with model: rol, class: "company-form" do |form| %>
+  <div class="form-actions form-actions-top">
+    <%= form.submit rol.persisted? ? "Actualizar Rol" : "Guardar Rol", class: "ui-button ui-button-primary submit-button" %>
+    <%= link_to "Cancelar", rol.persisted? ? rol_path(rol) : roles_path, class: "ui-button ui-button-secondary" %>
+  </div>
+
   <% if rol.errors.any? %>
     <section class="panel form-errors">
       <ul class="error-list">

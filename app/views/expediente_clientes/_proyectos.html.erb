@@ -1,0 +1,48 @@
+<section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="proyectos" hidden>
+  <div class="panel-header">
+    <div>
+      <h2>Proyectos Relacionados</h2>
+      <p>Seguimiento de implementaciones y operaciones que nacieron desde cotizaciones firmadas.</p>
+    </div>
+    <div class="panel-header-actions">
+      <%= render "shared/badge", text: "#{proyectos.size} proyectos", tone: "info" %>
+    </div>
+  </div>
+
+  <% if proyectos.any? %>
+    <div class="table-shell catalog-table-shell top-spacing">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Proyecto</th>
+            <th>Estado</th>
+            <th>Inicio</th>
+            <th>Cotización origen</th>
+            <th>Monto aprobado</th>
+            <th>Margen estimado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% proyectos.each do |proyecto| %>
+            <tr>
+              <td>
+                <strong><%= proyecto.nombre %></strong>
+                <small><%= proyecto.documentacion_relacionada.to_s.split("\n").first.presence || "Sin descripción operativa" %></small>
+              </td>
+              <td><%= render "shared/badge", text: proyecto.estado.humanize, tone: tono_estado_proyecto(proyecto) %></td>
+              <td><%= proyecto.fecha_inicio ? l(proyecto.fecha_inicio, format: :long) : "Pendiente" %></td>
+              <td><%= proyecto.cotizacion&.codigo || "-" %></td>
+              <td><%= number_to_currency(proyecto.monto_aprobado, unit: "Q ", delimiter: ",", separator: ".") %></td>
+              <td><%= number_to_currency(proyecto.margen_estimado, unit: "Q ", delimiter: ",", separator: ".") %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="empty-inline-state">
+      <strong>No hay proyectos generados todavía.</strong>
+      <span>Cuando una cotización firmada active ejecución, aquí quedará visible su seguimiento operativo.</span>
+    </div>
+  <% end %>
+</section>

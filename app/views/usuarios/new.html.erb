@@ -3,9 +3,11 @@
     <div>
       <p class="eyebrow">Administración</p>
       <h1>Nuevo Usuario</h1>
-      <p>Registra un nuevo usuario interno.</p>
+      <p>Crea un nuevo usuario interno con su estado, credenciales y roles base.</p>
     </div>
-    <%= link_to "Volver", usuarios_path, class: "ui-button ui-button-secondary" %>
+    <div class="page-actions-inline">
+      <%= link_to "Volver", usuarios_path, class: "ui-button ui-button-secondary" %>
+    </div>
   </div>
   <%= render "form", usuario: @usuario %>
 </section>

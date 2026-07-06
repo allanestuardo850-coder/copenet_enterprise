@@ -1,0 +1,15 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Cobros</p>
+      <h1>Editar Producto o Servicio</h1>
+      <p>Actualiza la configuración comercial, operativa y fiscal del concepto seleccionado.</p>
+    </div>
+    <div class="page-actions-inline">
+      <%= link_to "Ver detalle", productos_servicio_path(@producto_servicio), class: "ui-button ui-button-secondary" %>
+      <%= link_to "Volver", productos_servicios_path, class: "ui-button ui-button-secondary" %>
+    </div>
+  </div>
+
+  <%= render "form", producto_servicio: @producto_servicio %>
+</section>

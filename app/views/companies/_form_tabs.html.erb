@@ -1,0 +1,326 @@
+<section class="panel product-tabs-panel">
+  <div class="panel-header">
+    <div>
+      <h2>Configuración de la Empresa</h2>
+      <p>Completa el registro por pestañas para administrar identidad, FEL y plantilla comercial sin formularios extensos.</p>
+    </div>
+    <%= render "shared/badge", text: company.persisted? ? "Edición" : "Nuevo registro", tone: "info" %>
+  </div>
+
+  <div class="module-tabs" role="tablist" aria-label="Secciones del formulario de empresa">
+    <button type="button" class="module-tab is-active" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch" role="tab" aria-selected="true">
+      <span class="module-tab-icon"><%= icon("users") %></span>
+      <span class="module-tab-copy">
+        <strong>General</strong>
+        <small>Identidad y contacto base</small>
+      </span>
+    </button>
+    <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="fel" data-action="tabs#switch" role="tab" aria-selected="false">
+      <span class="module-tab-icon"><%= icon("shield") %></span>
+      <span class="module-tab-copy">
+        <strong>FEL / INFILE</strong>
+        <small>Certificación y datos fiscales</small>
+      </span>
+    </button>
+    <button type="button" class="module-tab module-tab-emphasis" data-tabs-target="tab" data-tab-id="cotizacion" data-action="tabs#switch" role="tab" aria-selected="false">
+      <span class="module-tab-icon"><%= icon("report") %></span>
+      <span class="module-tab-copy">
+        <strong>Cotización</strong>
+        <small>Branding, contacto y pie PDF</small>
+      </span>
+    </button>
+    <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="documento" data-action="tabs#switch" role="tab" aria-selected="false">
+      <span class="module-tab-icon"><%= icon("contract") %></span>
+      <span class="module-tab-copy">
+        <strong>Documento</strong>
+        <small>Título, carta y firma</small>
+      </span>
+    </button>
+  </div>
+</section>
+
+<section class="panel form-section module-tab-panel is-active" data-tabs-target="panel" data-tab-id="general">
+  <div class="panel-header">
+    <div>
+      <h2>Información General</h2>
+      <p>Datos principales de identificación y operación de la empresa.</p>
+    </div>
+  </div>
+
+  <div class="form-grid">
+    <div class="field-group">
+      <%= form.label :commercial_name, "Nombre Comercial" %>
+      <%= form.text_field :commercial_name, class: "text-input", placeholder: "Copenet" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :legal_name, "Razón Social" %>
+      <%= form.text_field :legal_name, class: "text-input", placeholder: "Copenet, S.A." %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :tax_id, "NIT" %>
+      <%= form.text_field :tax_id, class: "text-input", placeholder: "103480861" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :company_type, "Tipo de Empresa" %>
+      <%= form.text_field :company_type, class: "text-input", placeholder: "Tecnología y Servicios" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :email, "Correo Electrónico" %>
+      <%= form.email_field :email, class: "text-input", placeholder: "info@empresa.com" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :correo_comercial, "Correo Comercial" %>
+      <%= form.email_field :correo_comercial, class: "text-input", placeholder: "comercial@empresa.com" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :phone, "Teléfono" %>
+      <%= form.telephone_field :phone, class: "text-input", placeholder: "+502 2222-0000" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :web, "Web Corporativa" %>
+      <%= form.text_field :web, class: "text-input", placeholder: "https://empresa.com" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :color_primario, "Color Primario" %>
+      <%= form.text_field :color_primario, class: "text-input", placeholder: "#2458E6" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :color_secundario, "Color Secundario" %>
+      <%= form.text_field :color_secundario, class: "text-input", placeholder: "#0B2D66" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :color_acento, "Color de Acento" %>
+      <%= form.text_field :color_acento, class: "text-input", placeholder: "#6EB8FF" %>
+    </div>
+
+    <div class="field-group field-group-full">
+      <%= form.label :address, "Dirección" %>
+      <%= form.text_area :address, rows: 4, class: "text-input text-area", placeholder: "Dirección fiscal y comercial de la empresa" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :status, "Estado" %>
+      <%= form.text_field :status, class: "text-input", placeholder: "Activa" %>
+    </div>
+
+    <div class="field-group checkbox-group">
+      <label class="checkbox-label">
+        <%= form.check_box :active %>
+        <span>Empresa activa</span>
+      </label>
+    </div>
+
+    <div class="field-group field-group-full">
+      <%= form.label :logo, "Logo Corporativo" %>
+      <% if company.logo.attached? %>
+        <div class="branding-preview-card">
+          <%= image_tag company.logo, class: "branding-preview-image", alt: "Logo corporativo" %>
+        </div>
+        <label class="checkbox-label checkbox-inline">
+          <%= form.check_box :remove_logo, {}, "1", "0" %>
+          <span>Eliminar logo corporativo actual</span>
+        </label>
+      <% end %>
+      <%= form.file_field :logo, class: "text-input" %>
+    </div>
+  </div>
+</section>
+
+<section class="panel form-section module-tab-panel" data-tabs-target="panel" data-tab-id="fel" hidden>
+  <div class="panel-header">
+    <div>
+      <h2>Configuración FEL / INFILE</h2>
+      <p>Parámetros internos de certificación por empresa. El diseño queda listo para enmascarado posterior.</p>
+    </div>
+  </div>
+
+  <div class="form-grid">
+    <div class="field-group">
+      <%= form.label :infile_prefix, "Prefijo INFILE" %>
+      <%= form.text_field :infile_prefix, class: "text-input" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :infile_key, "Llave INFILE" %>
+      <%= form.text_field :infile_key, class: "text-input" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :infile_signature_prefix, "Prefijo Firma" %>
+      <%= form.text_field :infile_signature_prefix, class: "text-input" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :infile_signature_key, "Llave Firma" %>
+      <%= form.text_field :infile_signature_key, class: "text-input" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :vat_affiliation, "Afiliación IVA" %>
+      <%= form.text_field :vat_affiliation, class: "text-input", placeholder: "GEN" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :fel_token, "Token FEL" %>
+      <%= form.text_field :fel_token, class: "text-input" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :fel_scenario_code, "Código Escenario" %>
+      <%= form.text_field :fel_scenario_code, class: "text-input", placeholder: "2" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :notification_email, "Correo Electrónico de Notificaciones" %>
+      <%= form.email_field :notification_email, class: "text-input", placeholder: "notificaciones@empresa.com" %>
+    </div>
+  </div>
+</section>
+
+<section class="panel form-section module-tab-panel" data-tabs-target="panel" data-tab-id="cotizacion" hidden>
+  <div class="panel-header">
+    <div>
+      <h2>Branding y Contacto Comercial</h2>
+      <p>Define la identidad de la empresa que aparecerá al emitir una cotización o propuesta PDF.</p>
+    </div>
+  </div>
+
+  <div class="form-grid">
+    <div class="field-group">
+      <%= form.label :quote_format_name, "Formato de Cotización" %>
+      <%= form.text_field :quote_format_name, class: "text-input", placeholder: "Propuesta Comercial Copenet" %>
+      <p class="field-help">Nombre interno o comercial del formato usado por esta empresa.</p>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :quote_website_url, "URL de Contacto" %>
+      <%= form.text_field :quote_website_url, class: "text-input", placeholder: "https://empresa.com" %>
+      <p class="field-help">Si queda vacío, el PDF usará la web corporativa de la empresa.</p>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :quote_contact_name, "Nombre de Contacto" %>
+      <%= form.text_field :quote_contact_name, class: "text-input", placeholder: "Equipo Comercial" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :quote_contact_role, "Cargo o Área" %>
+      <%= form.text_field :quote_contact_role, class: "text-input", placeholder: "Dirección Comercial" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :quote_contact_email, "Correo de Contacto" %>
+      <%= form.email_field :quote_contact_email, class: "text-input", placeholder: "comercial@empresa.com" %>
+      <p class="field-help">Si queda vacío, el PDF usará el correo comercial de la empresa.</p>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :quote_contact_phone, "Teléfono de Contacto" %>
+      <%= form.telephone_field :quote_contact_phone, class: "text-input", placeholder: "+502 0000-0000" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :quote_table_header_color, "Color de Encabezados de Tabla" %>
+      <%= form.text_field :quote_table_header_color, class: "text-input", placeholder: "#E8F0FF" %>
+      <p class="field-help">Usa un color hexadecimal para el fondo de los cabezales de tabla del PDF.</p>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :quote_contact_text_color, "Color de Datos de Contacto" %>
+      <%= form.text_field :quote_contact_text_color, class: "text-input", placeholder: "#0B2D66" %>
+      <p class="field-help">Se aplicará al destinatario y al bloque de contacto comercial de la cotización.</p>
+    </div>
+
+    <div class="field-group field-group-full">
+      <%= form.label :quote_footer_note, "Texto Inferior del PDF" %>
+      <%= form.text_area :quote_footer_note, rows: 3, class: "text-input text-area", placeholder: "Documento comercial emitido por la empresa para fines comerciales y de facturación." %>
+    </div>
+
+    <div class="field-group field-group-full">
+      <%= form.label :quote_logo, "Logo para Cotización" %>
+      <% if company.quote_logo.attached? %>
+        <div class="branding-preview-card">
+          <%= image_tag company.quote_logo, class: "branding-preview-image", alt: "Logo de cotización" %>
+        </div>
+        <label class="checkbox-label checkbox-inline">
+          <%= form.check_box :remove_quote_logo, {}, "1", "0" %>
+          <span>Eliminar logo actual</span>
+        </label>
+      <% end %>
+      <%= form.file_field :quote_logo, class: "text-input" %>
+      <p class="field-help">Si queda vacío, el PDF usará el logo corporativo de la empresa y luego el branding global como respaldo.</p>
+    </div>
+  </div>
+</section>
+
+<section class="panel form-section module-tab-panel" data-tabs-target="panel" data-tab-id="documento" hidden>
+  <div class="panel-header">
+    <div>
+      <h2>Plantilla del Documento Comercial</h2>
+      <p>Controla la portada, la carta inicial, los términos y la firma de la cotización emitida por esta empresa.</p>
+    </div>
+  </div>
+
+  <div class="form-grid">
+    <div class="field-group">
+      <%= form.label :quote_title, "Título Visible del PDF" %>
+      <%= form.text_field :quote_title, class: "text-input", placeholder: "Propuesta Comercial Autorizable" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :quote_subtitle, "Subtítulo del PDF" %>
+      <%= form.text_field :quote_subtitle, class: "text-input", placeholder: "Documento comercial generado desde el catálogo maestro del servicio." %>
+    </div>
+
+    <div class="field-group field-group-full">
+      <%= form.label :quote_intro_text, "Texto de Bienvenida" %>
+      <%= form.text_area :quote_intro_text, rows: 4, class: "text-input text-area", placeholder: "Mensaje inicial que se mostrará después del destinatario y la fecha." %>
+    </div>
+
+    <div class="field-group field-group-full">
+      <%= form.label :quote_terms_text, "Términos Comerciales" %>
+      <%= form.text_area :quote_terms_text, rows: 4, class: "text-input text-area", placeholder: "Condiciones comerciales, notas legales y alcances generales de la propuesta." %>
+    </div>
+
+    <div class="field-group field-group-full">
+      <%= form.label :quote_closing_text, "Texto de Cierre" %>
+      <%= form.text_area :quote_closing_text, rows: 4, class: "text-input text-area", placeholder: "Mensaje final de cierre comercial antes de la firma." %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :quote_signature_name, "Nombre de Firma" %>
+      <%= form.text_field :quote_signature_name, class: "text-input", placeholder: "Equipo Comercial Copenet" %>
+    </div>
+
+    <div class="field-group">
+      <%= form.label :quote_signature_role, "Cargo de Firma" %>
+      <%= form.text_field :quote_signature_role, class: "text-input", placeholder: "Dirección Comercial" %>
+    </div>
+
+    <div class="field-group field-group-full">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span>Vista previa encabezado de tablas</span>
+          <strong>
+            <span style="display:inline-flex;width:18px;height:18px;border-radius:999px;background:<%= company.quote_table_header_color_display %>;border:1px solid rgba(15,23,42,.12);vertical-align:middle;margin-right:8px;"></span>
+            <%= company.quote_table_header_color_display %>
+          </strong>
+        </div>
+        <div class="detail-item">
+          <span>Vista previa datos de contacto</span>
+          <strong style="color:<%= company.quote_contact_text_color_display %>;"><%= company.quote_contact_text_color_display %></strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

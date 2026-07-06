@@ -1,86 +1,53 @@
-<section class="page-section">
+<section class="page-section user-admin-page">
   <div class="page-heading">
-    <div>
+    <div class="page-heading-copy">
+      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+        <%= link_to "Dashboard", dashboard_path %>
+        <span><%= icon("chevron") %></span>
+        <%= link_to "Empresas", companies_path %>
+        <span><%= icon("chevron") %></span>
+        <strong><%= @company.commercial_name.presence || @company.legal_name %></strong>
+      </nav>
       <p class="eyebrow">Detalle de Empresa</p>
       <h1><%= @company.commercial_name.presence || @company.legal_name %></h1>
-      <p>Vista interna para administración general y configuración FEL / INFILE por empresa.</p>
+      <p>Vista central para administrar identidad, certificación y plantilla comercial por empresa.</p>
     </div>
-    <div class="page-actions-inline">
-      <%= link_to "Editar empresa", edit_company_path(@company), class: "ui-button ui-button-primary" %>
-      <%= link_to "Configurar", configuration_company_path(@company), class: "ui-button ui-button-secondary" %>
-      <%= link_to "Volver", companies_path, class: "ui-button ui-button-secondary" %>
+    <div class="page-heading-side">
+      <div class="user-heading-meta">
+        <%= render "shared/badge", text: @company.active? ? "Activa" : "Inactiva", tone: @company.active? ? "success" : "warning" %>
+        <%= render "shared/badge", text: @company.quote_format_name.present? ? "Formato propio" : "Formato global", tone: @company.quote_format_name.present? ? "primary" : "info" %>
+      </div>
+      <div class="page-actions-inline">
+        <%= link_to "Editar empresa", edit_company_path(@company), class: "ui-button ui-button-primary" %>
+        <%= link_to "Configurar", configuration_company_path(@company), class: "ui-button ui-button-secondary" %>
+        <%= link_to "Volver", companies_path, class: "ui-button ui-button-secondary" %>
+      </div>
     </div>
   </div>
 
-  <div class="module-page-grid">
-    <div class="dashboard-main-stack">
-      <section class="panel detail-section">
-        <div class="panel-header">
-          <div>
-            <h2>Información General</h2>
-            <p>Datos base de la empresa y su estado actual.</p>
-          </div>
-        </div>
-
-        <div class="detail-grid">
-          <div class="detail-item"><span>Nombre Comercial</span><strong><%= @company.commercial_name.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Razón Social</span><strong><%= @company.legal_name.presence || "-" %></strong></div>
-          <div class="detail-item"><span>NIT</span><strong><%= @company.tax_id.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Tipo de Empresa</span><strong><%= @company.company_type.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Correo Electrónico</span><strong><%= @company.email.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Teléfono</span><strong><%= @company.phone.presence || "-" %></strong></div>
-          <div class="detail-item detail-item-full"><span>Dirección</span><strong><%= @company.address.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Estado</span><strong><%= @company.status.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Activa</span><strong><%= @company.active? ? "Sí" : "No" %></strong></div>
-        </div>
-      </section>
-
-      <section class="panel detail-section">
-        <div class="panel-header">
-          <div>
-            <h2>Configuración FEL / INFILE</h2>
-            <p>Valores visibles en fase interna de desarrollo. El diseño queda listo para aplicar enmascarado después.</p>
-          </div>
-          <%= render "shared/badge", text: "Interno", tone: "warning" %>
-        </div>
-
-        <div class="detail-grid">
-          <div class="detail-item"><span>Prefijo INFILE</span><strong><%= @company.infile_prefix.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Llave INFILE</span><strong><%= @company.infile_key.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Prefijo Firma</span><strong><%= @company.infile_signature_prefix.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Llave Firma</span><strong><%= @company.infile_signature_key.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Afiliación IVA</span><strong><%= @company.vat_affiliation.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Token FEL</span><strong><%= @company.fel_token.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Código Escenario</span><strong><%= @company.fel_scenario_code.presence || "-" %></strong></div>
-          <div class="detail-item"><span>Correo Electrónico de Notificaciones</span><strong><%= @company.notification_email.presence || "-" %></strong></div>
-        </div>
-      </section>
+  <section class="panel user-profile-strip">
+    <div class="user-profile-strip-main">
+      <div class="user-profile-avatar"><%= (@company.commercial_name.presence || @company.legal_name).to_s.first(2).upcase %></div>
+      <div class="user-profile-copy">
+        <strong><%= @company.commercial_name.presence || @company.legal_name %></strong>
+        <span><%= @company.email.presence || @company.notification_email.presence || "Sin correo principal" %></span>
+      </div>
     </div>
+    <div class="user-profile-metrics">
+      <article class="mini-metric-card">
+        <span>Configuración FEL</span>
+        <strong><%= @company.fel_token.present? ? "Lista" : "Pendiente" %></strong>
+      </article>
+      <article class="mini-metric-card">
+        <span>Formato PDF</span>
+        <strong><%= @company.quote_format_name.present? ? "Propio" : "Global" %></strong>
+      </article>
+      <article class="mini-metric-card">
+        <span>Contacto comercial</span>
+        <strong><%= @company.quote_contact_name.presence || "Pendiente" %></strong>
+      </article>
+    </div>
+  </section>
 
-    <aside class="module-page-side">
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Resumen operativo</h2>
-            <p>Acciones rápidas para la empresa</p>
-          </div>
-        </div>
-
-        <div class="summary-stack">
-          <div class="summary-card">
-            <span>Configuración FEL</span>
-            <strong><%= @company.fel_token.present? ? "Lista para pruebas" : "Pendiente" %></strong>
-          </div>
-          <div class="summary-card">
-            <span>Notificaciones</span>
-            <strong><%= @company.notification_email.present? ? "Configuradas" : "Sin correo" %></strong>
-          </div>
-          <div class="summary-card">
-            <span>Estado comercial</span>
-            <strong><%= @company.status.presence || "Sin estado" %></strong>
-          </div>
-        </div>
-      </section>
-    </aside>
-  </div>
+  <%= render "detail_tabs", company: @company, default_tab: "general" %>
 </section>

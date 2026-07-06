@@ -1,0 +1,75 @@
+<section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="documentos" hidden>
+  <div class="panel-header">
+    <div>
+      <h2>Documentación del Expediente</h2>
+      <p>Adjunta contratos, respaldos, autorizaciones, anexos y cualquier evidencia necesaria antes de facturar.</p>
+    </div>
+    <div class="panel-header-actions">
+      <%= render "shared/badge", text: "#{expediente_cliente.total_documentos} archivos", tone: "info" %>
+    </div>
+  </div>
+
+  <div class="module-page-grid top-spacing">
+    <section class="panel nested-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Agregar documentación</h2>
+          <p>Sube múltiples archivos para centralizar el expediente operativo del cliente.</p>
+        </div>
+      </div>
+
+      <%= form_with model: expediente_cliente,
+                    url: expediente_documentos_cliente_path(cliente),
+                    method: :patch,
+                    html: { multipart: true, class: "document-upload-form" } do |form| %>
+        <div class="file-upload-panel">
+          <%= form.label :documentos, "Archivos del expediente", class: "field-label" %>
+          <%= form.file_field :documentos, multiple: true, direct_upload: false, class: "field-input" %>
+          <p class="field-help">Puedes adjuntar propuestas firmadas, contratos, cartas, anexos, respaldos de cliente y documentación previa a facturación.</p>
+          <div class="page-actions-inline">
+            <%= form.submit "Guardar documentos", class: "ui-button ui-button-primary submit-button" %>
+            <%= link_to "Volver al resumen", expediente_cliente_path(cliente, tab: "resumen"), class: "ui-button ui-button-secondary" %>
+          </div>
+        </div>
+      <% end %>
+    </section>
+
+    <aside class="panel nested-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Estado documental</h2>
+          <p>Lectura rápida para saber si el cliente ya tiene respaldo suficiente.</p>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item"><span>Archivos cargados</span><strong><%= expediente_cliente.total_documentos %></strong></div>
+        <div class="detail-item"><span>Última carga</span><strong><%= documentos.first&.created_at ? l(documentos.first.created_at, format: :short) : "Pendiente" %></strong></div>
+        <div class="detail-item"><span>Cotización firmada</span><strong><%= expediente_cliente.cotizaciones_firmadas.exists? ? "Sí" : "No" %></strong></div>
+        <div class="detail-item"><span>Estado</span><strong><%= expediente_cliente.documentos.attached? ? "Documentado" : "Pendiente" %></strong></div>
+      </div>
+    </aside>
+  </div>
+
+  <% if documentos.any? %>
+    <div class="attached-files-panel">
+      <div class="document-list">
+        <% documentos.each do |documento| %>
+          <%= link_to rails_blob_path(documento, disposition: "attachment"), class: "document-item document-item-link" do %>
+            <span class="document-item-icon"><%= icon("report") %></span>
+            <span class="document-item-copy">
+              <strong><%= documento.filename %></strong>
+              <small><%= etiqueta_documento_expediente(documento) %></small>
+              <small>Cargado el <%= l(documento.created_at, format: :long) %></small>
+            </span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+    <div class="empty-inline-state">
+      <strong>Todavía no hay documentos cargados.</strong>
+      <span>Empieza adjuntando contratos, anexos, artes de aprobación o cualquier soporte que el equipo necesite consultar.</span>
+    </div>
+  <% end %>
+</section>

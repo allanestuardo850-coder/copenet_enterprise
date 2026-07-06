@@ -1,0 +1,12 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Editar Módulo del Sistema</h1>
+      <p>Actualiza grupo, ruta y estado del módulo registrado.</p>
+    </div>
+    <%= link_to "Ver detalle", modulos_sistema_path(@modulo_sistema), class: "ui-button ui-button-secondary" %>
+  </div>
+
+  <%= render "form", modulo_sistema: @modulo_sistema %>
+</section>

@@ -67,40 +67,21 @@ class EnterpriseController < ApplicationController
     )
   end
 
-  def productos_servicios
-    set_module_page(
-      key: :productos_servicios,
-      title: "Productos y Servicios",
-      description: "Presenta el catálogo de productos, servicios, licencias y cargos preparados para cobros y facturación.",
-      action_label: "Nuevo servicio",
-      filters: ["Categoría", "Estado", "Modalidad"],
-      table_columns: ["Servicio", "Categoría", "Plan", "Estado", "Precio base"],
-      rows: [
-        ["Soporte Enterprise", "Servicios", "Premium", "Activo", "$420"],
-        ["Monitoreo Operativo", "Servicios", "Mensual", "Activo", "$275"],
-        ["Suite Administrativa", "Producto", "Anual", "Borrador", "$980"]
-      ],
-      empty_title: "Catálogo en preparación",
-      empty_description: "Aquí podremos conectar los servicios, productos y paquetes reutilizables del sistema."
-    )
+  def parametros
+    @current_page = :parametros
+    @configuracion_sistema = ConfiguracionSistema.first || ConfiguracionSistema.new
   end
 
-  def parametros
-    set_module_page(
-      key: :parametros,
-      title: "Parámetros",
-      description: "Administra parámetros operativos, reglas base y preferencias configurables del sistema.",
-      action_label: "Nuevo parámetro",
-      filters: ["Área", "Tipo", "Estado"],
-      table_columns: ["Parámetro", "Sección", "Valor", "Estado", "Actualización"],
-      rows: [
-        ["Moneda base", "Finanzas", "GTQ", "Activo", "05 Jul 2026"],
-        ["Ciclo de cobro", "Cobros", "Mensual", "Activo", "04 Jul 2026"],
-        ["Zona horaria", "Sistema", "America/Guatemala", "Activo", "03 Jul 2026"]
-      ],
-      empty_title: "Parámetros listos para configurarse",
-      empty_description: "Esta base visual está preparada para recibir parámetros persistidos cuando entremos a la lógica operativa."
-    )
+  def actualizar_parametros
+    @current_page = :parametros
+    @configuracion_sistema = ConfiguracionSistema.first || ConfiguracionSistema.new
+    @configuracion_sistema.assign_attributes(configuracion_sistema_params)
+
+    if @configuracion_sistema.save
+      redirect_to parametros_path, notice: "Branding y parámetros visuales actualizados correctamente."
+    else
+      render :parametros, status: :unprocessable_entity
+    end
   end
 
   def auditoria
@@ -230,6 +211,43 @@ class EnterpriseController < ApplicationController
   end
 
   private
+
+  def configuracion_sistema_params
+    params.require(:configuracion_sistema).permit(
+      :nombre_plataforma,
+      :nombre_principal,
+      :nombre_secundario,
+      :login_eyebrow,
+      :login_titulo,
+      :login_subtitulo,
+      :promo_titulo,
+      :promo_descripcion,
+      :promo_boton_texto,
+      :promo_boton_url,
+      :footer_logo_texto,
+      :footer_logo_etiqueta,
+      :placeholder_busqueda,
+      :loader_mensaje,
+      :pdf_titulo,
+      :pdf_subtitulo,
+      :pdf_intro_texto,
+      :pdf_cierre_texto,
+      :pdf_firma_nombre,
+      :pdf_firma_cargo,
+      :color_primario,
+      :color_secundario,
+      :color_acento,
+      :color_sidebar_desde,
+      :color_sidebar_hasta,
+      :color_boton_texto,
+      :logo_principal,
+      :logo_login,
+      :logo_footer,
+      :eliminar_logo_principal,
+      :eliminar_logo_login,
+      :eliminar_logo_footer
+    )
+  end
 
   def set_module_page(key:, title:, description:, action_label:, filters:, table_columns:, rows:, empty_title:, empty_description:)
     @current_page = key

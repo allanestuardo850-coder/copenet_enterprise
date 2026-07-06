@@ -1,13 +1,27 @@
 class UsuariosController < ApplicationController
-  before_action :set_usuario, only: %i[show edit update destroy]
+  before_action :set_usuario, only: %i[show edit update destroy permisos]
 
   def index
     @current_page = :usuarios
+    @filters = {
+      query: params[:query].to_s.strip,
+      status: params[:status].to_s.strip,
+      root: params[:root].to_s.strip
+    }
+
     @usuarios = Usuario.includes(:roles).order(:nombre, :apellido)
+    @usuarios = aplicar_filtros_usuarios(@usuarios)
+    @usuario_stats = {
+      total: Usuario.count,
+      activos: Usuario.where(activo: true).count,
+      roots: Usuario.where(root: true).count,
+      con_roles: Usuario.joins(:usuario_roles).distinct.count
+    }
   end
 
   def show
     @current_page = :usuarios
+    cargar_permisos
   end
 
   def new
@@ -56,6 +70,42 @@ class UsuariosController < ApplicationController
     redirect_to usuarios_path, notice: "Usuario eliminado correctamente."
   end
 
+  def permisos
+    @current_page = :usuarios
+    modulo_id = params[:modulo_id].presence
+
+    if modulo_id.present?
+      modulo = ModuloSistema.activos.find(modulo_id)
+      values = params.require(:usuario_permisos).permit(
+        :puede_ver,
+        :puede_crear,
+        :puede_editar,
+        :puede_eliminar,
+        :puede_exportar,
+        :puede_configurar
+      ).to_h
+
+      permiso = actualizar_permiso_usuario_para(@usuario, modulo, values)
+      render json: {
+        ok: true,
+        modulo_id: modulo.id,
+        permiso_id: permiso.id,
+        message: "Permisos actualizados"
+      }
+      return
+    end
+
+    cargar_permisos
+
+    params.fetch(:usuario_permisos, {}).each do |submitted_modulo_id, _|
+      modulo = ModuloSistema.activos.find(submitted_modulo_id)
+      values = permiso_usuario_params_for(modulo.id)
+      actualizar_permiso_usuario_para(@usuario, modulo, values)
+    end
+
+    redirect_to usuario_path(@usuario), notice: "Permisos del usuario actualizados correctamente."
+  end
+
   private
 
   def set_usuario
@@ -66,8 +116,61 @@ class UsuariosController < ApplicationController
     @roles = Rol.order(:nombre)
   end
 
+  def cargar_permisos
+    @modulo_sistemas = ModuloSistema.activos.orden_admin
+    @modulo_sistemas_por_grupo = @modulo_sistemas.group_by { |modulo| modulo.grupo.presence || "Sin grupo" }
+    @actividad_reciente = [
+      {
+        titulo: "Usuario actualizado",
+        detalle: "Se sincronizaron roles y datos de acceso del perfil.",
+        fecha: "Hoy, 08:45",
+        tone: "primary"
+      },
+      {
+        titulo: "Permisos personalizados guardados",
+        detalle: "El usuario ya puede tener permisos propios además de los heredados por rol.",
+        fecha: "Ayer, 16:20",
+        tone: "success"
+      },
+      {
+        titulo: "Módulos sincronizados",
+        detalle: "Todo módulo activo aparece aquí automáticamente para que puedas configurarlo desde usuarios.",
+        fecha: "Siempre",
+        tone: "info"
+      }
+    ]
+  end
+
   def sync_roles
     @usuario.rol_ids = params.dig(:usuario, :rol_ids).to_a.reject(&:blank?)
+  end
+
+  def permiso_usuario_params_for(modulo_id)
+    raw_values = params.fetch(:usuario_permisos, {}).fetch(modulo_id.to_s, {})
+    return raw_values if raw_values.is_a?(Hash)
+
+    raw_values.permit(
+      :puede_ver,
+      :puede_crear,
+      :puede_editar,
+      :puede_eliminar,
+      :puede_exportar,
+      :puede_configurar
+    ).to_h
+  end
+
+  def actualizar_permiso_usuario_para(usuario, modulo, values)
+    permiso = usuario.usuario_permisos.find_or_initialize_by(modulo_sistema: modulo)
+    permiso.assign_attributes(
+      puede_ver: values["puede_ver"] == "1",
+      puede_crear: values["puede_crear"] == "1",
+      puede_editar: values["puede_editar"] == "1",
+      puede_eliminar: values["puede_eliminar"] == "1",
+      puede_exportar: values["puede_exportar"] == "1",
+      puede_configurar: values["puede_configurar"] == "1"
+    )
+    permiso.save!
+    permiso
   end
 
   def usuario_params
@@ -83,5 +186,16 @@ class UsuariosController < ApplicationController
     else
       permitted
     end
+  end
+
+  def aplicar_filtros_usuarios(scope)
+    if @filters[:query].present?
+      termino = "%#{@filters[:query]}%"
+      scope = scope.where("nombre ILIKE :term OR apellido ILIKE :term OR email ILIKE :term", term: termino)
+    end
+
+    scope = scope.where(activo: @filters[:status] == "activo") if @filters[:status].in?(%w[activo inactivo])
+    scope = scope.where(root: @filters[:root] == "si") if @filters[:root].in?(%w[si no])
+    scope
   end
 end

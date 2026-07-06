@@ -1,0 +1,54 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1><%= @moneda.nombre %></h1>
+      <p>Detalle interno de la moneda registrada en el catálogo del sistema.</p>
+    </div>
+    <div class="page-actions-inline">
+      <%= link_to "Editar", edit_moneda_path(@moneda), class: "ui-button ui-button-primary" %>
+      <%= link_to "Volver", monedas_path, class: "ui-button ui-button-secondary" %>
+      <%= button_to "Eliminar", moneda_path(@moneda), method: :delete, class: "ui-button ui-button-secondary", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar esta moneda?" } %>
+    </div>
+  </div>
+
+  <div class="module-page-grid">
+    <section class="panel detail-section">
+      <div class="panel-header">
+        <div>
+          <h2>Información de la moneda</h2>
+          <p>Datos base del catálogo financiero.</p>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item"><span>Código</span><strong><%= @moneda.codigo %></strong></div>
+        <div class="detail-item"><span>Nombre</span><strong><%= @moneda.nombre %></strong></div>
+        <div class="detail-item"><span>Símbolo</span><strong><%= @moneda.simbolo %></strong></div>
+        <div class="detail-item"><span>Estado</span><strong><%= @moneda.activo? ? "Activa" : "Inactiva" %></strong></div>
+      </div>
+    </section>
+
+    <aside class="module-page-side">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Resumen operativo</h2>
+            <p>Estado actual del registro</p>
+          </div>
+        </div>
+
+        <div class="summary-stack">
+          <div class="summary-card">
+            <span>Código numérico</span>
+            <strong><%= @moneda.codigo %></strong>
+          </div>
+          <div class="summary-card">
+            <span>Disponibilidad</span>
+            <strong><%= @moneda.activo? ? "Lista para usar" : "Registro inactivo" %></strong>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</section>

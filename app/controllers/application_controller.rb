@@ -11,6 +11,8 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_usuario, :usuario_signed_in?, :puede?, :permiso_efectivo
 
+  around_action :set_current_attributes
+
   private
 
   def current_usuario
@@ -64,13 +66,20 @@ class ApplicationController < ActionController::Base
     when "enterprise"
       case action_name
       when "dashboard" then "DASHBOARD"
-      when "productos_servicios" then "PRODUCTOS_SERVICIOS"
       else nil
       end
     when "monedas"
       "MONEDAS"
+    when "clientes"
+      "CLIENTES"
+    when "expediente_clientes"
+      "EXPEDIENTES_CLIENTES"
     when "companies"
       "COMPANIAS"
+    when "productos_servicios"
+      "PRODUCTOS_SERVICIOS"
+    when "cotizaciones"
+      "COTIZACIONES"
     when "usuarios"
       "USUARIOS"
     when "roles"
@@ -88,11 +97,11 @@ class ApplicationController < ActionController::Base
       :ver
     when "new", "create"
       :crear
-    when "edit", "update"
+    when "edit", "update", "agregar_precio", "agregar_costo"
       :editar
     when "destroy"
       :eliminar
-    when "configuration", "permisos", "actualizar_permisos"
+    when "configuration", "permisos", "actualizar_permisos", "actualizar_parametros"
       :configurar
     else
       :ver
@@ -109,7 +118,9 @@ class ApplicationController < ActionController::Base
     admin_children << { key: :monedas, label: "Monedas", path: monedas_path, icon: "coins" } if current_usuario.root? || puede?(:ver, "MONEDAS")
     admin_children << { key: :modulos_sistema, label: "Módulos del Sistema", path: modulos_sistema_index_path, icon: "layers" } if current_usuario.root? || puede?(:ver, "MODULOS_SISTEMA")
     cobros_children = []
+    cobros_children << { key: :clientes, label: "Clientes", path: clientes_path, icon: "users" } if current_usuario.root? || puede?(:ver, "CLIENTES")
     cobros_children << { key: :productos_servicios, label: "Productos y Servicios", path: productos_servicios_path, icon: "box" } if current_usuario.root? || puede?(:ver, "PRODUCTOS_SERVICIOS")
+    cobros_children << { key: :cotizaciones, label: "Cotizaciones", path: cotizaciones_path, icon: "report" } if current_usuario.root? || puede?(:ver, "COTIZACIONES")
     reportes_children = []
     reportes_children << { key: :reports, label: "Reportes", path: reports_path, icon: "report" } if current_usuario.root?
     configuracion_children = []
@@ -157,12 +168,21 @@ class ApplicationController < ActionController::Base
   def ruta_segura_post_login
     return dashboard_path if puede?(:ver, "DASHBOARD")
     return companies_path if puede?(:ver, "COMPANIAS")
+    return clientes_path if defined?(clientes_path) && puede?(:ver, "CLIENTES")
     return usuarios_path if puede?(:ver, "USUARIOS")
     return roles_path if puede?(:ver, "ROLES")
     return monedas_path if puede?(:ver, "MONEDAS")
     return modulos_sistema_index_path if puede?(:ver, "MODULOS_SISTEMA")
     return productos_servicios_path if puede?(:ver, "PRODUCTOS_SERVICIOS")
+    return cotizaciones_path if puede?(:ver, "COTIZACIONES")
 
     login_path
+  end
+
+  def set_current_attributes
+    Current.usuario = current_usuario
+    yield
+  ensure
+    Current.reset
   end
 end

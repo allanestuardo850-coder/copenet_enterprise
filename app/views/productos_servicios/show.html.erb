@@ -1,0 +1,624 @@
+<section class="page-section producto-servicio-show" data-controller="tabs" data-tabs-default-value="<%= @tab_activa.presence || "general" %>">
+  <div class="page-heading">
+    <div class="page-heading-copy">
+      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+        <%= link_to "Dashboard", dashboard_path %>
+        <span><%= icon("chevron") %></span>
+        <%= link_to "Productos y Servicios", productos_servicios_path %>
+        <span><%= icon("chevron") %></span>
+        <strong><%= @producto_servicio.nombre %></strong>
+      </nav>
+      <h1><%= @producto_servicio.nombre %></h1>
+      <p>Detalle funcional del concepto cobrable con su configuración comercial, operativa y fiscal.</p>
+    </div>
+    <div class="page-heading-side">
+      <div class="user-heading-meta">
+        <%= render "shared/badge", text: @producto_servicio.activo? ? "Activo" : "Inactivo", tone: @producto_servicio.activo? ? "success" : "warning" %>
+        <%= render "shared/badge", text: @producto_servicio.estado_catalogo, tone: "info" %>
+      </div>
+      <div class="page-actions-inline">
+        <%= link_to "Generar cotización", cotizacion_productos_servicio_path(@producto_servicio), class: "ui-button ui-button-primary" %>
+        <%= link_to "Editar", edit_productos_servicio_path(@producto_servicio), class: "ui-button ui-button-primary" %>
+        <%= link_to "Nuevo", new_productos_servicio_path, class: "ui-button ui-button-secondary" %>
+        <%= link_to "Volver", productos_servicios_path, class: "ui-button ui-button-secondary" %>
+        <%= button_to "Eliminar", productos_servicio_path(@producto_servicio), method: :delete, class: "ui-button ui-button-secondary", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este producto o servicio?" } %>
+      </div>
+    </div>
+  </div>
+
+  <section class="panel user-profile-strip">
+    <div class="user-profile-strip-main">
+      <div class="user-profile-avatar"><%= @producto_servicio.codigo.to_s.first(2).presence || "PS" %></div>
+      <div class="user-profile-copy">
+        <strong><%= @producto_servicio.nombre %></strong>
+        <span><%= @producto_servicio.company&.commercial_name || @producto_servicio.company&.legal_name || "Empresa facturadora pendiente" %></span>
+      </div>
+    </div>
+    <div class="user-profile-metrics">
+      <article class="mini-metric-card">
+        <span>Tipo funcional</span>
+        <strong><%= product_type_label(@producto_servicio) %></strong>
+      </article>
+      <article class="mini-metric-card">
+        <span>Modelo de cobro</span>
+        <strong><%= @producto_servicio.modelo_cobro.presence || "-" %></strong>
+      </article>
+      <article class="mini-metric-card">
+        <span>Moneda</span>
+        <strong><%= moneda_nombre_producto(@producto_servicio) %></strong>
+      </article>
+      <article class="mini-metric-card">
+        <span>Precio base</span>
+        <strong><%= monto_producto(@producto_servicio, @producto_servicio.precio_base) %></strong>
+      </article>
+      <article class="mini-metric-card">
+        <span>Regla CopeNET</span>
+        <strong><%= @producto_servicio.no_charge_for_copenet? ? "Sin cobro" : "Cobro normal" %></strong>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel product-tabs-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Vista del catálogo</h2>
+        <p>Explora la configuración por dominios sin recorrer una ficha extensa.</p>
+      </div>
+      <%= render "shared/badge", text: "Cobros", tone: "primary" %>
+    </div>
+
+    <div class="product-tabs" role="tablist" aria-label="Detalle del producto o servicio">
+      <button type="button" class="product-tab is-active" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch" role="tab" aria-selected="true">
+        <span class="product-tab-accent product-tab-accent-blue"></span>
+        <span class="product-tab-icon"><%= icon("box") %></span>
+        <span class="product-tab-copy">
+          <strong>Información General</strong>
+          <small>Identidad, código, vigencia y estado</small>
+        </span>
+        <span class="product-tab-step">01</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="comercial" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-cyan"></span>
+        <span class="product-tab-icon"><%= icon("coins") %></span>
+        <span class="product-tab-copy">
+          <strong>Comercial</strong>
+          <small>Portafolio, empresa, precio y margen</small>
+        </span>
+        <span class="product-tab-step">02</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="costos" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-rose"></span>
+        <span class="product-tab-icon"><%= icon("wallet") %></span>
+        <span class="product-tab-copy">
+          <strong>Costos</strong>
+          <small>Estructura extendida por componente y recurrencia</small>
+        </span>
+        <span class="product-tab-step">03</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="facturacion" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-violet"></span>
+        <span class="product-tab-icon"><%= icon("receipt") %></span>
+        <span class="product-tab-copy">
+          <strong>Cobro y Facturación</strong>
+          <small>Recurrencia, consumo y reglas de factura</small>
+        </span>
+        <span class="product-tab-step">04</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="operacion" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-green"></span>
+        <span class="product-tab-icon"><%= icon("contract") %></span>
+        <span class="product-tab-copy">
+          <strong>Operación</strong>
+          <small>Soporte, contrato y liquidación</small>
+        </span>
+        <span class="product-tab-step">05</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="fiscal" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-amber"></span>
+        <span class="product-tab-icon"><%= icon("settings") %></span>
+        <span class="product-tab-copy">
+          <strong>Fiscal y Visibilidad</strong>
+          <small>IVA, FEL, cuentas y exposición del catálogo</small>
+        </span>
+        <span class="product-tab-step">06</span>
+      </button>
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="documentacion" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-slate"></span>
+        <span class="product-tab-icon"><%= icon("report") %></span>
+        <span class="product-tab-copy">
+          <strong>Documentación</strong>
+          <small>Archivos, soporte y base para cotización</small>
+        </span>
+        <span class="product-tab-step">07</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel is-active" data-tabs-target="panel" data-tab-id="general">
+    <div class="panel-header">
+      <div>
+        <h2>Información General</h2>
+        <p>Vista organizada para lectura operativa, pensada para usuarios no técnicos.</p>
+      </div>
+    </div>
+
+    <div class="document-reading-layout">
+      <section class="document-section-card">
+        <div class="document-section-header">
+          <span class="document-section-step">01</span>
+          <div>
+            <h3>Identificación del Producto o Servicio</h3>
+            <p>Datos base para reconocer rápidamente el concepto dentro del catálogo.</p>
+          </div>
+        </div>
+        <div class="document-meta-grid">
+          <div class="document-meta-item"><span>Código</span><strong><%= @producto_servicio.codigo %></strong></div>
+          <div class="document-meta-item"><span>Nombre</span><strong><%= @producto_servicio.nombre %></strong></div>
+          <div class="document-meta-item"><span>Nombre corto</span><strong><%= @producto_servicio.nombre_corto.presence || "-" %></strong></div>
+          <div class="document-meta-item"><span>Estado</span><strong><%= @producto_servicio.estado_catalogo %></strong></div>
+          <div class="document-meta-item"><span>Activo para operar</span><strong><%= @producto_servicio.activo? ? "Sí" : "No" %></strong></div>
+          <div class="document-meta-item"><span>Vigencia</span><strong><%= [@producto_servicio.fecha_inicio_vigencia&.strftime("%d/%m/%Y"), @producto_servicio.fecha_fin_vigencia&.strftime("%d/%m/%Y")].compact.join(" al ").presence || "-" %></strong></div>
+        </div>
+      </section>
+
+      <section class="document-section-card">
+        <div class="document-section-header">
+          <span class="document-section-step">02</span>
+          <div>
+            <h3>Descripción General</h3>
+            <p>Resumen claro del producto o servicio y su propósito principal.</p>
+          </div>
+        </div>
+        <div class="document-paragraph-card">
+          <strong>Descripción del concepto</strong>
+          <p><%= @producto_servicio.descripcion.presence || "No se ha documentado una descripción general todavía." %></p>
+        </div>
+      </section>
+
+      <section class="document-section-card">
+        <div class="document-section-header">
+          <span class="document-section-step">03</span>
+          <div>
+            <h3>Explicación Comercial para Operación</h3>
+            <p>Contenido explicado como una guía para que un operador entienda qué vender y cómo presentarlo.</p>
+          </div>
+        </div>
+
+        <div class="document-paragraph-stack">
+          <article class="document-paragraph-card">
+            <strong>Problema que resuelve</strong>
+            <p><%= @producto_servicio.problema_resuelve.presence || "No se ha documentado todavía el problema principal que resuelve este producto o servicio." %></p>
+          </article>
+          <article class="document-paragraph-card">
+            <strong>Caso de uso recomendado</strong>
+            <p><%= @producto_servicio.caso_uso.presence || "No se ha documentado todavía un caso de uso para este producto o servicio." %></p>
+          </article>
+          <article class="document-paragraph-card">
+            <strong>Qué incluye una cotización</strong>
+            <p><%= @producto_servicio.incluye_cotizacion.presence || "No se ha definido todavía qué debe incluir la cotización de este concepto." %></p>
+          </article>
+          <article class="document-paragraph-card">
+            <strong>Qué se necesita para cerrar la venta</strong>
+            <p><%= @producto_servicio.requisitos_cierre_venta.presence || "No se han documentado todavía los requisitos para cierre de venta." %></p>
+          </article>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="comercial" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Comercial</h2>
+        <p>Presentación tipo cotización del concepto, con importes visibles y configuración comercial resumida.</p>
+      </div>
+    </div>
+
+    <% if puede?(:editar, "PRODUCTOS_SERVICIOS") %>
+      <%= render "quick_precio_form", producto_servicio: @producto_servicio, nuevo_precio: @nuevo_precio %>
+    <% end %>
+
+    <div class="quote-summary-grid">
+      <article class="mini-metric-card quote-metric-card">
+        <span>Moneda principal</span>
+        <strong><%= "#{moneda_simbolo_producto(@producto_servicio)} · #{moneda_nombre_producto(@producto_servicio)}" %></strong>
+      </article>
+      <article class="mini-metric-card quote-metric-card">
+        <span>Precio principal</span>
+        <strong><%= monto_producto(@producto_servicio, total_precios_producto(@producto_servicio)) %></strong>
+      </article>
+      <article class="mini-metric-card quote-metric-card">
+        <span>Costo principal</span>
+        <strong><%= monto_producto(@producto_servicio, total_costos_producto(@producto_servicio)) %></strong>
+      </article>
+      <article class="mini-metric-card quote-metric-card">
+        <span>Margen promedio</span>
+        <strong><%= margen_promedio_producto(@producto_servicio).present? ? "#{number_with_precision(margen_promedio_producto(@producto_servicio), precision: 2)}%" : "-" %></strong>
+      </article>
+    </div>
+
+    <div class="currency-summary-panel">
+      <strong>Totales comerciales por moneda</strong>
+      <div class="currency-summary-list">
+        <% totales_por_moneda(@producto_servicio.producto_servicio_precios, atributo: :precio, producto_servicio: @producto_servicio).each do |item| %>
+          <span class="currency-summary-chip"><%= monto_en_moneda(item[:moneda], item[:total]) %></span>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @producto_servicio.producto_servicio_precios.any? %>
+      <div class="table-shell quote-table-shell">
+        <table class="data-table quote-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Sección</th>
+              <th>Recurrencia</th>
+              <th>Moneda</th>
+              <th>Estado</th>
+              <th>Margen</th>
+              <th>Precio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @producto_servicio.producto_servicio_precios.each do |precio| %>
+              <tr>
+                <td><strong><%= precio.nombre %></strong></td>
+                <td><%= precio.descripcion.presence || "-" %></td>
+                <td><%= precio.seccion_cotizacion.presence || "-" %></td>
+                <td><%= precio.recurrencia.presence || "-" %></td>
+                <td><%= precio.moneda&.simbolo || @producto_servicio.moneda&.simbolo || "-" %></td>
+                <td><%= precio.activo? ? "Activo" : "Inactivo" %></td>
+                <td><%= precio.margen.present? ? "#{number_with_precision(precio.margen, precision: 2)}%" : "-" %></td>
+                <td class="quote-amount"><%= monto_en_moneda(moneda_para_registro(precio, @producto_servicio), precio.precio) %></td>
+              </tr>
+            <% end %>
+            <tr>
+              <td colspan="7"><strong>Totales por moneda</strong></td>
+              <td class="quote-amount"><strong><%= resumen_totales_por_moneda(@producto_servicio.producto_servicio_precios, atributo: :precio, producto_servicio: @producto_servicio) %></strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+
+    <div class="table-shell quote-table-shell">
+      <table class="data-table quote-table">
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Detalle</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Tipo de producto</strong></td>
+            <td>Clasificación principal del catálogo.</td>
+            <td><%= @producto_servicio.tipo_producto.presence || "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Categoría</strong></td>
+            <td>Ubicación comercial dentro del portafolio.</td>
+            <td><%= @producto_servicio.categoria.presence || "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Subcategoría</strong></td>
+            <td>Segmento operativo o comercial de referencia.</td>
+            <td><%= @producto_servicio.subcategoria.presence || "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Empresa que factura</strong></td>
+            <td>Entidad responsable de emitir cobros y facturas.</td>
+            <td><%= @producto_servicio.company&.commercial_name || @producto_servicio.company&.legal_name || "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Totales por moneda</strong></td>
+            <td>Divisas usadas en los renglones comerciales del producto.</td>
+            <td><%= resumen_totales_por_moneda(@producto_servicio.producto_servicio_precios, atributo: :precio, producto_servicio: @producto_servicio) %></td>
+          </tr>
+          <tr>
+            <td><strong>Precio consolidado</strong></td>
+            <td>Total calculado desde la estructura comercial extendida del producto o servicio.</td>
+            <td class="quote-amount"><%= monto_producto(@producto_servicio, total_precios_producto(@producto_servicio)) %></td>
+          </tr>
+          <tr>
+            <td><strong>Costo consolidado</strong></td>
+            <td>Total calculado desde la estructura extendida de costos del producto o servicio.</td>
+            <td class="quote-amount"><%= monto_producto(@producto_servicio, total_costos_producto(@producto_servicio)) %></td>
+          </tr>
+          <tr>
+            <td><strong>Margen promedio</strong></td>
+            <td>Promedio comercial de los márgenes registrados por renglón.</td>
+            <td><%= margen_promedio_producto(@producto_servicio).present? ? "#{number_with_precision(margen_promedio_producto(@producto_servicio), precision: 2)}%" : "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Permite descuento</strong></td>
+            <td>Habilita descuentos comerciales al asignar el producto.</td>
+            <td><%= @producto_servicio.permite_descuento? ? "Sí" : "No" %></td>
+          </tr>
+          <tr>
+            <td><strong>Descuento máximo</strong></td>
+            <td>Límite autorizado para negociación comercial.</td>
+            <td><%= @producto_servicio.porcentaje_descuento_maximo.present? ? "#{number_with_precision(@producto_servicio.porcentaje_descuento_maximo, precision: 2)}%" : "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Aprobación comercial</strong></td>
+            <td>Control adicional previo a usar el concepto en operación.</td>
+            <td><%= @producto_servicio.requiere_aprobacion_comercial? ? "Sí" : "No" %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="costos" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Costos Extendidos</h2>
+        <p>Desglose operativo y financiero de todos los componentes de costo asociados al producto o servicio.</p>
+      </div>
+      <div class="panel-header-actions">
+        <%= render "shared/badge", text: "#{@producto_servicio.producto_servicio_costos.activos.count} activos", tone: "info" %>
+      </div>
+    </div>
+
+    <% if puede?(:editar, "PRODUCTOS_SERVICIOS") %>
+      <%= render "quick_costo_form", producto_servicio: @producto_servicio, nuevo_costo: @nuevo_costo %>
+    <% end %>
+
+    <div class="quote-summary-grid">
+      <article class="mini-metric-card quote-metric-card">
+        <span>Total principal</span>
+        <strong><%= monto_producto(@producto_servicio, total_costos_producto(@producto_servicio)) %></strong>
+      </article>
+      <article class="mini-metric-card quote-metric-card">
+        <span>Componentes registrados</span>
+        <strong><%= @producto_servicio.producto_servicio_costos.size %></strong>
+      </article>
+      <article class="mini-metric-card quote-metric-card">
+        <span>Totales por moneda</span>
+        <strong><%= resumen_totales_por_moneda(@producto_servicio.producto_servicio_costos, atributo: :monto, producto_servicio: @producto_servicio) %></strong>
+      </article>
+    </div>
+
+    <div class="currency-summary-panel">
+      <strong>Totales de costos por moneda</strong>
+      <div class="currency-summary-list">
+        <% totales_por_moneda(@producto_servicio.producto_servicio_costos, atributo: :monto, producto_servicio: @producto_servicio).each do |item| %>
+          <span class="currency-summary-chip"><%= monto_en_moneda(item[:moneda], item[:total]) %></span>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @producto_servicio.producto_servicio_costos.any? %>
+      <div class="table-shell quote-table-shell">
+        <table class="data-table quote-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Recurrencia</th>
+              <th>Moneda</th>
+              <th>Estado</th>
+              <th>Costo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @producto_servicio.producto_servicio_costos.each do |costo| %>
+              <tr>
+                <td><strong><%= costo.tipo_costo %></strong></td>
+                <td><%= costo.nombre %></td>
+                <td><%= costo.descripcion.presence || "-" %></td>
+                <td><%= costo.recurrencia %></td>
+                <td><%= costo.moneda&.simbolo || @producto_servicio.moneda&.simbolo || "-" %></td>
+                <td><%= costo.activo? ? "Activo" : "Inactivo" %></td>
+                <td class="quote-amount"><%= monto_en_moneda(moneda_para_registro(costo, @producto_servicio), costo.monto) %></td>
+              </tr>
+            <% end %>
+            <tr>
+              <td colspan="6"><strong>Totales por moneda</strong></td>
+              <td class="quote-amount"><strong><%= resumen_totales_por_moneda(@producto_servicio.producto_servicio_costos, atributo: :monto, producto_servicio: @producto_servicio) %></strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="empty-inline-state">
+        <strong>No hay costos detallados registrados todavía.</strong>
+        <span>Puedes agregarlos desde la edición del producto para separar implementación, licencias, soporte y otros componentes.</span>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="facturacion" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Cobro y Facturación</h2>
+        <p>Reglas base para generación de cargos y facturación futura.</p>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-item"><span>Modelo de Cobro</span><strong><%= @producto_servicio.modelo_cobro.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Facturable</span><strong><%= @producto_servicio.facturable? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Tipo de Facturación</span><strong><%= @producto_servicio.tipo_facturacion.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Es Recurrente</span><strong><%= @producto_servicio.es_recurrente? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Recurrencia</span><strong><%= @producto_servicio.recurrencia.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Día de Cobro</span><strong><%= @producto_servicio.dia_cobro.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Requiere Consumo</span><strong><%= @producto_servicio.requiere_consumo? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Unidad de Cobro</span><strong><%= @producto_servicio.unidad_cobro.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Cantidad Mínima</span><strong><%= @producto_servicio.cantidad_minima.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Cantidad Máxima</span><strong><%= @producto_servicio.cantidad_maxima.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Cobra Proporcional</span><strong><%= @producto_servicio.cobra_proporcional? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Agrupable en Factura</span><strong><%= @producto_servicio.agrupable_en_factura? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Descripción Dinámica</span><strong><%= @producto_servicio.requiere_descripcion_dinamica? ? "Sí" : "No" %></strong></div>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="operacion" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Operación</h2>
+        <p>Parámetros para activación, soporte, contratos y reparto futuro.</p>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-item"><span>Requiere Activación</span><strong><%= @producto_servicio.requiere_activacion? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Requiere Soporte</span><strong><%= @producto_servicio.requiere_soporte? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Nivel de Servicio</span><strong><%= @producto_servicio.nivel_servicio.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Permite Suspensión</span><strong><%= @producto_servicio.permite_suspension? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Requiere Contrato</span><strong><%= @producto_servicio.requiere_contrato? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Permanencia Mínima</span><strong><%= @producto_servicio.duracion_minima_meses.present? ? "#{@producto_servicio.duracion_minima_meses} meses" : "-" %></strong></div>
+      <div class="detail-item"><span>Permite Renovación</span><strong><%= @producto_servicio.permite_renovacion? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Liquidable</span><strong><%= @producto_servicio.liquidable? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Modelo de Liquidación</span><strong><%= @producto_servicio.modelo_liquidacion.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Porcentaje de Liquidación</span><strong><%= @producto_servicio.porcentaje_liquidacion.present? ? "#{number_with_precision(@producto_servicio.porcentaje_liquidacion, precision: 2)}%" : "-" %></strong></div>
+      <div class="detail-item"><span>Base de Liquidación</span><strong><%= @producto_servicio.base_liquidacion.presence || "-" %></strong></div>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="fiscal" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Fiscal y Visibilidad</h2>
+        <p>Preparación para reportes financieros, impuestos y módulos consumidores.</p>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-item"><span>Permite Costo Variable</span><strong><%= @producto_servicio.permite_costo_variable? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Contabilizable</span><strong><%= @producto_servicio.contabilizable? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Cuenta de Ingreso</span><strong><%= @producto_servicio.cuenta_ingreso_codigo.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Centro de Costo</span><strong><%= @producto_servicio.centro_costo_codigo.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Afecto a IVA</span><strong><%= @producto_servicio.afecto_iva? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Tipo de Impuesto</span><strong><%= @producto_servicio.tipo_impuesto.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Requiere FEL Detallado</span><strong><%= @producto_servicio.requiere_fel_detallado? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Visible en CRM</span><strong><%= @producto_servicio.visible_en_crm? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Visible en Contratos</span><strong><%= @producto_servicio.visible_en_contratos? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Visible en Expedientes</span><strong><%= @producto_servicio.visible_en_expedientes? ? "Sí" : "No" %></strong></div>
+      <div class="detail-item"><span>Orden Visual</span><strong><%= @producto_servicio.orden_visual.presence || "-" %></strong></div>
+    </div>
+  </section>
+
+  <section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="documentacion" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Documentación y Material Comercial</h2>
+        <p>Archivos de respaldo y base comercial disponible para construir propuestas y cotizaciones.</p>
+      </div>
+      <div class="panel-header-actions">
+        <%= link_to "Generar cotización", cotizacion_productos_servicio_path(@producto_servicio), class: "ui-button ui-button-primary" %>
+      </div>
+    </div>
+
+    <% if @producto_servicio.documentos_comerciales.attached? %>
+      <div class="document-list">
+        <% @producto_servicio.documentos_comerciales.each do |documento| %>
+          <a href="<%= url_for(documento) %>" class="document-item document-item-link" target="_blank" rel="noopener">
+            <span class="document-item-icon"><%= icon("report") %></span>
+            <div class="document-item-copy">
+              <strong><%= documento.filename %></strong>
+              <small><%= etiqueta_documento_producto(documento) %></small>
+            </div>
+          </a>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-inline-state">
+        <strong>No hay documentación adjunta.</strong>
+        <span>Agrega fichas, anexos o presentaciones desde la edición del producto para respaldar futuras cotizaciones.</span>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="panel cotizaciones-history-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Cotizaciones Realizadas</h2>
+        <p>Registro histórico de cada cotización generada para este producto o servicio, con su detalle comercial principal.</p>
+      </div>
+      <div class="panel-header-actions">
+        <%= render "shared/badge", text: "#{@cotizaciones_realizadas.size} registradas", tone: "primary" %>
+      </div>
+    </div>
+
+    <% if @cotizaciones_realizadas.any? %>
+      <div class="cotizaciones-history-list">
+        <% @cotizaciones_realizadas.each do |cotizacion| %>
+          <article class="cotizacion-history-card">
+            <div class="cotizacion-history-card-header">
+              <div class="cotizacion-history-card-copy">
+                <strong><%= cotizacion.codigo %></strong>
+                <span><%= cotizacion.cliente %> · <%= cotizacion.contacto %></span>
+              </div>
+              <div class="cotizacion-history-card-actions">
+                <%= render "shared/badge", text: cotizacion.estado, tone: tono_estado_cotizacion(cotizacion) %>
+                <%= link_to "Abrir", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: cotizacion.id), class: "ui-button ui-button-secondary ui-button-compact" %>
+                <%= link_to "PDF", cotizacion_pdf_productos_servicio_path(@producto_servicio, cotizacion_id: cotizacion.id), class: "ui-button ui-button-primary ui-button-compact" %>
+              </div>
+            </div>
+
+            <div class="cotizacion-history-summary">
+              <article class="mini-metric-card quote-metric-card">
+                <span>Fecha</span>
+                <strong><%= fecha_cotizacion(cotizacion) %></strong>
+              </article>
+              <article class="mini-metric-card quote-metric-card">
+                <span>Ítems cotizados</span>
+                <strong><%= cotizacion.cotizacion_detalles.size %></strong>
+              </article>
+              <article class="mini-metric-card quote-metric-card">
+                <span>Totales por moneda</span>
+                <strong><%= resumen_totales_por_moneda(cotizacion.cotizacion_detalles, atributo: :precio, producto_servicio: @producto_servicio) %></strong>
+              </article>
+              <article class="mini-metric-card quote-metric-card">
+                <span>Vigencia</span>
+                <strong><%= "#{cotizacion.vigencia_dias} días" %></strong>
+              </article>
+            </div>
+
+            <div class="table-shell quote-table-shell">
+              <table class="data-table quote-table cotizacion-history-table">
+                <thead>
+                  <tr>
+                    <th>Descripción</th>
+                    <th>Sección</th>
+                    <th>Recurrencia</th>
+                    <th>Moneda</th>
+                    <th>Facturable</th>
+                    <th>Precio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% cotizacion.cotizacion_detalles.each do |detalle| %>
+                    <tr>
+                      <td><strong><%= detalle.descripcion %></strong></td>
+                      <td><%= detalle.seccion_cotizacion.presence || "-" %></td>
+                      <td><%= detalle.recurrencia.presence || "-" %></td>
+                      <td><%= detalle.moneda&.simbolo || @producto_servicio.moneda&.simbolo || "-" %></td>
+                      <td><%= detalle.facturable? ? "Sí" : "No" %></td>
+                      <td class="quote-amount"><%= monto_en_moneda(moneda_para_registro(detalle, @producto_servicio), detalle.precio) %></td>
+                    </tr>
+                  <% end %>
+                  <tr>
+                    <td colspan="5"><strong>Total por moneda</strong></td>
+                    <td class="quote-amount"><strong><%= resumen_totales_por_moneda(cotizacion.cotizacion_detalles, atributo: :precio, producto_servicio: @producto_servicio) %></strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-inline-state">
+        <strong>No hay cotizaciones registradas todavía.</strong>
+        <span>Cuando generes una cotización desde este producto o servicio, aparecerá aquí como un registro individual con su detalle.</span>
+      </div>
+    <% end %>
+  </section>
+</section>

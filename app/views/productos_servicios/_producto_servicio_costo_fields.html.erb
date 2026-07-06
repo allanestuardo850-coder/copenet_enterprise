@@ -1,0 +1,59 @@
+<article class="costo-detalle-card" data-costo-item>
+  <%= form.hidden_field :_destroy %>
+
+  <div class="costo-detalle-card-header">
+    <div class="costo-detalle-card-copy">
+      <strong>Costo Detallado</strong>
+      <span>Registra nombre, tipo, recurrencia y monto para consolidar el costo del producto.</span>
+    </div>
+    <button type="button" class="ui-button ui-button-secondary ui-button-compact" data-action="producto-servicio-costos#remove">
+      Quitar
+    </button>
+  </div>
+
+  <div class="form-grid costo-form-grid">
+    <div class="field-group">
+      <%= form.label :tipo_costo, "Tipo de costo" %>
+      <%= form.select :tipo_costo,
+                      options_for_select(ProductoServicioCosto::TIPOS_COSTO, form.object.tipo_costo),
+                      { include_blank: "Selecciona un tipo" },
+                      class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :nombre, "Nombre del costo" %>
+      <%= form.text_field :nombre, class: "text-input", placeholder: "Licencia base, hosting, soporte..." %>
+    </div>
+    <div class="field-group">
+      <%= form.label :moneda_id, "Moneda" %>
+      <%= form.select :moneda_id,
+                      options_from_collection_for_select(@monedas, :id, :nombre, form.object.moneda_id),
+                      { include_blank: "Selecciona moneda" },
+                      class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :monto, "Costo" %>
+      <%= form.number_field :monto, class: "text-input", step: "0.01", min: 0, placeholder: "0.00" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :recurrencia, "Recurrencia" %>
+      <%= form.select :recurrencia,
+                      options_for_select(ProductoServicioCosto::RECURRENCIAS, form.object.recurrencia),
+                      { include_blank: "Selecciona recurrencia" },
+                      class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :orden, "Orden" %>
+      <%= form.number_field :orden, class: "text-input", min: 0, step: 1, placeholder: "0" %>
+    </div>
+    <div class="field-group checkbox-group">
+      <label class="checkbox-label">
+        <%= form.check_box :activo %>
+        <span>Activo</span>
+      </label>
+    </div>
+    <div class="field-group field-group-full">
+      <%= form.label :descripcion, "Descripción" %>
+      <%= form.text_area :descripcion, rows: 3, class: "text-input text-area", placeholder: "Explica qué cubre este costo y por qué forma parte de la estructura del producto o servicio." %>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,94 @@
+<section class="page-section catalog-index-page">
+  <div class="page-heading">
+    <div class="page-heading-copy catalog-title-block">
+      <p class="eyebrow">Cobros</p>
+      <h1>Productos y Servicios</h1>
+      <p>Catálogo maestro de conceptos cobrables para contratos, cobros, facturación y reportes.</p>
+    </div>
+    <%= link_to "Nuevo producto o servicio", new_productos_servicio_path, class: "ui-button ui-button-primary" %>
+  </div>
+
+  <div class="panel filters-panel catalog-filters-panel">
+    <%= form_with url: productos_servicios_path, method: :get, class: "filters-form" do %>
+      <div class="filters-bar">
+        <label class="search-shell inline-search-shell">
+          <span class="search-icon"><%= icon("search") %></span>
+          <%= text_field_tag :query, @filtros[:query], placeholder: "Buscar por código, nombre o descripción" %>
+        </label>
+        <div class="filter-chip-list filter-select-list">
+          <%= select_tag :estado_catalogo,
+                         options_for_select([["Todos los estados", ""]] + ProductoServicio::ESTADOS_CATALOGO.map { |estado| [estado, estado] }, @filtros[:estado_catalogo]),
+                         class: "filter-select" %>
+          <%= select_tag :modelo_cobro,
+                         options_for_select([["Todos los modelos", ""]] + ProductoServicio::MODELOS_COBRO.map { |modelo| [modelo, modelo] }, @filtros[:modelo_cobro]),
+                         class: "filter-select" %>
+          <%= submit_tag "Aplicar filtros", class: "ui-button ui-button-primary submit-button" %>
+          <%= link_to "Limpiar", productos_servicios_path, class: "ui-button ui-button-secondary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="panel catalog-table-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Listado del catálogo</h2>
+        <p>Portafolio central para productos, servicios, licencias, cargos y conceptos transaccionales.</p>
+      </div>
+      <%= render "shared/badge", text: "#{@producto_servicios.size} registros", tone: "info" %>
+    </div>
+
+    <% if @producto_servicios.any? %>
+      <div class="table-shell catalog-table-shell">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Modelo de Cobro</th>
+              <th>Empresa que Factura</th>
+              <th>Moneda</th>
+              <th>Precio Base</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @producto_servicios.each do |producto_servicio| %>
+              <tr>
+                <td><strong><%= producto_servicio.codigo %></strong></td>
+                <td>
+                  <div><%= producto_servicio.nombre %></div>
+                  <% if producto_servicio.nombre_corto.present? %>
+                    <small><%= producto_servicio.nombre_corto %></small>
+                  <% end %>
+                </td>
+                <td><%= producto_servicio.tipo_producto %></td>
+                <td><%= producto_servicio.modelo_cobro %></td>
+                <td><%= producto_servicio.company&.commercial_name || producto_servicio.company&.legal_name || "-" %></td>
+                <td><%= producto_servicio.moneda&.simbolo || producto_servicio.moneda&.nombre || "-" %></td>
+                <td><%= monto_producto(producto_servicio, producto_servicio.precio_base) %></td>
+                <td>
+                  <%= render "shared/badge",
+                             text: producto_servicio.estado_catalogo,
+                             tone: producto_servicio.activo? ? "success" : "warning" %>
+                </td>
+                <td class="table-actions">
+                  <%= link_to "Ver", productos_servicio_path(producto_servicio), class: "table-link" %>
+                  <%= link_to "Cotizar", cotizacion_productos_servicio_path(producto_servicio), class: "table-link" %>
+                  <%= link_to "Editar", edit_productos_servicio_path(producto_servicio), class: "table-link" %>
+                  <%= button_to "Eliminar", productos_servicio_path(producto_servicio), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este producto o servicio?" } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state",
+                 title: "No hay productos ni servicios registrados",
+                 description: "Crea el primer concepto cobrable para comenzar a construir contratos, cobros y facturación." %>
+    <% end %>
+  </div>
+</section>

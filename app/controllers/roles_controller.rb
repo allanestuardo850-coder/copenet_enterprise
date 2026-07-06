@@ -61,7 +61,7 @@ class RolesController < ApplicationController
 
     ModuloSistema.find_each do |modulo|
       permiso = @rol.permisos.find_or_initialize_by(modulo_sistema: modulo)
-      values = params.dig(:permisos, modulo.id.to_s).to_h
+      values = permiso_params_for(modulo.id)
       permiso.assign_attributes(
         puede_ver: values["puede_ver"] == "1",
         puede_crear: values["puede_crear"] == "1",
@@ -73,7 +73,7 @@ class RolesController < ApplicationController
       permiso.save!
     end
 
-    redirect_to permisos_role_path(@rol), notice: "Permisos actualizados correctamente."
+    redirect_to permisos_rol_path(@rol), notice: "Permisos actualizados correctamente."
   end
 
   private
@@ -84,6 +84,20 @@ class RolesController < ApplicationController
 
   def rol_params
     params.require(:rol).permit(:nombre, :descripcion, :activo)
+  end
+
+  def permiso_params_for(modulo_id)
+    raw_values = params.fetch(:permisos, {}).fetch(modulo_id.to_s, {})
+    return raw_values if raw_values.is_a?(Hash)
+
+    raw_values.permit(
+      :puede_ver,
+      :puede_crear,
+      :puede_editar,
+      :puede_eliminar,
+      :puede_exportar,
+      :puede_configurar
+    ).to_h
   end
 
   def crear_permisos_faltantes

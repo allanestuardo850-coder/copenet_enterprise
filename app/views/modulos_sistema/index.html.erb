@@ -1,0 +1,51 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Módulos del Sistema</h1>
+      <p>Gestiona los módulos registrados para navegación, permisos y administración interna.</p>
+    </div>
+    <%= link_to "Nuevo Módulo", new_modulos_sistema_path, class: "ui-button ui-button-primary" %>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Registro de módulos</h2>
+        <p>Listado base para controlar grupos, rutas y disponibilidad operativa.</p>
+      </div>
+      <%= render "shared/badge", text: "#{@modulos_sistema.size} registros", tone: "info" %>
+    </div>
+
+    <div class="table-shell">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Grupo</th>
+            <th>Ruta</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @modulos_sistema.each do |modulo_sistema| %>
+            <tr>
+              <td><strong><%= modulo_sistema.codigo %></strong></td>
+              <td><%= modulo_sistema.nombre %></td>
+              <td><%= modulo_sistema.grupo.presence || "Sin grupo" %></td>
+              <td><%= modulo_sistema.ruta.presence || "Sin ruta" %></td>
+              <td><%= render "shared/badge", text: modulo_sistema.activo? ? "Activo" : "Inactivo", tone: modulo_sistema.activo? ? "success" : "warning" %></td>
+              <td class="table-actions">
+                <%= link_to "Ver", modulos_sistema_path(modulo_sistema), class: "table-link" %>
+                <%= link_to "Editar", edit_modulos_sistema_path(modulo_sistema), class: "table-link" %>
+                <%= button_to "Eliminar", modulos_sistema_path(modulo_sistema), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este módulo?" } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,12 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Editar moneda</h1>
+      <p>Actualiza el código numérico, nombre y símbolo del catálogo.</p>
+    </div>
+    <%= link_to "Ver detalle", moneda_path(@moneda), class: "ui-button ui-button-secondary" %>
+  </div>
+
+  <%= render "form", moneda: @moneda %>
+</section>

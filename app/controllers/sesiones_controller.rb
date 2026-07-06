@@ -6,7 +6,7 @@ class SesionesController < ApplicationController
   skip_before_action :authorize_modulo!
 
   def new
-    redirect_to dashboard_path if usuario_signed_in?
+    redirect_to ruta_segura_post_login if usuario_signed_in?
   end
 
   def create
@@ -15,7 +15,15 @@ class SesionesController < ApplicationController
     if usuario&.authenticate(params[:password].to_s)
       session[:usuario_id] = usuario.id
       usuario.update_column(:ultimo_acceso_en, Time.current)
-      redirect_to dashboard_path, notice: "Sesión iniciada correctamente."
+      destino = ruta_segura_post_login
+
+      if destino == login_path && !usuario.root?
+        reset_session
+        flash.now[:alert] = "Tu usuario no tiene permisos asignados para ingresar."
+        render :new, status: :unprocessable_entity
+      else
+        redirect_to destino, notice: "Sesión iniciada correctamente."
+      end
     else
       flash.now[:alert] = "Correo o contraseña inválidos."
       render :new, status: :unprocessable_entity

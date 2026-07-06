@@ -1,0 +1,72 @@
+<section class="panel nested-panel quick-inline-panel">
+  <div class="panel-header nested-panel-header">
+    <div>
+      <h2>Agregar costo operativo</h2>
+      <p>Agrega un componente de costo sin entrar a la edición completa del catálogo.</p>
+    </div>
+  </div>
+
+  <% if nuevo_costo.errors.any? %>
+    <section class="panel form-errors quick-inline-errors">
+      <ul class="error-list">
+        <% nuevo_costo.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%= form_with model: nuevo_costo,
+                url: agregar_costo_productos_servicio_path(producto_servicio),
+                class: "quick-inline-form" do |form| %>
+    <div class="form-grid quick-inline-grid">
+      <div class="field-group">
+        <%= form.label :tipo_costo, "Tipo de costo" %>
+        <%= form.select :tipo_costo,
+                        options_for_select(ProductoServicioCosto::TIPOS_COSTO, nuevo_costo.tipo_costo),
+                        { include_blank: "Selecciona un tipo" },
+                        class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :nombre, "Nombre del costo" %>
+        <%= form.text_field :nombre, class: "text-input", placeholder: "Hosting, soporte, comisión..." %>
+      </div>
+      <div class="field-group">
+        <%= form.label :moneda_id, "Moneda" %>
+        <%= form.select :moneda_id,
+                        options_from_collection_for_select(@monedas, :id, :nombre, nuevo_costo.moneda_id),
+                        { include_blank: "Selecciona moneda" },
+                        class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :monto, "Costo" %>
+        <%= form.number_field :monto, class: "text-input", step: "0.01", min: 0, placeholder: "0.00" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :recurrencia, "Recurrencia" %>
+        <%= form.select :recurrencia,
+                        options_for_select(ProductoServicioCosto::RECURRENCIAS, nuevo_costo.recurrencia),
+                        {},
+                        class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :orden, "Orden" %>
+        <%= form.number_field :orden, class: "text-input", min: 0 %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :activo %>
+          <span>Activo</span>
+        </label>
+      </div>
+      <div class="field-group field-group-full">
+        <%= form.label :descripcion, "Descripción" %>
+        <%= form.text_area :descripcion, class: "text-input text-area", rows: 3, placeholder: "Explica qué cubre este costo y por qué forma parte de la estructura del producto." %>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <%= form.submit "Agregar costo", class: "ui-button ui-button-primary submit-button" %>
+    </div>
+  <% end %>
+</section>

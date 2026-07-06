@@ -1,0 +1,88 @@
+<section class="panel nested-panel quick-inline-panel">
+  <div class="panel-header nested-panel-header">
+    <div>
+      <h2>Agregar precio comercial</h2>
+      <p>Registra un nuevo renglón comercial sin salir de la ficha del producto o servicio.</p>
+    </div>
+  </div>
+
+  <% if nuevo_precio.errors.any? %>
+    <section class="panel form-errors quick-inline-errors">
+      <ul class="error-list">
+        <% nuevo_precio.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%= form_with model: nuevo_precio,
+                url: agregar_precio_productos_servicio_path(producto_servicio),
+                class: "quick-inline-form" do |form| %>
+    <div class="form-grid quick-inline-grid">
+      <div class="field-group">
+        <%= form.label :nombre, "Nombre del precio" %>
+        <%= form.text_field :nombre, class: "text-input", placeholder: "Licencia base, soporte premium..." %>
+      </div>
+      <div class="field-group">
+        <%= form.label :moneda_id, "Moneda" %>
+        <%= form.select :moneda_id,
+                        options_from_collection_for_select(@monedas, :id, :nombre, nuevo_precio.moneda_id),
+                        { include_blank: "Selecciona moneda" },
+                        class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :precio, "Precio" %>
+        <%= form.number_field :precio, class: "text-input", step: "0.01", min: 0, placeholder: "0.00" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :margen, "Margen %" %>
+        <%= form.number_field :margen, class: "text-input", step: "0.01", min: 0, max: 100, placeholder: "0.00" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :recurrencia, "Recurrencia" %>
+        <%= form.select :recurrencia,
+                        options_for_select(ProductoServicioPrecio::RECURRENCIAS, nuevo_precio.recurrencia),
+                        { include_blank: "Selecciona recurrencia" },
+                        class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :seccion_cotizacion, "Sección en cotización" %>
+        <%= form.select :seccion_cotizacion,
+                        options_for_select(ProductoServicioPrecio::SECCIONES_COTIZACION, nuevo_precio.seccion_cotizacion),
+                        { include_blank: "Selecciona sección" },
+                        class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :orden, "Orden" %>
+        <%= form.number_field :orden, class: "text-input", min: 0 %>
+      </div>
+      <div class="field-group field-group-full">
+        <%= form.label :descripcion, "Descripción" %>
+        <%= form.text_area :descripcion, class: "text-input text-area", rows: 3, placeholder: "Describe qué cubre este precio dentro de la propuesta comercial." %>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :activo %>
+          <span>Activo</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :cotizable %>
+          <span>Incluir en cotización</span>
+        </label>
+      </div>
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :facturable %>
+          <span>Preparar para facturación</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <%= form.submit "Agregar precio", class: "ui-button ui-button-primary submit-button" %>
+    </div>
+  <% end %>
+</section>

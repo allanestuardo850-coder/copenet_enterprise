@@ -1,9 +1,12 @@
 <aside class="sidebar" data-shell-target="sidebar">
-  <div class="sidebar-brand">
-    <div class="sidebar-brand-mark">C</div>
-    <div>
-      <strong>Copenet Enterprise</strong>
-      <span>Visual Base</span>
+  <% logo_sidebar = branding_image(:logo_principal, css_class: "sidebar-brand-image", alt: branding_texto(:nombre_plataforma, "Copenet Enterprise")) %>
+  <div class="sidebar-brand <%= 'sidebar-brand-full' if logo_sidebar.present? %>">
+    <div class="sidebar-brand-mark <%= 'has-image sidebar-brand-mark-full' if logo_sidebar.present? %>" aria-hidden="true">
+      <% if logo_sidebar.present? %>
+        <%= logo_sidebar %>
+      <% else %>
+        <span class="sidebar-brand-mark-core"></span>
+      <% end %>
     </div>
     <button class="icon-button mobile-only" type="button" data-action="shell#closeSidebar">
       <%= icon("chevron") %>
@@ -33,10 +36,17 @@
   </nav>
 
   <div class="sidebar-footer">
-    <div class="sidebar-footer-card">
-      <p class="eyebrow">Enterprise Ready</p>
-      <strong>Modo visual inicial</strong>
-      <span>Listo para integrar módulos administrativos y financieros.</span>
+    <div class="sidebar-promo-card">
+      <strong><%= branding_texto(:promo_titulo, "Mejora tu experiencia") %></strong>
+      <p><%= branding_texto(:promo_descripcion, "Descubre todas las funcionalidades avanzadas de Copenet Enterprise.") %></p>
+      <%= link_to branding_texto(:promo_boton_texto, "Ver planes"), branding_texto(:promo_boton_url, "#"), class: "sidebar-promo-button" %>
+    </div>
+    <div class="sidebar-footer-logo" aria-label="<%= branding_texto(:footer_logo_etiqueta, 'Footer') %>">
+      <% if (logo_footer = branding_image(:logo_footer, css_class: "sidebar-footer-logo-image", alt: branding_texto(:footer_logo_etiqueta, "Footer"))).present? %>
+        <%= logo_footer %>
+      <% else %>
+        <span class="sidebar-footer-logo-mark"><%= branding_texto(:footer_logo_texto, "Derechos reservados") %></span>
+      <% end %>
     </div>
   </div>
 </aside>

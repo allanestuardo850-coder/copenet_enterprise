@@ -5,11 +5,14 @@
       <h1>Permisos de <%= @rol.nombre %></h1>
       <p>Gestiona acceso dinámico por módulo para este rol.</p>
     </div>
-    <%= link_to "Volver al rol", rol_path(@rol), class: "ui-button ui-button-secondary" %>
+    <div class="page-actions-inline">
+      <%= submit_tag "Guardar Permisos", class: "ui-button ui-button-primary submit-button", form: "form-permisos-rol" %>
+      <%= link_to "Volver al rol", rol_path(@rol), class: "ui-button ui-button-secondary" %>
+    </div>
   </div>
 
   <div class="panel">
-    <%= form_with url: permisos_role_path(@rol), method: :patch do %>
+    <%= form_with url: permisos_rol_path(@rol), method: :patch, id: "form-permisos-rol" do %>
       <div class="table-shell">
         <table class="data-table permisos-table">
           <thead>

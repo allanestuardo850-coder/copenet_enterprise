@@ -1,0 +1,127 @@
+<section class="panel form-section product-tab-panel is-active" data-tabs-target="panel" data-tab-id="resumen">
+  <div class="panel-header">
+    <div>
+      <h2>Resumen del Expediente</h2>
+      <p>Lectura ejecutiva del cliente antes de pasar a procesos de cobro y facturación.</p>
+    </div>
+  </div>
+
+  <div class="document-reading-layout">
+    <section class="document-section-card">
+      <div class="document-section-header">
+        <span class="document-section-step">01</span>
+        <div>
+          <h3>Perfil Comercial del Cliente</h3>
+          <p>Identifica rápidamente el contexto del cliente, su contacto base y la relación con CopeNET.</p>
+        </div>
+      </div>
+
+      <div class="document-meta-grid">
+        <div class="document-meta-item"><span>Cliente</span><strong><%= cliente.nombre %></strong></div>
+        <div class="document-meta-item"><span>Tipo</span><strong><%= client_type_label(cliente) %></strong></div>
+        <div class="document-meta-item"><span>Estado</span><strong><%= cliente.activo? ? "Activo" : "Inactivo" %></strong></div>
+        <div class="document-meta-item"><span>Contacto principal</span><strong><%= cliente.contacto_principal.presence || "Pendiente" %></strong></div>
+        <div class="document-meta-item"><span>Correo</span><strong><%= cliente.email.presence || "Pendiente" %></strong></div>
+        <div class="document-meta-item"><span>Teléfono</span><strong><%= cliente.telefono.presence || "Pendiente" %></strong></div>
+      </div>
+    </section>
+
+    <section class="document-section-card">
+      <div class="document-section-header">
+        <span class="document-section-step">02</span>
+        <div>
+          <h3>Estado Operativo del Expediente</h3>
+          <p>Resumen de la situación actual para saber si el cliente está listo para continuar con la siguiente etapa.</p>
+        </div>
+      </div>
+
+      <div class="expediente-status-grid">
+        <article class="mini-metric-card">
+          <span>Estado general</span>
+          <strong><%= expediente_cliente.estado_operativo %></strong>
+        </article>
+        <article class="mini-metric-card">
+          <span>Cotización principal</span>
+          <strong><%= cotizacion_principal&.codigo || "Pendiente" %></strong>
+        </article>
+        <article class="mini-metric-card">
+          <span>Estado de cotización</span>
+          <strong><%= cotizacion_principal&.estado&.humanize || "Sin registro" %></strong>
+        </article>
+        <article class="mini-metric-card">
+          <span>Último documento</span>
+          <strong><%= documentos.first&.created_at ? l(documentos.first.created_at.to_date, format: :long) : "Sin archivos" %></strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="document-section-card">
+      <div class="document-section-header">
+        <span class="document-section-step">03</span>
+        <div>
+          <h3>Checklist de Preparación</h3>
+          <p>Indicadores rápidos para detectar vacíos antes de avanzar a facturación.</p>
+        </div>
+      </div>
+
+      <div class="document-meta-grid expediente-readiness-grid">
+        <div class="document-meta-item">
+          <span>Contacto completo</span>
+          <strong><%= cliente.contacto_principal.present? && cliente.email.present? ? "Listo" : "Pendiente" %></strong>
+        </div>
+        <div class="document-meta-item">
+          <span>Documentación</span>
+          <strong><%= expediente_cliente.documentos.attached? ? "#{expediente_cliente.total_documentos} archivos" : "Pendiente" %></strong>
+        </div>
+        <div class="document-meta-item">
+          <span>Cotización firmada</span>
+          <strong><%= expediente_cliente.cotizaciones_firmadas.exists? ? "Sí" : "No" %></strong>
+        </div>
+        <div class="document-meta-item">
+          <span>Proyecto generado</span>
+          <strong><%= proyectos.any? ? "Sí" : "Pendiente" %></strong>
+        </div>
+        <div class="document-meta-item">
+          <span>Cliente CopeNET</span>
+          <strong><%= cliente.is_copenet_client? ? "Sí" : "No" %></strong>
+        </div>
+        <div class="document-meta-item">
+          <span>Listo para prefacturación</span>
+          <strong><%= expediente_cliente.listo_para_prefacturacion? ? "Sí" : "No" %></strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="document-section-card">
+      <div class="document-section-header">
+        <span class="document-section-step">04</span>
+        <div>
+          <h3>Resumen Financiero</h3>
+          <p>Referencia comercial consolidada para operación y seguimiento previo a factura.</p>
+        </div>
+      </div>
+
+      <div class="quote-summary-grid">
+        <article class="mini-metric-card">
+          <span>Total cotizado</span>
+          <strong><%= number_to_currency(expediente_cliente.total_cotizado, unit: "Q ", delimiter: ",", separator: ".") %></strong>
+        </article>
+        <article class="mini-metric-card">
+          <span>Total facturable</span>
+          <strong><%= number_to_currency(expediente_cliente.total_facturable, unit: "Q ", delimiter: ",", separator: ".") %></strong>
+        </article>
+        <article class="mini-metric-card">
+          <span>Sin costo CopeNET</span>
+          <strong><%= number_to_currency(expediente_cliente.valor_entregado_sin_costo, unit: "Q ", delimiter: ",", separator: ".") %></strong>
+        </article>
+      </div>
+
+      <div class="expediente-status-badges">
+        <% cotizaciones_por_estado.each do |estado, cantidad| %>
+          <% next if cantidad.zero? %>
+          <%= render "shared/badge", text: "#{estado.humanize}: #{cantidad}", tone: tono_cotizacion_por_estado(estado) %>
+        <% end %>
+      </div>
+    </section>
+  </div>
+</section>

@@ -16,10 +16,29 @@ Rails.application.routes.draw do
   delete "logout", to: "sesiones#destroy"
 
   get "dashboard", to: "enterprise#dashboard"
-  get "productos_servicios", to: "enterprise#productos_servicios"
   get "services", to: redirect("/productos_servicios")
   get "parametros", to: "enterprise#parametros"
+  patch "parametros", to: "enterprise#actualizar_parametros"
   get "auditoria", to: "enterprise#auditoria"
+  resources :cotizaciones, only: [:index, :update] do
+    member do
+      patch :actualizar_estado
+    end
+  end
+  resources :clientes do
+    member do
+      get :expediente, to: "expediente_clientes#show"
+      patch :expediente_documentos, to: "expediente_clientes#actualizar_documentos"
+    end
+  end
+  resources :productos_servicios do
+    member do
+      match :cotizacion, via: %i[get post]
+      get :cotizacion_pdf
+      post :agregar_precio
+      post :agregar_costo
+    end
+  end
   resources :monedas
   resources :companies, except: [:destroy] do
     member do

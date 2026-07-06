@@ -1,0 +1,69 @@
+<section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="cotizaciones" hidden>
+  <div class="panel-header">
+    <div>
+      <h2>Cotizaciones del Cliente</h2>
+      <p>Visibilidad de estados, montos y avance comercial para tomar decisiones antes de facturar.</p>
+    </div>
+    <div class="panel-header-actions">
+      <%= render "shared/badge", text: "#{cotizaciones.size} cotizaciones", tone: "info" %>
+    </div>
+  </div>
+
+  <div class="expediente-status-grid top-spacing">
+    <% cotizaciones_por_estado.each do |estado, cantidad| %>
+      <article class="mini-metric-card">
+        <span><%= estado.humanize %></span>
+        <strong><%= cantidad %></strong>
+      </article>
+    <% end %>
+  </div>
+
+  <% if cotizaciones.any? %>
+    <div class="table-shell catalog-table-shell top-spacing">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Producto o Servicio</th>
+            <th>Estado</th>
+            <th>Emisión</th>
+            <th>Total</th>
+            <th>Facturable</th>
+            <th>Sin costo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% cotizaciones.each do |cotizacion| %>
+            <tr>
+              <td><strong><%= cotizacion.codigo %></strong></td>
+              <td>
+                <strong><%= cotizacion.producto_servicio&.nombre || "Producto no disponible" %></strong>
+                <small><%= cotizacion.contacto.presence || "Sin contacto principal" %></small>
+              </td>
+              <td>
+                <%= render "shared/badge", text: cotizacion.estado.humanize, tone: tono_estado_cotizacion(cotizacion) %>
+              </td>
+              <td><%= fecha_cotizacion(cotizacion) %></td>
+              <td><%= number_to_currency(cotizacion.precio_final, unit: "Q ", delimiter: ",", separator: ".") %></td>
+              <td><%= number_to_currency(cotizacion.total_facturable, unit: "Q ", delimiter: ",", separator: ".") %></td>
+              <td><%= number_to_currency(cotizacion.total_no_cobrado_copenet, unit: "Q ", delimiter: ",", separator: ".") %></td>
+              <td>
+                <% if cotizacion.producto_servicio.present? %>
+                  <%= link_to "Abrir", cotizacion_productos_servicio_path(cotizacion.producto_servicio, cotizacion_id: cotizacion.id), class: "table-link" %>
+                <% else %>
+                  <span class="table-link is-disabled">Sin vista</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="empty-inline-state">
+      <strong>No hay cotizaciones registradas todavía.</strong>
+      <span>Cuando se emitan cotizaciones, aquí verás su estado, sus montos y el avance previo a facturación.</span>
+    </div>
+  <% end %>
+</section>

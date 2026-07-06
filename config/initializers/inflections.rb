@@ -19,4 +19,5 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.irregular "rol", "roles"
   inflect.irregular "permiso", "permisos"
   inflect.irregular "sesion", "sesiones"
+  inflect.irregular "cotizacion", "cotizaciones"
 end

@@ -1,0 +1,13 @@
+<div class="page-loader" data-loading-target="overlay" aria-hidden="false">
+  <div class="page-loader-mark <%= 'has-image' if branding_logo_attached?(:logo_principal) %>" aria-hidden="true">
+    <% if (logo_loader = branding_image(:logo_principal, css_class: "page-loader-image", alt: branding_texto(:nombre_plataforma, "Copenet Enterprise"))).present? %>
+      <%= logo_loader %>
+    <% else %>
+      <span class="page-loader-mark-core"></span>
+    <% end %>
+  </div>
+  <div class="page-loader-copy">
+    <strong><%= branding_texto(:nombre_plataforma, "Copenet Enterprise") %></strong>
+    <span><%= branding_texto(:loader_mensaje, "Cargando plataforma...") %></span>
+  </div>
+</div>

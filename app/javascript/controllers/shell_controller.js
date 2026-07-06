@@ -2,14 +2,21 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["sidebar", "menu", "themeLabel"]
-  static classes = ["sidebarOpen", "menuOpen", "dark"]
+  static classes = ["sidebarOpen", "menuOpen", "dark", "sidebarCollapsed"]
 
   connect() {
     this.applyStoredTheme()
+    this.applyStoredSidebar()
   }
 
   toggleSidebar() {
-    this.sidebarTarget.classList.toggle(this.sidebarOpenClass)
+    if (window.innerWidth <= 920) {
+      this.sidebarTarget.classList.toggle(this.sidebarOpenClass)
+      return
+    }
+
+    const isCollapsed = this.element.classList.toggle(this.sidebarCollapsedClass)
+    localStorage.setItem("copenet-sidebar", isCollapsed ? "collapsed" : "expanded")
   }
 
   closeSidebar() {
@@ -44,6 +51,13 @@ export default class extends Controller {
     const isDark = stored == "dark"
     document.documentElement.classList.toggle(this.darkClass, isDark)
     this.updateThemeLabel(isDark)
+  }
+
+  applyStoredSidebar() {
+    if (window.innerWidth <= 920) return
+
+    const stored = localStorage.getItem("copenet-sidebar")
+    this.element.classList.toggle(this.sidebarCollapsedClass, stored == "collapsed")
   }
 
   updateThemeLabel(isDark) {

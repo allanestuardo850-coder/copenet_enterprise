@@ -1,0 +1,31 @@
+<section class="panel form-section product-tab-panel" data-tabs-target="panel" data-tab-id="actividad" hidden>
+  <div class="panel-header">
+    <div>
+      <h2>Actividad del Expediente</h2>
+      <p>Timeline reciente del cliente para entender qué cambió y quién intervino.</p>
+    </div>
+    <div class="panel-header-actions">
+      <%= render "shared/badge", text: "#{actividad.size} eventos", tone: "info" %>
+    </div>
+  </div>
+
+  <% if actividad.any? %>
+    <div class="activity-list user-activity-list top-spacing">
+      <% actividad.each do |evento| %>
+        <article class="activity-item">
+          <span class="activity-dot"></span>
+          <div>
+            <h3><%= titulo_evento_expediente(evento) %></h3>
+            <p><%= detalle_evento_expediente(evento) %></p>
+          </div>
+          <%= render "shared/badge", text: fecha_evento_expediente(evento), tone: tono_evento_expediente(evento) %>
+        </article>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-inline-state">
+      <strong>No hay actividad reciente registrada.</strong>
+      <span>Los cambios del cliente, cotizaciones y documentos aparecerán aquí para dar trazabilidad operativa.</span>
+    </div>
+  <% end %>
+</section>

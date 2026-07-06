@@ -1,0 +1,12 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Nuevo Módulo del Sistema</h1>
+      <p>Registra un módulo para navegación, permisos y organización interna.</p>
+    </div>
+    <%= link_to "Volver", modulos_sistema_index_path, class: "ui-button ui-button-secondary" %>
+  </div>
+
+  <%= render "form", modulo_sistema: @modulo_sistema %>
+</section>

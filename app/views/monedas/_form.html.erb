@@ -1,0 +1,54 @@
+<%= form_with model: moneda, class: "company-form" do |form| %>
+  <div class="form-actions form-actions-top">
+    <%= form.submit moneda.persisted? ? "Actualizar Moneda" : "Guardar Moneda", class: "ui-button ui-button-primary submit-button" %>
+    <%= link_to "Cancelar", moneda.persisted? ? moneda_path(moneda) : monedas_path, class: "ui-button ui-button-secondary" %>
+  </div>
+
+  <% if moneda.errors.any? %>
+    <section class="panel form-errors">
+      <ul class="error-list">
+        <% moneda.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <section class="panel form-section">
+    <div class="panel-header">
+      <div>
+        <h2>Información de la moneda</h2>
+        <p>Configura el código numérico, nombre y símbolo del catálogo.</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <%= form.label :codigo, "Código" %>
+        <%= form.number_field :codigo, class: "text-input", min: 1, step: 1, placeholder: "320" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :nombre, "Nombre" %>
+        <%= form.text_field :nombre, class: "text-input", placeholder: "Quetzal" %>
+      </div>
+
+      <div class="field-group">
+        <%= form.label :simbolo, "Símbolo" %>
+        <%= form.text_field :simbolo, class: "text-input", placeholder: "Q" %>
+      </div>
+
+      <div class="field-group checkbox-group">
+        <label class="checkbox-label">
+          <%= form.check_box :activo %>
+          <span>Activa</span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <div class="form-actions">
+    <%= form.submit moneda.persisted? ? "Actualizar Moneda" : "Guardar Moneda", class: "ui-button ui-button-primary submit-button" %>
+    <%= link_to "Cancelar", moneda.persisted? ? moneda_path(moneda) : monedas_path, class: "ui-button ui-button-secondary" %>
+  </div>
+<% end %>

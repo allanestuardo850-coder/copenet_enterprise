@@ -1,0 +1,55 @@
+<%= form_with model: cliente, class: "company-form" do |form| %>
+  <% if cliente.errors.any? %>
+    <section class="panel form-errors">
+      <ul class="error-list">
+        <% cliente.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <div class="form-grid">
+    <div class="field-group">
+      <%= form.label :nombre, "Nombre del cliente" %>
+      <%= form.text_field :nombre, class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :client_type, "Tipo de cliente" %>
+      <%= form.select :client_type, options_for_select(Cliente::CLIENT_TYPES.map { |item| [item.humanize, item] }, cliente.client_type), {}, class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :contacto_principal, "Contacto principal" %>
+      <%= form.text_field :contacto_principal, class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :email, "Correo" %>
+      <%= form.email_field :email, class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :telefono, "Teléfono" %>
+      <%= form.text_field :telefono, class: "text-input" %>
+    </div>
+    <div class="field-group checkbox-group">
+      <label class="checkbox-label">
+        <%= form.check_box :is_copenet_client %>
+        <span>Cliente CopeNET</span>
+      </label>
+    </div>
+    <div class="field-group checkbox-group">
+      <label class="checkbox-label">
+        <%= form.check_box :activo %>
+        <span>Activo</span>
+      </label>
+    </div>
+    <div class="field-group field-group-full">
+      <%= form.label :notas, "Notas" %>
+      <%= form.text_area :notas, rows: 4, class: "text-input text-area" %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= form.submit cliente.persisted? ? "Actualizar cliente" : "Guardar cliente", class: "ui-button ui-button-primary submit-button" %>
+    <%= link_to "Cancelar", cliente.persisted? ? cliente_path(cliente) : clientes_path, class: "ui-button ui-button-secondary" %>
+  </div>
+<% end %>

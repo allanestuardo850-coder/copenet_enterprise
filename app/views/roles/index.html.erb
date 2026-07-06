@@ -30,7 +30,7 @@
               <td class="table-actions">
                 <%= link_to "Ver", rol_path(rol), class: "table-link" %>
                 <%= link_to "Editar", edit_rol_path(rol), class: "table-link" %>
-                <%= link_to "Permisos", permisos_role_path(rol), class: "table-link" %>
+                <%= link_to "Permisos", permisos_rol_path(rol), class: "table-link" %>
                 <%= button_to "Eliminar", rol_path(rol), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este rol?" } %>
               </td>
             </tr>

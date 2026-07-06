@@ -1,0 +1,75 @@
+<article class="precio-detalle-card" data-precio-item>
+  <%= form.hidden_field :_destroy %>
+
+  <div class="precio-detalle-card-header">
+    <div class="precio-detalle-card-copy">
+      <strong>Ítem comercial</strong>
+      <span>Define el concepto comercial, su precio y el margen esperado para este renglón.</span>
+    </div>
+    <button type="button" class="ui-button ui-button-secondary ui-button-compact" data-action="producto-servicio-precios#remove">
+      Quitar
+    </button>
+  </div>
+
+  <div class="form-grid precio-form-grid">
+    <div class="field-group">
+      <%= form.label :nombre, "Nombre comercial" %>
+      <%= form.text_field :nombre, class: "text-input", placeholder: "Licencia Enterprise, implementación, soporte..." %>
+    </div>
+    <div class="field-group">
+      <%= form.label :moneda_id, "Moneda" %>
+      <%= form.select :moneda_id,
+                      options_from_collection_for_select(@monedas, :id, :nombre, form.object.moneda_id),
+                      { include_blank: "Selecciona moneda" },
+                      class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :precio, "Precio" %>
+      <%= form.number_field :precio, class: "text-input", step: "0.01", min: 0, placeholder: "0.00" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :margen, "Margen %" %>
+      <%= form.number_field :margen, class: "text-input", step: "0.01", min: 0, max: 100, placeholder: "25.00" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :recurrencia, "Recurrencia de cobro" %>
+      <%= form.select :recurrencia,
+                      options_for_select(ProductoServicioPrecio::RECURRENCIAS, form.object.recurrencia),
+                      { include_blank: "Selecciona recurrencia" },
+                      class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :seccion_cotizacion, "Sección en cotización" %>
+      <%= form.select :seccion_cotizacion,
+                      options_for_select(ProductoServicioPrecio::SECCIONES_COTIZACION, form.object.seccion_cotizacion),
+                      { include_blank: "Selecciona sección" },
+                      class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :orden, "Orden" %>
+      <%= form.number_field :orden, class: "text-input", min: 0, step: 1, placeholder: "0" %>
+    </div>
+    <div class="field-group checkbox-group">
+      <label class="checkbox-label">
+        <%= form.check_box :activo %>
+        <span>Activo</span>
+      </label>
+    </div>
+    <div class="field-group checkbox-group">
+      <label class="checkbox-label">
+        <%= form.check_box :cotizable %>
+        <span>Incluir en cotización</span>
+      </label>
+    </div>
+    <div class="field-group checkbox-group">
+      <label class="checkbox-label">
+        <%= form.check_box :facturable %>
+        <span>Preparar para facturación</span>
+      </label>
+    </div>
+    <div class="field-group field-group-full">
+      <%= form.label :descripcion, "Descripción comercial" %>
+      <%= form.text_area :descripcion, rows: 3, class: "text-input text-area", placeholder: "Explica qué incluye este ítem comercial y cómo debe presentarse al cliente." %>
+    </div>
+  </div>
+</article>

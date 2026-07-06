@@ -1,0 +1,12 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Nueva moneda</h1>
+      <p>Registra una moneda con su código numérico y símbolo operativo.</p>
+    </div>
+    <%= link_to "Volver", monedas_path, class: "ui-button ui-button-secondary" %>
+  </div>
+
+  <%= render "form", moneda: @moneda %>
+</section>

@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Copenet Enterprise" %></title>
+    <title><%= content_for(:title) || branding_texto(:nombre_plataforma, "Copenet Enterprise") %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Copenet Enterprise">
+    <meta name="application-name" content="<%= branding_texto(:nombre_plataforma, 'Copenet Enterprise') %>">
     <meta name="mobile-web-app-capable" content="yes">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -19,11 +22,13 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= branding_css_variables %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="app-body" data-controller="shell" data-shell-sidebar-open-class="is-open" data-shell-menu-open-class="is-open" data-shell-dark-class="theme-dark">
+  <body class="app-body" data-controller="shell loading" data-shell-sidebar-open-class="is-open" data-shell-menu-open-class="is-open" data-shell-dark-class="theme-dark" data-shell-sidebar-collapsed-class="sidebar-collapsed">
+    <%= render "shared/page_loader" %>
     <div class="app-shell">
       <%= render "shared/sidebar" %>
 

@@ -1,53 +1,147 @@
-<section class="page-section">
+<section class="page-section user-module-page">
   <div class="page-heading">
     <div>
       <p class="eyebrow">Administración</p>
       <h1>Usuarios</h1>
-      <p>Gestiona cuentas internas, acceso root y asignación de roles.</p>
+      <p>Administra usuarios internos, privilegios root, roles operativos y acceso a módulos del sistema.</p>
     </div>
-    <%= link_to "Nuevo Usuario", new_usuario_path, class: "ui-button ui-button-primary" %>
+    <div class="page-actions-inline">
+      <%= link_to "Exportar", "#", class: "ui-button ui-button-secondary" %>
+      <%= link_to "Nuevo Usuario", new_usuario_path, class: "ui-button ui-button-primary" %>
+    </div>
   </div>
 
-  <div class="panel">
+  <section class="kpi-grid user-kpi-grid">
+    <article class="kpi-card kpi-card-primary">
+      <div class="kpi-meta">
+        <span class="kpi-title">Usuarios Registrados</span>
+        <%= render "shared/badge", text: "Directorio", tone: "info" %>
+      </div>
+      <strong class="kpi-value"><%= @usuario_stats[:total] %></strong>
+      <p class="kpi-footer">Base total de usuarios creados en la plataforma.</p>
+    </article>
+
+    <article class="kpi-card kpi-card-success">
+      <div class="kpi-meta">
+        <span class="kpi-title">Usuarios Activos</span>
+        <%= render "shared/badge", text: "Operativos", tone: "success" %>
+      </div>
+      <strong class="kpi-value"><%= @usuario_stats[:activos] %></strong>
+      <p class="kpi-footer">Usuarios con acceso habilitado actualmente.</p>
+    </article>
+
+    <article class="kpi-card kpi-card-info">
+      <div class="kpi-meta">
+        <span class="kpi-title">Usuarios Root</span>
+        <%= render "shared/badge", text: "Crítico", tone: "primary" %>
+      </div>
+      <strong class="kpi-value"><%= @usuario_stats[:roots] %></strong>
+      <p class="kpi-footer">Perfiles con control administrativo total.</p>
+    </article>
+
+    <article class="kpi-card kpi-card-warning">
+      <div class="kpi-meta">
+        <span class="kpi-title">Usuarios con Roles</span>
+        <%= render "shared/badge", text: "Asignados", tone: "warning" %>
+      </div>
+      <strong class="kpi-value"><%= @usuario_stats[:con_roles] %></strong>
+      <p class="kpi-footer">Usuarios ya vinculados a roles del sistema.</p>
+    </article>
+  </section>
+
+  <section class="panel filters-panel">
     <div class="panel-header">
       <div>
-        <h2>Listado de usuarios</h2>
-        <p>Administración inicial de usuarios y acceso al sistema.</p>
+        <h2>Filtros de Búsqueda</h2>
+        <p>Ubica usuarios por nombre, correo, estado o nivel administrativo.</p>
+      </div>
+    </div>
+
+    <%= form_with url: usuarios_path, method: :get, class: "filters-form" do %>
+      <div class="filters-bar">
+        <label class="search-shell inline-search-shell">
+          <span class="search-icon"><%= icon("search") %></span>
+          <%= text_field_tag :query, @filters[:query], placeholder: "Buscar por nombre, apellido o correo" %>
+        </label>
+        <div class="filter-chip-list filter-select-list">
+          <%= select_tag :status,
+                         options_for_select([["Todos los estados", ""], ["Activos", "activo"], ["Inactivos", "inactivo"]], @filters[:status]),
+                         class: "filter-select" %>
+          <%= select_tag :root,
+                         options_for_select([["Todos los niveles", ""], ["Root", "si"], ["No root", "no"]], @filters[:root]),
+                         class: "filter-select" %>
+          <%= submit_tag "Aplicar filtros", class: "ui-button ui-button-primary submit-button" %>
+          <%= link_to "Limpiar", usuarios_path, class: "ui-button ui-button-secondary" %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Listado de Usuarios</h2>
+        <p>Vista central para operar el acceso interno, revisar actividad y administrar privilegios.</p>
       </div>
       <%= render "shared/badge", text: "#{@usuarios.size} registros", tone: "info" %>
     </div>
 
-    <div class="table-shell">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Roles</th>
-            <th>Estado</th>
-            <th>Root</th>
-            <th>Último Acceso</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @usuarios.each do |usuario| %>
+    <% if @usuarios.any? %>
+      <div class="table-shell">
+        <table class="data-table usuarios-table">
+          <thead>
             <tr>
-              <td><%= [usuario.nombre, usuario.apellido].join(" ") %></td>
-              <td><%= usuario.email %></td>
-              <td><%= usuario.roles.map(&:nombre).presence&.join(", ") || "Sin roles" %></td>
-              <td><%= render "shared/badge", text: usuario.activo? ? "Activo" : "Inactivo", tone: usuario.activo? ? "success" : "warning" %></td>
-              <td><%= render "shared/badge", text: usuario.root? ? "Sí" : "No", tone: usuario.root? ? "primary" : "info" %></td>
-              <td><%= usuario.ultimo_acceso_en&.strftime("%d/%m/%Y %H:%M") || "Sin acceso" %></td>
-              <td class="table-actions">
-                <%= link_to "Ver", usuario_path(usuario), class: "table-link" %>
-                <%= link_to "Editar", edit_usuario_path(usuario), class: "table-link" %>
-                <%= button_to "Eliminar", usuario_path(usuario), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este usuario?" } %>
-              </td>
+              <th>Usuario</th>
+              <th>Roles</th>
+              <th>Estado</th>
+              <th>Nivel</th>
+              <th>Último Acceso</th>
+              <th>Acciones</th>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
+          </thead>
+          <tbody>
+            <% @usuarios.each do |usuario| %>
+              <tr>
+                <td>
+                  <div class="table-user-cell">
+                    <div class="table-user-avatar"><%= usuario.nombre.to_s.first&.upcase %><%= usuario.apellido.to_s.first&.upcase %></div>
+                    <div class="table-user-copy">
+                      <strong><%= usuario.nombre_completo %></strong>
+                      <span><%= usuario.email %></span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="table-chip-stack">
+                    <% if usuario.roles.any? %>
+                      <% usuario.roles.limit(2).each do |rol| %>
+                        <span class="role-chip"><%= rol.nombre %></span>
+                      <% end %>
+                      <% if usuario.roles.size > 2 %>
+                        <span class="role-chip role-chip-muted">+<%= usuario.roles.size - 2 %> más</span>
+                      <% end %>
+                    <% else %>
+                      <span class="role-chip role-chip-muted">Sin roles</span>
+                    <% end %>
+                  </div>
+                </td>
+                <td><%= render "shared/badge", text: usuario.activo? ? "Activo" : "Inactivo", tone: usuario.activo? ? "success" : "warning" %></td>
+                <td><%= render "shared/badge", text: usuario.root? ? "Root" : "Estándar", tone: usuario.root? ? "primary" : "info" %></td>
+                <td><%= usuario_fecha(usuario.ultimo_acceso_en) %></td>
+                <td class="table-actions">
+                  <%= link_to "Ver", usuario_path(usuario), class: "table-link" %>
+                  <%= link_to "Editar", edit_usuario_path(usuario), class: "table-link" %>
+                  <%= button_to "Eliminar", usuario_path(usuario), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este usuario?" } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state",
+                 title: "No hay usuarios registrados",
+                 description: "Crea el primer usuario para comenzar a configurar accesos, roles y permisos operativos." %>
+    <% end %>
+  </section>
 </section>

@@ -1,0 +1,55 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Administración</p>
+      <h1>Monedas</h1>
+      <p>Administra el catálogo de monedas y su disponibilidad operativa dentro de la plataforma.</p>
+    </div>
+    <%= link_to "Nueva moneda", new_moneda_path, class: "ui-button ui-button-primary" %>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Listado de monedas</h2>
+        <p>Catálogo interno con código numérico, símbolo y estado operativo.</p>
+      </div>
+      <%= render "shared/badge", text: "#{@monedas.size} registros", tone: "info" %>
+    </div>
+
+    <% if @monedas.any? %>
+      <div class="table-shell">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Símbolo</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @monedas.each do |moneda| %>
+              <tr>
+                <td><strong><%= moneda.codigo %></strong></td>
+                <td><%= moneda.nombre %></td>
+                <td><%= moneda.simbolo %></td>
+                <td><%= render "shared/badge", text: moneda.activo? ? "Activa" : "Inactiva", tone: moneda.activo? ? "success" : "warning" %></td>
+                <td class="table-actions">
+                  <%= link_to "Ver", moneda_path(moneda), class: "table-link" %>
+                  <%= link_to "Editar", edit_moneda_path(moneda), class: "table-link" %>
+                  <%= button_to "Eliminar", moneda_path(moneda), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar esta moneda?" } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state",
+                 title: "No hay monedas registradas",
+                 description: "Crea la primera moneda para comenzar a construir el catálogo financiero base." %>
+    <% end %>
+  </div>
+</section>

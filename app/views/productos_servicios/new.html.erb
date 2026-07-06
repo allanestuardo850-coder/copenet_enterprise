@@ -1,0 +1,12 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Cobros</p>
+      <h1>Nuevo Producto o Servicio</h1>
+      <p>Registra un nuevo concepto cobrable para el catálogo maestro del dominio de cobros.</p>
+    </div>
+    <%= link_to "Volver", productos_servicios_path, class: "ui-button ui-button-secondary" %>
+  </div>
+
+  <%= render "form", producto_servicio: @producto_servicio %>
+</section>

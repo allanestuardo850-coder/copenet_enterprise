@@ -1,4 +1,9 @@
-<%= form_with model: usuario, class: "company-form" do |form| %>
+<%= form_with model: usuario, class: "company-form", data: { controller: "tabs", tabs_default_value: "general" } do |form| %>
+  <div class="form-actions form-actions-top">
+    <%= form.submit usuario.persisted? ? "Actualizar Usuario" : "Guardar Usuario", class: "ui-button ui-button-primary submit-button" %>
+    <%= link_to "Cancelar", usuario.persisted? ? usuario_path(usuario) : usuarios_path, class: "ui-button ui-button-secondary" %>
+  </div>
+
   <% if usuario.errors.any? %>
     <section class="panel form-errors">
       <ul class="error-list">
@@ -9,62 +14,110 @@
     </section>
   <% end %>
 
-  <section class="panel form-section">
+  <section class="panel product-tabs-panel">
     <div class="panel-header">
       <div>
-        <h2>Información del usuario</h2>
-        <p>Datos base y credenciales iniciales.</p>
+        <h2>Configuración del Usuario</h2>
+        <p>Completa el registro por módulos para mantener la edición compacta y más operativa.</p>
+      </div>
+      <%= render "shared/badge", text: usuario.persisted? ? "Edición" : "Nuevo registro", tone: "info" %>
+    </div>
+
+    <div class="module-tabs" role="tablist" aria-label="Secciones del formulario de usuario">
+      <button type="button" class="module-tab is-active" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch" role="tab" aria-selected="true">
+        <span class="module-tab-icon"><%= icon("users") %></span>
+        <span class="module-tab-copy">
+          <strong>General</strong>
+          <small>Datos del usuario</small>
+        </span>
+      </button>
+      <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="seguridad" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="module-tab-icon"><%= icon("shield") %></span>
+        <span class="module-tab-copy">
+          <strong>Seguridad</strong>
+          <small>Credenciales</small>
+        </span>
+      </button>
+      <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="roles" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="module-tab-icon"><%= icon("layers") %></span>
+        <span class="module-tab-copy">
+          <strong>Roles</strong>
+          <small>Alcance funcional</small>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <section class="panel form-section module-tab-panel is-active" data-tabs-target="panel" data-tab-id="general">
+    <div class="panel-header">
+      <div>
+        <h2>Información General</h2>
+        <p>Datos personales y estado operativo del usuario dentro de la plataforma.</p>
       </div>
     </div>
 
     <div class="form-grid">
       <div class="field-group">
         <%= form.label :nombre, "Nombre" %>
-        <%= form.text_field :nombre, class: "text-input" %>
+        <%= form.text_field :nombre, class: "text-input", placeholder: "Mario" %>
       </div>
       <div class="field-group">
         <%= form.label :apellido, "Apellido" %>
-        <%= form.text_field :apellido, class: "text-input" %>
+        <%= form.text_field :apellido, class: "text-input", placeholder: "Montúfar" %>
       </div>
       <div class="field-group field-group-full">
         <%= form.label :email, "Correo Electrónico" %>
-        <%= form.email_field :email, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :password, "Contraseña" %>
-        <%= form.password_field :password, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :password_confirmation, "Confirmar Contraseña" %>
-        <%= form.password_field :password_confirmation, class: "text-input" %>
+        <%= form.email_field :email, class: "text-input", placeholder: "usuario@copenet.com.gt" %>
       </div>
       <div class="field-group checkbox-group">
         <label class="checkbox-label">
           <%= form.check_box :activo %>
-          <span>Activo</span>
+          <span>Usuario activo</span>
         </label>
       </div>
       <div class="field-group checkbox-group">
         <label class="checkbox-label">
           <%= form.check_box :root %>
-          <span>Root</span>
+          <span>Acceso root</span>
         </label>
       </div>
     </div>
   </section>
 
-  <section class="panel form-section">
+  <section class="panel form-section module-tab-panel" data-tabs-target="panel" data-tab-id="seguridad" hidden>
     <div class="panel-header">
       <div>
-        <h2>Roles</h2>
-        <p>Asigna uno o más roles disponibles.</p>
+        <h2>Seguridad y Credenciales</h2>
+        <p>Define credenciales de acceso. En edición puedes dejarlo vacío si no deseas cambiar la contraseña.</p>
       </div>
     </div>
-    <div class="checkbox-list">
+
+    <div class="form-grid">
+      <div class="field-group">
+        <%= form.label :password, "Contraseña" %>
+        <%= form.password_field :password, class: "text-input", placeholder: usuario.persisted? ? "Dejar vacío para conservar" : "Contraseña inicial" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :password_confirmation, "Confirmar Contraseña" %>
+        <%= form.password_field :password_confirmation, class: "text-input", placeholder: "Repite la contraseña" %>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel form-section module-tab-panel" data-tabs-target="panel" data-tab-id="roles" hidden>
+    <div class="panel-header">
+      <div>
+        <h2>Roles y Alcance Operativo</h2>
+        <p>Asigna los roles que servirán como base funcional del acceso del usuario.</p>
+      </div>
+      <%= render "shared/badge", text: "#{@roles.size} roles disponibles", tone: "info" %>
+    </div>
+
+    <div class="checkbox-list checkbox-role-grid">
       <% @roles.each do |rol| %>
-        <label class="checkbox-label checkbox-card">
+        <label class="checkbox-label checkbox-card role-select-card">
           <%= check_box_tag "usuario[rol_ids][]", rol.id, usuario.roles.include?(rol) %>
-          <span><%= rol.nombre %></span>
+          <span><strong><%= rol.nombre %></strong><small><%= rol.descripcion.presence || "Rol disponible para administración interna." %></small></span>
         </label>
       <% end %>
     </div>

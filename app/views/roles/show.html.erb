@@ -7,8 +7,11 @@
     </div>
     <div class="page-actions-inline">
       <%= link_to "Editar", edit_rol_path(@rol), class: "ui-button ui-button-primary" %>
-      <%= link_to "Permisos", permisos_role_path(@rol), class: "ui-button ui-button-secondary" %>
+      <%= link_to "Permisos", permisos_rol_path(@rol), class: "ui-button ui-button-secondary" %>
       <%= link_to "Volver", roles_path, class: "ui-button ui-button-secondary" %>
+      <% unless @rol.usuarios.exists? %>
+        <%= button_to "Eliminar", rol_path(@rol), method: :delete, class: "ui-button ui-button-secondary", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este rol?" } %>
+      <% end %>
     </div>
   </div>
 

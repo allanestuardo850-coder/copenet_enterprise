@@ -1,0 +1,92 @@
+<article class="cotizacion-item-card" data-cotizacion-detalle-item>
+  <%= form.hidden_field :_destroy %>
+  <%= form.hidden_field :producto_servicio_precio_id %>
+
+  <div class="cotizacion-item-card-header">
+    <div class="cotizacion-item-card-copy">
+      <strong>Ítem de cotización</strong>
+      <span>Agrega una descripción clara y el precio correspondiente.</span>
+    </div>
+    <button type="button" class="ui-button ui-button-secondary ui-button-compact" data-action="cotizacion-detalles#remove">
+      Quitar
+    </button>
+  </div>
+
+  <div class="form-grid cotizacion-item-grid">
+    <div class="field-group field-group-full">
+      <%= form.label :descripcion, "Descripción del ítem" %>
+      <%= form.text_field :descripcion, class: "text-input", placeholder: "Licencia, implementación, soporte, integración..." %>
+    </div>
+    <div class="field-group">
+      <%= form.label :moneda_id, "Moneda" %>
+      <%= form.select :moneda_id,
+                      options_from_collection_for_select(@monedas, :id, :nombre, form.object.moneda_id),
+                      { include_blank: "Selecciona moneda" },
+                      class: "text-input",
+                      data: { action: "change->cotizacion-detalles#updateTotals", cotizacion_detalles_target: "currencyInput" } %>
+    </div>
+    <div class="field-group">
+      <%= form.label :catalog_price, "Precio catálogo" %>
+      <%= form.number_field :catalog_price,
+                            class: "text-input",
+                            step: "0.01",
+                            min: 0,
+                            readonly: true %>
+    </div>
+    <div class="field-group">
+      <%= form.label :applied_price, "Precio aplicado" %>
+      <%= form.number_field :applied_price,
+                            class: "text-input",
+                            step: "0.01",
+                            min: 0,
+                            placeholder: "0.00",
+                            data: { action: "input->cotizacion-detalles#updateTotals", cotizacion_detalles_target: "priceInput" } %>
+    </div>
+    <div class="field-group">
+      <%= form.label :internal_cost, "Costo interno" %>
+      <%= form.number_field :internal_cost,
+                            class: "text-input",
+                            step: "0.01",
+                            min: 0,
+                            readonly: true %>
+    </div>
+    <div class="field-group">
+      <%= form.label :recurrencia, "Recurrencia" %>
+      <%= form.select :recurrencia,
+                      options_for_select(ProductoServicioPrecio::RECURRENCIAS, form.object.recurrencia),
+                      { include_blank: "Selecciona recurrencia" },
+                      class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :seccion_cotizacion, "Sección" %>
+      <%= form.select :seccion_cotizacion,
+                      options_for_select(CotizacionDetalle::SECCIONES_COTIZACION, form.object.seccion_cotizacion),
+                      { include_blank: "Selecciona sección" },
+                      class: "text-input" %>
+    </div>
+    <div class="field-group">
+      <%= form.label :price_rule_applied, "Regla aplicada" %>
+      <%= form.text_field :price_rule_applied, class: "text-input", readonly: true %>
+    </div>
+    <div class="field-group">
+      <%= form.label :orden, "Orden" %>
+      <%= form.number_field :orden, class: "text-input", min: 0, step: 1, placeholder: "0" %>
+    </div>
+    <div class="field-group checkbox-group">
+      <label class="checkbox-label">
+        <%= form.check_box :facturable %>
+        <span>Pasar a facturación</span>
+      </label>
+    </div>
+    <div class="field-group checkbox-group">
+      <label class="checkbox-label">
+        <%= form.check_box :billing_authorized %>
+        <span>Autorizar cobro manual si queda en 0</span>
+      </label>
+    </div>
+    <div class="field-group field-group-full">
+      <%= form.label :price_override_reason, "Motivo de modificación de precio" %>
+      <%= form.text_area :price_override_reason, rows: 2, class: "text-input text-area", placeholder: "Explica el ajuste manual o la excepción aplicada." %>
+    </div>
+  </div>
+</article>

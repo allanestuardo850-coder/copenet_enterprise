@@ -1,0 +1,631 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div class="page-heading-copy">
+      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+        <%= link_to "Dashboard", dashboard_path %>
+        <span><%= icon("chevron") %></span>
+        <%= link_to "Productos y Servicios", productos_servicios_path %>
+        <span><%= icon("chevron") %></span>
+        <%= link_to @producto_servicio.nombre, productos_servicio_path(@producto_servicio) %>
+        <span><%= icon("chevron") %></span>
+        <strong>
+          <%= if @mostrar_formulario_cotizacion
+                @cotizacion.persisted? ? "Editar cotización" : "Generar cotización"
+              else
+                "Ver cotización"
+              end %>
+        </strong>
+      </nav>
+      <h1>
+        <%= if @mostrar_formulario_cotizacion
+              @cotizacion.persisted? ? "Editar Cotización" : "Generar Cotización"
+            else
+              "Ver Cotización"
+            end %>
+      </h1>
+      <p>
+        <%= if @mostrar_formulario_cotizacion
+              @cotizacion.persisted? ? "Ajusta la cotización seleccionada sin crear una nueva propuesta." : "Prepara una propuesta comercial base a partir de la información, documentación y parámetros del producto o servicio."
+            else
+              "Consulta la cotización seleccionada, cambia su estado y firma cuando corresponda."
+            end %>
+      </p>
+    </div>
+    <div class="page-actions-inline">
+      <% if @cotizacion_seleccionada&.persisted? %>
+        <%= link_to "Descargar PDF", cotizacion_pdf_productos_servicio_path(@producto_servicio, cotizacion_id: @cotizacion_seleccionada.id), class: "ui-button ui-button-primary" %>
+        <% unless @cotizacion_seleccionada.firmada? %>
+          <%= link_to "Editar cotización", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: @cotizacion_seleccionada.id, modo: "editar"), class: "ui-button ui-button-secondary" %>
+        <% end %>
+        <% unless @cotizacion_seleccionada.firmada? %>
+          <%= button_to "Marcar enviada", actualizar_estado_cotizacion_path(@cotizacion_seleccionada, cotizacion: { estado: "enviada" }), method: :patch, class: "ui-button ui-button-secondary", form_class: "inline-form" %>
+          <%= button_to "Aprobar", actualizar_estado_cotizacion_path(@cotizacion_seleccionada, cotizacion: { estado: "aprobada" }), method: :patch, class: "ui-button ui-button-secondary", form_class: "inline-form" %>
+          <%= button_to "Firmar", actualizar_estado_cotizacion_path(@cotizacion_seleccionada, cotizacion: { estado: "firmada", signed_by: current_usuario&.nombre_completo }), method: :patch, class: "ui-button ui-button-primary", form_class: "inline-form" %>
+        <% end %>
+        <% if @cotizacion_seleccionada.cliente_registro.present? %>
+          <%= link_to "Expediente", expediente_cliente_path(@cotizacion_seleccionada.cliente_registro), class: "ui-button ui-button-secondary" %>
+        <% end %>
+      <% end %>
+      <%= link_to "Nueva cotización", cotizacion_productos_servicio_path(@producto_servicio, modo: "nueva"), class: "ui-button ui-button-secondary" %>
+      <%= link_to "Ver producto", productos_servicio_path(@producto_servicio), class: "ui-button ui-button-secondary" %>
+      <%= link_to "Editar producto", edit_productos_servicio_path(@producto_servicio), class: "ui-button ui-button-secondary" %>
+      <%= link_to "Volver", productos_servicios_path, class: "ui-button ui-button-secondary" %>
+    </div>
+  </div>
+
+  <div class="quote-builder-grid">
+    <% if @mostrar_formulario_cotizacion %>
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2><%= @cotizacion.persisted? ? "Editar cotización #{ @cotizacion.codigo }" : "Generar Nueva Cotización" %></h2>
+            <p><%= @cotizacion.persisted? ? "Modifica datos, ítems y estado de la cotización seleccionada." : "Completa los datos del cliente y ajusta el detalle por renglón. Puedes mezclar monedas, cargos iniciales, mensuales y recurrentes dentro de la misma propuesta." %></p>
+          </div>
+        </div>
+
+        <% if @cotizacion.errors.any? %>
+          <section class="panel form-errors">
+            <ul class="error-list">
+              <% @cotizacion.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </section>
+        <% end %>
+
+        <%= form_with model: @cotizacion,
+                      url: @cotizacion.persisted? ? cotizacion_path(@cotizacion) : cotizacion_productos_servicio_path(@producto_servicio),
+                      method: @cotizacion.persisted? ? :patch : :post,
+                      class: "company-form",
+                      data: {
+                        controller: "cotizacion-detalles",
+                        cotizacion_detalles_index_value: @cotizacion.cotizacion_detalles.size
+                      } do |form| %>
+          <div class="form-grid">
+            <div class="field-group">
+              <%= form.label :cliente_id, "Cliente registrado" %>
+              <%= form.select :cliente_id,
+                              options_for_select(@clientes.map { |cliente| ["#{cliente.nombre} · #{client_type_label(cliente)}", cliente.id] }, @cotizacion.cliente_id),
+                              { include_blank: "Selecciona un cliente" },
+                              class: "text-input" %>
+              <p class="field-help">Selecciona un cliente real para activar reglas CopeNET, expediente y proyecto automático.</p>
+            </div>
+            <div class="field-group">
+              <%= form.label :cliente, "Nombre visible en documento" %>
+              <%= form.text_field :cliente, class: "text-input", placeholder: "Nombre del cliente o empresa" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :contacto, "Contacto Comercial" %>
+              <%= form.text_field :contacto, class: "text-input", placeholder: "Nombre del contacto" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :correo, "Correo Electrónico" %>
+              <%= form.email_field :correo, class: "text-input", placeholder: "correo@cliente.com" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :telefono, "Teléfono" %>
+              <%= form.text_field :telefono, class: "text-input", placeholder: "+502 5555-5555" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :vigencia_dias, "Vigencia de la Oferta" %>
+              <%= form.number_field :vigencia_dias, class: "text-input", min: 1, step: 1 %>
+            </div>
+            <div class="field-group">
+              <%= form.label :estado, "Estado inicial" %>
+              <%= form.select :estado,
+                              options_for_select(Cotizacion::ESTADOS.map { |estado| [estado.humanize, estado] }, @cotizacion.estado),
+                              {},
+                              class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <label>Moneda principal del producto</label>
+              <div class="text-input static-field"><%= "#{moneda_simbolo_producto(@producto_servicio)} · #{moneda_nombre_producto(@producto_servicio)}" %></div>
+            </div>
+            <div class="field-group">
+              <%= form.label :precio_base, "Subtotal nominal interno" %>
+              <%= form.number_field :precio_base,
+                                    class: "text-input",
+                                    step: "0.01",
+                                    min: 0,
+                                    readonly: true,
+                                    data: { cotizacion_detalles_target: "subtotalField" } %>
+              <p class="field-help">Se conserva para control interno. La visualización comercial correcta aparece en el resumen por moneda.</p>
+            </div>
+            <div class="field-group">
+              <%= form.label :porcentaje_descuento, "Descuento Aplicado %" %>
+              <%= form.number_field :porcentaje_descuento,
+                                    class: "text-input",
+                                    step: "0.01",
+                                    min: 0,
+                                    max: 100,
+                                    placeholder: "0.00",
+                                    data: { action: "input->cotizacion-detalles#updateTotals", cotizacion_detalles_target: "discountInput" } %>
+              <p class="field-help">Si mezclas monedas, el descuento global se desactiva para evitar cálculos incorrectos.</p>
+            </div>
+            <div class="field-group field-group-full">
+              <div class="panel nested-panel cotizacion-items-panel">
+                <div class="panel-header nested-panel-header">
+                  <div>
+                    <h2>Ítems de la Cotización</h2>
+                    <p>Agrega varios conceptos con descripción y precio. El total se calcula automáticamente al final.</p>
+                  </div>
+                  <button type="button" class="ui-button ui-button-primary ui-button-compact" data-action="cotizacion-detalles#add">
+                    Agregar ítem
+                  </button>
+                </div>
+
+                <div class="cotizacion-items-summary">
+                  <article class="mini-metric-card quote-metric-card">
+                    <span>Subtotal nominal</span>
+                    <strong data-cotizacion-detalles-target="subtotalDisplay"><%= monto_producto(@producto_servicio, @cotizacion.precio_base.presence || 0) %></strong>
+                  </article>
+                  <article class="mini-metric-card quote-metric-card">
+                    <span>Descuento</span>
+                    <strong data-cotizacion-detalles-target="discountDisplay"><%= monto_producto(@producto_servicio, @cotizacion.monto_descuento.presence || 0) %></strong>
+                  </article>
+                  <article class="mini-metric-card quote-metric-card">
+                    <span>Total final</span>
+                    <strong data-cotizacion-detalles-target="finalDisplay"><%= monto_producto(@producto_servicio, @cotizacion.precio_final.presence || @cotizacion.precio_base.presence || 0) %></strong>
+                  </article>
+                </div>
+
+                <div class="currency-summary-panel">
+                  <strong>Totales por moneda</strong>
+                  <div class="currency-summary-list" data-cotizacion-detalles-target="currencySummary">
+                    <% totales_por_moneda(@cotizacion.cotizacion_detalles.reject(&:marked_for_destruction?), atributo: :applied_price, producto_servicio: @producto_servicio).each do |item| %>
+                      <span class="currency-summary-chip"><%= monto_en_moneda(item[:moneda], item[:total]) %></span>
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="cotizacion-items-list" data-cotizacion-detalles-target="list">
+                  <%= form.fields_for :cotizacion_detalles do |detalle_form| %>
+                    <%= render "cotizacion_detalle_fields", form: detalle_form %>
+                  <% end %>
+                </div>
+
+                <template data-cotizacion-detalles-target="template">
+                  <%= form.fields_for :cotizacion_detalles, CotizacionDetalle.new(moneda_id: @producto_servicio.moneda_id, recurrencia: @producto_servicio.es_recurrente? ? (@producto_servicio.recurrencia.presence || "Mensual") : "Unico", seccion_cotizacion: @producto_servicio.es_recurrente? ? "Cargo mensual" : "Cargo inicial", facturable: @producto_servicio.facturable?, catalog_price: @producto_servicio.precio_base, applied_price: @producto_servicio.precio_base, internal_cost: @producto_servicio.costo_base), child_index: "NEW_RECORD" do |detalle_form| %>
+                    <%= render "cotizacion_detalle_fields", form: detalle_form %>
+                  <% end %>
+                </template>
+              </div>
+            </div>
+            <div class="field-group field-group-full">
+              <%= form.label :alcance_personalizado, "Alcance o Enfoque Personalizado" %>
+              <%= form.text_area :alcance_personalizado, rows: 4, class: "text-input text-area", placeholder: "Describe el enfoque específico de la propuesta para este cliente, alcance, cobertura o combinación comercial." %>
+            </div>
+            <div class="field-group field-group-full">
+              <%= form.label :observaciones, "Observaciones de la Cotización" %>
+              <%= form.text_area :observaciones, rows: 4, class: "text-input text-area", placeholder: "Agrega observaciones, condiciones comerciales, exclusiones o notas relevantes para esta propuesta." %>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <%= form.submit @cotizacion.persisted? ? "Guardar cambios" : "Generar Cotización", class: "ui-button ui-button-primary submit-button" %>
+            <% if @cotizacion.persisted? %>
+              <%= link_to "Cancelar edición", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: @cotizacion.id), class: "ui-button ui-button-secondary" %>
+            <% end %>
+          </div>
+        <% end %>
+      </section>
+    <% end %>
+
+    <aside class="panel quote-highlight-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Resumen Económico</h2>
+          <p><%= @cotizacion_seleccionada&.persisted? ? "Cotización seleccionada #{ @cotizacion_seleccionada.codigo }." : "Base comercial del concepto seleccionado." %></p>
+        </div>
+      </div>
+
+      <div class="summary-stack">
+        <div class="summary-card">
+          <span>Subtotal nominal</span>
+          <strong><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.precio_base) : monto_producto(@producto_servicio, @producto_servicio.precio_base) %></strong>
+        </div>
+        <div class="summary-card">
+          <span>Descuento aplicado</span>
+          <strong><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.monto_descuento) : monto_producto(@producto_servicio, 0) %></strong>
+        </div>
+        <div class="summary-card">
+          <span>Total interno final</span>
+          <strong><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.precio_final) : monto_producto(@producto_servicio, @producto_servicio.precio_base) %></strong>
+        </div>
+        <div class="summary-card">
+          <span>Total facturable</span>
+          <strong><%= number_to_currency((@cotizacion_seleccionada || @cotizacion).total_facturable, unit: "#{moneda_simbolo_producto(@producto_servicio)} ") %></strong>
+        </div>
+        <div class="summary-card">
+          <span>No cobrado CopeNET</span>
+          <strong><%= number_to_currency((@cotizacion_seleccionada || @cotizacion).total_no_cobrado_copenet, unit: "#{moneda_simbolo_producto(@producto_servicio)} ") %></strong>
+        </div>
+        <div class="summary-card">
+          <span>Costo base principal</span>
+          <strong><%= monto_producto(@producto_servicio, total_costos_producto(@producto_servicio)) %></strong>
+        </div>
+        <div class="summary-card">
+          <span>Cotizaciones generadas</span>
+          <strong><%= @cotizaciones.size %></strong>
+        </div>
+        <div class="summary-card">
+          <span>Totales por moneda</span>
+          <strong><%= @cotizacion_seleccionada&.present? ? resumen_totales_por_moneda(@cotizacion_seleccionada.cotizacion_detalles, atributo: :precio, producto_servicio: @producto_servicio) : resumen_totales_por_moneda(@cotizacion.cotizacion_detalles, atributo: :precio, producto_servicio: @producto_servicio) %></strong>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Detalle de Ítems Cotizados</h2>
+        <p>Desglose comercial de los conceptos incluidos en la propuesta enviada al cliente.</p>
+      </div>
+    </div>
+
+    <% if @cotizacion_seleccionada&.cotizacion_detalles&.any? %>
+      <div class="table-shell quote-table-shell">
+        <table class="data-table quote-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Descripción</th>
+              <th>Catálogo</th>
+              <th>Aplicado</th>
+              <th>Costo interno</th>
+              <th>Sección</th>
+              <th>Recurrencia</th>
+              <th>Regla</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @cotizacion_seleccionada.cotizacion_detalles.each_with_index do |detalle, index| %>
+              <tr>
+                <td><strong><%= index + 1 %></strong></td>
+                <td><%= detalle.descripcion %></td>
+                <td class="quote-amount"><%= monto_en_moneda(moneda_para_registro(detalle, @producto_servicio), detalle.catalog_price) %></td>
+                <td class="quote-amount"><%= monto_en_moneda(moneda_para_registro(detalle, @producto_servicio), detalle.applied_price) %></td>
+                <td class="quote-amount"><%= monto_en_moneda(moneda_para_registro(detalle, @producto_servicio), detalle.internal_cost) %></td>
+                <td><%= detalle.seccion_cotizacion.presence || "-" %></td>
+                <td><%= detalle.recurrencia.presence || "-" %></td>
+                <td><%= detalle.price_rule_applied.presence || "-" %></td>
+              </tr>
+            <% end %>
+            <tr>
+              <td colspan="7"><strong>Totales por moneda</strong></td>
+              <td class="quote-amount"><strong><%= resumen_totales_por_moneda(@cotizacion_seleccionada.cotizacion_detalles, atributo: :applied_price, producto_servicio: @producto_servicio) %></strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="empty-inline-state">
+        <strong>No hay ítems detallados en esta cotización.</strong>
+        <span>Agrega descripciones y precios para desglosar mejor la propuesta comercial.</span>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Base Comercial para la Propuesta</h2>
+        <p>Documento guía para que un operador entienda qué presentar, cómo explicarlo y qué validar para avanzar la venta.</p>
+      </div>
+    </div>
+
+    <div class="document-reading-layout">
+      <section class="document-section-card">
+        <div class="document-section-header">
+          <span class="document-section-step">01</span>
+          <div>
+            <h3>Qué problema resuelve esta propuesta</h3>
+            <p>Ayuda al operador a explicar por qué este producto o servicio es relevante para el cliente.</p>
+          </div>
+        </div>
+        <div class="document-paragraph-card">
+          <p><%= @producto_servicio.problema_resuelve.presence || "No se ha documentado todavía el problema principal que resuelve este producto o servicio." %></p>
+        </div>
+      </section>
+
+      <section class="document-section-card">
+        <div class="document-section-header">
+          <span class="document-section-step">02</span>
+          <div>
+            <h3>Cómo se usa o en qué casos aplica</h3>
+            <p>Describe escenarios prácticos para que el operador pueda explicarlo con claridad.</p>
+          </div>
+        </div>
+        <div class="document-paragraph-card">
+          <p><%= @producto_servicio.caso_uso.presence || "No se ha documentado todavía un caso de uso para este producto o servicio." %></p>
+        </div>
+      </section>
+
+      <section class="document-section-card">
+        <div class="document-section-header">
+          <span class="document-section-step">03</span>
+          <div>
+            <h3>Qué debe incluir la cotización</h3>
+            <p>Contenido que debe aparecer en la propuesta para que el cliente entienda el alcance ofrecido.</p>
+          </div>
+        </div>
+        <div class="document-paragraph-card">
+          <p><%= @producto_servicio.incluye_cotizacion.presence || "No se ha definido todavía qué debe incluir la cotización de este concepto." %></p>
+        </div>
+      </section>
+
+      <section class="document-section-card">
+        <div class="document-section-header">
+          <span class="document-section-step">04</span>
+          <div>
+            <h3>Qué se necesita para cerrar la venta</h3>
+            <p>Checklist comercial para que el operador sepa qué validar antes del cierre.</p>
+          </div>
+        </div>
+        <div class="document-paragraph-card">
+          <p><%= @producto_servicio.requisitos_cierre_venta.presence || "No se han documentado todavía los requisitos para cierre de venta." %></p>
+        </div>
+      </section>
+
+      <% if @cotizacion_seleccionada&.alcance_personalizado.present? %>
+        <section class="document-section-card">
+          <div class="document-section-header">
+            <span class="document-section-step">05</span>
+            <div>
+              <h3>Alcance personalizado para este cliente</h3>
+              <p>Ajuste específico de la propuesta según el caso del prospecto actual.</p>
+            </div>
+          </div>
+          <div class="document-paragraph-card">
+            <p><%= @cotizacion_seleccionada.alcance_personalizado %></p>
+          </div>
+        </section>
+      <% end %>
+      <% if @cotizacion_seleccionada&.observaciones.present? %>
+        <section class="document-section-card">
+          <div class="document-section-header">
+            <span class="document-section-step">06</span>
+            <div>
+              <h3>Observaciones adicionales</h3>
+              <p>Notas relevantes para presentar o negociar esta propuesta comercial.</p>
+            </div>
+          </div>
+          <div class="document-paragraph-card">
+            <p><%= @cotizacion_seleccionada.observaciones %></p>
+          </div>
+        </section>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Estructura de Costos</h2>
+        <p>Base interna para revisar rentabilidad y explicar cómo se compone el costo del producto o servicio.</p>
+      </div>
+    </div>
+
+    <% if @producto_servicio.producto_servicio_costos.any? %>
+      <div class="table-shell quote-table-shell">
+        <table class="data-table quote-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Nombre</th>
+              <th>Recurrencia</th>
+              <th>Moneda</th>
+              <th>Descripción</th>
+              <th>Costo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @producto_servicio.producto_servicio_costos.each do |costo| %>
+              <tr>
+                <td><strong><%= costo.tipo_costo %></strong></td>
+                <td><%= costo.nombre %></td>
+                <td><%= costo.recurrencia %></td>
+                <td><%= costo.moneda&.simbolo || @producto_servicio.moneda&.simbolo || "-" %></td>
+                <td><%= costo.descripcion.presence || "-" %></td>
+                <td class="quote-amount"><%= monto_en_moneda(moneda_para_registro(costo, @producto_servicio), costo.monto) %></td>
+              </tr>
+            <% end %>
+            <tr>
+              <td colspan="5"><strong>Totales por moneda</strong></td>
+              <td class="quote-amount"><strong><%= resumen_totales_por_moneda(@producto_servicio.producto_servicio_costos, atributo: :monto, producto_servicio: @producto_servicio) %></strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="empty-inline-state">
+        <strong>No hay costos detallados registrados.</strong>
+        <span>La cotización seguirá usando el costo consolidado actual hasta que agregues componentes de costo al catálogo.</span>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Listado de Cotizaciones Generadas</h2>
+        <p>Historial de propuestas creadas para este producto o servicio.</p>
+      </div>
+      <%= render "shared/badge", text: "#{@cotizaciones.size} cotizaciones", tone: "info" %>
+    </div>
+
+    <% if @cotizaciones.any? %>
+      <div class="table-shell">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Cliente</th>
+              <th>Contacto</th>
+              <th>Totales por moneda</th>
+              <th>No cobrado CopeNET</th>
+              <th>Descuento</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @cotizaciones.each do |cotizacion| %>
+              <tr>
+                <td><strong><%= cotizacion.codigo %></strong></td>
+                <td><%= cotizacion[:cliente] %></td>
+                <td><%= cotizacion.contacto %></td>
+                <td><%= resumen_totales_por_moneda(cotizacion.cotizacion_detalles, atributo: :applied_price, producto_servicio: @producto_servicio) %></td>
+                <td><%= number_to_currency(cotizacion.total_no_cobrado_copenet, unit: "#{moneda_simbolo_producto(@producto_servicio)} ") %></td>
+                <td><%= cotizacion.porcentaje_descuento.present? ? "#{number_with_precision(cotizacion.porcentaje_descuento, precision: 2)}%" : "-" %></td>
+                <td>
+                  <% if cotizacion.firmada? %>
+                    <%= cotizacion.estado.humanize %>
+                  <% else %>
+                    <%= form_with url: actualizar_estado_cotizacion_path(cotizacion), method: :patch, class: "inline-form" do %>
+                      <%= select_tag "cotizacion[estado]",
+                                     options_for_select(Cotizacion::ESTADOS.map { |estado| [estado.humanize, estado] }, cotizacion.estado),
+                                     class: "filter-select" %>
+                      <%= submit_tag "Cambiar", class: "table-link button-link" %>
+                    <% end %>
+                  <% end %>
+                </td>
+                <td><%= l(cotizacion.created_at, format: :short) rescue cotizacion.created_at.strftime("%d/%m/%Y %H:%M") %></td>
+                <td class="table-actions">
+                  <%= link_to "Ver", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: cotizacion.id), class: "table-link" %>
+                  <% unless cotizacion.firmada? %>
+                    <%= link_to "Editar", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: cotizacion.id, modo: "editar"), class: "table-link" %>
+                  <% end %>
+                  <%= link_to "PDF", cotizacion_pdf_productos_servicio_path(@producto_servicio, cotizacion_id: cotizacion.id), class: "table-link" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="empty-inline-state">
+        <strong>Aún no hay cotizaciones generadas.</strong>
+        <span>Completa el formulario superior y guarda la primera cotización para este producto o servicio.</span>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Tabla Base de Cotización</h2>
+        <p>Resumen económico y operativo que puede convertirse luego en una cotización formal del sistema.</p>
+      </div>
+    </div>
+
+    <div class="table-shell quote-table-shell">
+      <table class="data-table quote-table">
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Detalle</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Producto / Servicio</strong></td>
+            <td>Concepto base de la propuesta.</td>
+            <td><%= @producto_servicio.nombre %></td>
+          </tr>
+          <tr>
+            <td><strong>Cliente / Prospecto</strong></td>
+            <td>Entidad objetivo de la cotización.</td>
+            <td><%= @cotizacion_seleccionada&.[](:cliente).presence || "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Tipo de cliente</strong></td>
+            <td>Clasificación que define reglas CopeNET y comportamiento del expediente.</td>
+            <td><%= @cotizacion_seleccionada&.cliente_registro&.client_type&.humanize || "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Contacto</strong></td>
+            <td>Responsable comercial del lado del cliente.</td>
+            <td><%= @cotizacion_seleccionada&.contacto.presence || "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Empresa que factura</strong></td>
+            <td>Entidad emisora asociada al producto.</td>
+            <td><%= @producto_servicio.company&.commercial_name || @producto_servicio.company&.legal_name || "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Totales por moneda</strong></td>
+            <td>Divisa comercial separada por renglón de la propuesta.</td>
+            <td><%= @cotizacion_seleccionada&.present? ? resumen_totales_por_moneda(@cotizacion_seleccionada.cotizacion_detalles, atributo: :precio, producto_servicio: @producto_servicio) : resumen_totales_por_moneda(@cotizacion.cotizacion_detalles, atributo: :precio, producto_servicio: @producto_servicio) %></td>
+          </tr>
+          <tr>
+            <td><strong>Subtotal de ítems</strong></td>
+            <td>Suma de todos los conceptos agregados a la cotización.</td>
+            <td class="quote-amount"><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.precio_base) : monto_producto(@producto_servicio, @producto_servicio.precio_base) %></td>
+          </tr>
+          <tr>
+            <td><strong>Descuento aplicado</strong></td>
+            <td>Porcentaje negociado para la cotización.</td>
+            <td><%= @cotizacion_seleccionada&.porcentaje_descuento.present? ? "#{number_with_precision(@cotizacion_seleccionada.porcentaje_descuento, precision: 2)}%" : "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Monto de descuento</strong></td>
+            <td>Valor descontado del precio cotizado.</td>
+            <td class="quote-amount"><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.monto_descuento) : monto_producto(@producto_servicio, 0) %></td>
+          </tr>
+          <tr>
+            <td><strong>Precio final</strong></td>
+            <td>Valor final ofrecido al cliente.</td>
+            <td class="quote-amount"><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.precio_final) : monto_producto(@producto_servicio, @producto_servicio.precio_base) %></td>
+          </tr>
+          <tr>
+            <td><strong>Total no cobrado por regla CopeNET</strong></td>
+            <td>Valor entregado sin costo que debe verse en expediente pero no generar cobro.</td>
+            <td class="quote-amount"><%= number_to_currency((@cotizacion_seleccionada || @cotizacion).total_no_cobrado_copenet, unit: "#{moneda_simbolo_producto(@producto_servicio)} ") %></td>
+          </tr>
+          <tr>
+            <td><strong>Modelo de cobro</strong></td>
+            <td>Forma comercial de monetización.</td>
+            <td><%= @producto_servicio.modelo_cobro.presence || "-" %></td>
+          </tr>
+          <tr>
+            <td><strong>Vigencia de la oferta</strong></td>
+            <td>Duración estimada de la propuesta enviada.</td>
+            <td><%= @cotizacion_seleccionada&.vigencia_dias.present? ? "#{@cotizacion_seleccionada.vigencia_dias} días" : "-" %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Documentación de Respaldo</h2>
+        <p>Archivos que pueden acompañar la propuesta comercial o servir de soporte técnico.</p>
+      </div>
+    </div>
+
+    <% if @producto_servicio.documentos_comerciales.attached? %>
+      <div class="document-list">
+        <% @producto_servicio.documentos_comerciales.each do |documento| %>
+          <a href="<%= url_for(documento) %>" class="document-item document-item-link" target="_blank" rel="noopener">
+            <span class="document-item-icon"><%= icon("report") %></span>
+            <div class="document-item-copy">
+              <strong><%= documento.filename %></strong>
+              <small><%= etiqueta_documento_producto(documento) %></small>
+            </div>
+          </a>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="empty-inline-state">
+        <strong>No hay documentos adjuntos.</strong>
+        <span>Sube documentación desde la edición del producto para complementar esta base de cotización.</span>
+      </div>
+    <% end %>
+  </section>
+</section>

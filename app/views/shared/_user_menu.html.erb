@@ -3,8 +3,9 @@
     <div class="user-avatar"><%= current_usuario&.nombre.to_s.first&.upcase || "C" %><%= current_usuario&.apellido.to_s.first&.upcase || "E" %></div>
     <div class="user-meta">
       <strong><%= [current_usuario&.nombre, current_usuario&.apellido].compact.join(" ").presence || "Invitado" %></strong>
-      <span><%= current_usuario&.root? ? "Usuario root" : current_usuario&.roles&.map(&:nombre)&.join(", ").presence || "Sin rol" %></span>
+      <span><%= current_usuario&.email.presence || (current_usuario&.root? ? "Usuario root" : current_usuario&.roles&.map(&:nombre)&.join(", ").presence || "Sin rol") %></span>
     </div>
+    <span class="user-menu-chevron"><%= icon("chevron_down") %></span>
   </button>
 
   <div class="user-menu-dropdown">

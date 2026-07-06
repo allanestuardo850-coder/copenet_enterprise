@@ -1,0 +1,71 @@
+current directory: /Users/usuario/Documents/proyectos/copenet_enterprise/gems/date-3.5.1/ext/date
+/Users/usuario/.rbenv/versions/3.3.8/bin/ruby extconf.rb
+checking for rb_category_warn()... yes
+checking for timezone in time.h with  -Werror... no
+checking for altzone in time.h with  -Werror... no
+creating Makefile
+
+current directory: /Users/usuario/Documents/proyectos/copenet_enterprise/gems/date-3.5.1/ext/date
+make DESTDIR\= sitearchdir\=./.gem.20260705-24379-c838ig sitelibdir\=./.gem.20260705-24379-c838ig clean
+
+current directory: /Users/usuario/Documents/proyectos/copenet_enterprise/gems/date-3.5.1/ext/date
+make DESTDIR\= sitearchdir\=./.gem.20260705-24379-c838ig sitelibdir\=./.gem.20260705-24379-c838ig
+compiling date_core.c
+In file included from date_core.c:5:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby.h:38:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/ruby.h:28:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/arithmetic/char.h:29:
+/Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/core/rstring.h:398:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  398 |         struct RString retval;
+      |                        ^
+/Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+compiling date_parse.c
+In file included from date_parse.c:5:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby.h:38:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/ruby.h:28:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/arithmetic/char.h:29:
+/Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/core/rstring.h:398:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  398 |         struct RString retval;
+      |                        ^
+/Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+compiling date_strftime.c
+In file included from date_strftime.c:7:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/ruby.h:28:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/arithmetic/char.h:29:
+/Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/core/rstring.h:398:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  398 |         struct RString retval;
+      |                        ^
+/Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+compiling date_strptime.c
+In file included from date_strptime.c:5:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby.h:38:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/ruby.h:28:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/arithmetic.h:24:
+In file included from /Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/arithmetic/char.h:29:
+/Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/core/rstring.h:398:24: warning: default initialization of an object of type 'struct RString' with const member leaves the object uninitialized [-Wdefault-const-init-field-unsafe]
+  398 |         struct RString retval;
+      |                        ^
+/Users/usuario/.rbenv/versions/3.3.8/include/ruby-3.3.0/ruby/internal/core/rbasic.h:88:17: note: member 'klass' declared 'const' here
+   88 |     const VALUE klass;
+      |                 ^
+1 warning generated.
+linking shared-object date_core.bundle
+
+current directory: /Users/usuario/Documents/proyectos/copenet_enterprise/gems/date-3.5.1/ext/date
+make DESTDIR\= sitearchdir\=./.gem.20260705-24379-c838ig sitelibdir\=./.gem.20260705-24379-c838ig install
+/opt/homebrew/bin/ginstall -c -m 0755 date_core.bundle ./.gem.20260705-24379-c838ig
+
+current directory: /Users/usuario/Documents/proyectos/copenet_enterprise/gems/date-3.5.1/ext/date
+make DESTDIR\= sitearchdir\=./.gem.20260705-24379-c838ig sitelibdir\=./.gem.20260705-24379-c838ig clean

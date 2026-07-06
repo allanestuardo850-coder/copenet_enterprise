@@ -1,0 +1,298 @@
+<section class="page-section">
+  <div class="page-heading">
+    <div class="page-heading-copy">
+      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+        <%= link_to "Dashboard", dashboard_path %>
+        <span><%= icon("chevron") %></span>
+        <strong>Parámetros</strong>
+      </nav>
+      <h1>Branding y Personalización</h1>
+      <p>Configura nombre de la aplicación, mensajes, logos y colores base para personalizar toda la experiencia visual.</p>
+    </div>
+  </div>
+
+  <% if @configuracion_sistema.errors.any? %>
+    <section class="panel form-errors">
+      <ul class="error-list">
+        <% @configuracion_sistema.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <%= form_with model: @configuracion_sistema, url: parametros_path, method: :patch, class: "company-form" do |form| %>
+    <div class="form-actions form-actions-top">
+      <%= form.submit "Guardar branding", class: "ui-button ui-button-primary submit-button" %>
+      <%= link_to "Volver", dashboard_path, class: "ui-button ui-button-secondary" %>
+    </div>
+
+    <section class="panel form-section">
+      <div class="panel-header">
+        <div>
+          <h2>Identidad Principal</h2>
+          <p>Nombre comercial visible en sidebar, login y título general del sistema.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field-group">
+          <%= form.label :nombre_plataforma, "Nombre de la plataforma" %>
+          <%= form.text_field :nombre_plataforma, class: "text-input" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :nombre_principal, "Nombre principal" %>
+          <%= form.text_field :nombre_principal, class: "text-input" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :nombre_secundario, "Nombre secundario" %>
+          <%= form.text_field :nombre_secundario, class: "text-input" %>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel form-section">
+      <div class="panel-header">
+        <div>
+          <h2>Mensajes del Sistema</h2>
+          <p>Controla el mensaje del login, la tarjeta promocional del menú lateral y la marca del footer.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field-group">
+          <%= form.label :login_eyebrow, "Etiqueta del login" %>
+          <%= form.text_field :login_eyebrow, class: "text-input" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :placeholder_busqueda, "Placeholder de búsqueda" %>
+          <%= form.text_field :placeholder_busqueda, class: "text-input" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :loader_mensaje, "Mensaje del loader" %>
+          <%= form.text_field :loader_mensaje, class: "text-input" %>
+        </div>
+        <div class="field-group field-group-full">
+          <%= form.label :login_titulo, "Título del login" %>
+          <%= form.text_field :login_titulo, class: "text-input" %>
+        </div>
+        <div class="field-group field-group-full">
+          <%= form.label :login_subtitulo, "Subtítulo del login" %>
+          <%= form.text_area :login_subtitulo, rows: 3, class: "text-input text-area" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :promo_titulo, "Título de tarjeta lateral" %>
+          <%= form.text_field :promo_titulo, class: "text-input" %>
+        </div>
+        <div class="field-group field-group-full">
+          <%= form.label :promo_descripcion, "Descripción de tarjeta lateral" %>
+          <%= form.text_area :promo_descripcion, rows: 3, class: "text-input text-area" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :promo_boton_texto, "Texto del botón lateral" %>
+          <%= form.text_field :promo_boton_texto, class: "text-input" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :promo_boton_url, "URL del botón lateral" %>
+          <%= form.text_field :promo_boton_url, class: "text-input", placeholder: "#" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :footer_logo_texto, "Texto del logo de footer" %>
+          <%= form.text_field :footer_logo_texto, class: "text-input" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :footer_logo_etiqueta, "Etiqueta accesible del footer" %>
+          <%= form.text_field :footer_logo_etiqueta, class: "text-input" %>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel form-section">
+      <div class="panel-header">
+        <div>
+          <h2>Plantilla Comercial PDF</h2>
+          <p>Personaliza el documento de cotización con mensajes, encabezado y firma alineados a la marca.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field-group">
+          <%= form.label :pdf_titulo, "Título PDF" %>
+          <%= form.text_field :pdf_titulo, class: "text-input" %>
+        </div>
+        <div class="field-group field-group-full">
+          <%= form.label :pdf_subtitulo, "Subtítulo PDF" %>
+          <%= form.text_field :pdf_subtitulo, class: "text-input" %>
+        </div>
+        <div class="field-group field-group-full">
+          <%= form.label :pdf_intro_texto, "Texto de apertura" %>
+          <%= form.text_area :pdf_intro_texto, rows: 4, class: "text-input text-area" %>
+        </div>
+        <div class="field-group field-group-full">
+          <%= form.label :pdf_cierre_texto, "Texto de cierre" %>
+          <%= form.text_area :pdf_cierre_texto, rows: 4, class: "text-input text-area" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :pdf_firma_nombre, "Nombre de firma" %>
+          <%= form.text_field :pdf_firma_nombre, class: "text-input" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :pdf_firma_cargo, "Cargo de firma" %>
+          <%= form.text_field :pdf_firma_cargo, class: "text-input" %>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel form-section">
+      <div class="panel-header">
+        <div>
+          <h2>Paleta de Marca</h2>
+          <p>Define colores globales para botones, sidebar, acentos y elementos principales.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="field-group">
+          <%= form.label :color_primario, "Color primario" %>
+          <%= form.text_field :color_primario, class: "text-input", placeholder: "#2458e6" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :color_secundario, "Color secundario" %>
+          <%= form.text_field :color_secundario, class: "text-input", placeholder: "#0b2d66" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :color_acento, "Color acento" %>
+          <%= form.text_field :color_acento, class: "text-input", placeholder: "#6eb8ff" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :color_sidebar_desde, "Sidebar desde" %>
+          <%= form.text_field :color_sidebar_desde, class: "text-input", placeholder: "#0a2146" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :color_sidebar_hasta, "Sidebar hasta" %>
+          <%= form.text_field :color_sidebar_hasta, class: "text-input", placeholder: "#08172e" %>
+        </div>
+        <div class="field-group">
+          <%= form.label :color_boton_texto, "Texto de botones" %>
+          <%= form.text_field :color_boton_texto, class: "text-input", placeholder: "#ffffff" %>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel form-section">
+      <div class="panel-header">
+        <div>
+          <h2>Logos y Recursos Visuales</h2>
+          <p>Sube los archivos que desees usar en sidebar, login y footer. Si no subes uno, se usa la marca textual por defecto.</p>
+        </div>
+      </div>
+
+      <div class="branding-assets-grid">
+        <article class="panel nested-panel branding-asset-card">
+          <div class="panel-header nested-panel-header">
+            <div>
+              <h2>Logo principal</h2>
+              <p>Visible en el menú lateral.</p>
+            </div>
+          </div>
+          <% if @configuracion_sistema.logo_principal.attached? %>
+            <div class="branding-preview">
+              <%= image_tag @configuracion_sistema.logo_principal, class: "branding-preview-image", alt: "Logo principal" %>
+            </div>
+          <% end %>
+          <div class="field-group">
+            <%= form.file_field :logo_principal, class: "text-input" %>
+          </div>
+          <div class="field-group checkbox-group">
+            <label class="checkbox-label">
+              <%= form.check_box :eliminar_logo_principal, {}, "1", "0" %>
+              <span>Eliminar logo principal actual</span>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel nested-panel branding-asset-card">
+          <div class="panel-header nested-panel-header">
+            <div>
+              <h2>Logo de login</h2>
+              <p>Visible en la pantalla pública de acceso.</p>
+            </div>
+          </div>
+          <% if @configuracion_sistema.logo_login.attached? %>
+            <div class="branding-preview">
+              <%= image_tag @configuracion_sistema.logo_login, class: "branding-preview-image", alt: "Logo de login" %>
+            </div>
+          <% end %>
+          <div class="field-group">
+            <%= form.file_field :logo_login, class: "text-input" %>
+          </div>
+          <div class="field-group checkbox-group">
+            <label class="checkbox-label">
+              <%= form.check_box :eliminar_logo_login, {}, "1", "0" %>
+              <span>Eliminar logo de login actual</span>
+            </label>
+          </div>
+        </article>
+
+        <article class="panel nested-panel branding-asset-card">
+          <div class="panel-header nested-panel-header">
+            <div>
+              <h2>Logo de footer</h2>
+              <p>Visible en el bloque inferior del sidebar.</p>
+            </div>
+          </div>
+          <% if @configuracion_sistema.logo_footer.attached? %>
+            <div class="branding-preview">
+              <%= image_tag @configuracion_sistema.logo_footer, class: "branding-preview-image", alt: "Logo de footer" %>
+            </div>
+          <% end %>
+          <div class="field-group">
+            <%= form.file_field :logo_footer, class: "text-input" %>
+          </div>
+          <div class="field-group checkbox-group">
+            <label class="checkbox-label">
+              <%= form.check_box :eliminar_logo_footer, {}, "1", "0" %>
+              <span>Eliminar logo de footer actual</span>
+            </label>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel form-section">
+      <div class="panel-header">
+        <div>
+          <h2>Vista Previa de Marca</h2>
+          <p>Resumen inmediato de textos y colores aplicados al sistema, al loader y a la cotización PDF.</p>
+        </div>
+      </div>
+
+      <div class="branding-preview-grid">
+        <article class="branding-preview-card">
+          <span class="branding-preview-label">Aplicación</span>
+          <strong><%= @configuracion_sistema.nombre_plataforma.presence || "Copenet Enterprise" %></strong>
+          <p><%= @configuracion_sistema.placeholder_busqueda.presence || "Buscar empresas, cuentas o reportes" %></p>
+          <div class="branding-preview-swatches">
+            <span class="branding-swatch" style="background: <%= @configuracion_sistema.color_primario.presence || '#2458e6' %>;"></span>
+            <span class="branding-swatch" style="background: <%= @configuracion_sistema.color_secundario.presence || '#0b2d66' %>;"></span>
+            <span class="branding-swatch" style="background: <%= @configuracion_sistema.color_acento.presence || '#6eb8ff' %>;"></span>
+          </div>
+        </article>
+
+        <article class="branding-preview-card">
+          <span class="branding-preview-label">Loader y Login</span>
+          <strong><%= @configuracion_sistema.nombre_principal.presence || "COPENET" %></strong>
+          <p><%= @configuracion_sistema.loader_mensaje.presence || "Cargando plataforma..." %></p>
+          <small><%= @configuracion_sistema.login_titulo.presence || "Control empresarial con una base moderna y segura" %></small>
+        </article>
+
+        <article class="branding-preview-card">
+          <span class="branding-preview-label">PDF Comercial</span>
+          <strong><%= @configuracion_sistema.pdf_titulo.presence || "Propuesta Comercial Autorizable" %></strong>
+          <p><%= @configuracion_sistema.pdf_subtitulo.presence || "Documento comercial generado desde el catálogo maestro del servicio." %></p>
+          <small><%= @configuracion_sistema.pdf_firma_nombre.presence || "Equipo Comercial Copenet" %> · <%= @configuracion_sistema.pdf_firma_cargo.presence || "Dirección Comercial" %></small>
+        </article>
+      </div>
+    </section>
+  <% end %>
+</section>

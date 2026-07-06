@@ -1,9 +1,25 @@
 <section class="login-shell">
   <div class="login-brand-panel">
-    <div class="login-brand-mark">C</div>
-    <p class="eyebrow">Copenet Enterprise</p>
-    <h1>Control empresarial con una base moderna y segura</h1>
-    <p>Plataforma empresarial para administración, costos, cobros y control operativo.</p>
+    <div class="login-particles" aria-hidden="true">
+      <span class="particle particle-1"></span>
+      <span class="particle particle-2"></span>
+      <span class="particle particle-3"></span>
+      <span class="particle particle-4"></span>
+      <span class="particle particle-5"></span>
+      <span class="particle particle-6"></span>
+    </div>
+    <div class="login-orbit login-orbit-a" aria-hidden="true"></div>
+    <div class="login-orbit login-orbit-b" aria-hidden="true"></div>
+    <div class="login-brand-mark">
+      <% if (logo_login = branding_image(:logo_login, css_class: "login-brand-image", alt: branding_texto(:nombre_plataforma, "Copenet Enterprise"))).present? %>
+        <%= logo_login %>
+      <% else %>
+        <%= branding_texto(:nombre_principal, "COPENET").to_s.first %>
+      <% end %>
+    </div>
+    <p class="eyebrow"><%= branding_texto(:login_eyebrow, "Copenet Enterprise") %></p>
+    <h1><%= branding_texto(:login_titulo, "Control empresarial con una base moderna y segura") %></h1>
+    <p><%= branding_texto(:login_subtitulo, "Plataforma empresarial para administración, costos, cobros y control operativo.") %></p>
     <div class="login-pattern"></div>
   </div>
 

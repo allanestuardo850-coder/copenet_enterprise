@@ -1,0 +1,124 @@
+<section class="page-section expediente-page" data-controller="tabs" data-tabs-default-value="<%= @tab_activa.presence || "resumen" %>">
+  <div class="page-heading">
+    <div class="page-heading-copy">
+      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+        <%= link_to "Dashboard", dashboard_path %>
+        <span><%= icon("chevron") %></span>
+        <%= link_to "Clientes", clientes_path %>
+        <span><%= icon("chevron") %></span>
+        <%= link_to @cliente.nombre, cliente_path(@cliente) %>
+        <span><%= icon("chevron") %></span>
+        <strong>Expediente</strong>
+      </nav>
+      <h1><%= @expediente_cliente.titulo %></h1>
+      <p>Consola previa a facturación para entender el estado comercial, documental y operativo del cliente.</p>
+    </div>
+
+    <div class="page-heading-side">
+      <div class="user-heading-meta">
+        <%= render "shared/badge", text: @cliente.activo? ? "Cliente activo" : "Cliente inactivo", tone: @cliente.activo? ? "success" : "warning" %>
+        <%= render "shared/badge", text: client_type_label(@cliente), tone: @cliente.is_copenet_client? ? "primary" : "info" %>
+        <%= render "shared/badge", text: @expediente_cliente.estado_operativo, tone: tono_estado_expediente(@expediente_cliente) %>
+      </div>
+
+      <div class="page-actions-inline">
+        <%= link_to "Volver al cliente", cliente_path(@cliente), class: "ui-button ui-button-secondary" %>
+        <%= link_to "Editar cliente", edit_cliente_path(@cliente), class: "ui-button ui-button-secondary" %>
+        <%= link_to "Documentos", expediente_cliente_path(@cliente, tab: "documentos"), class: "ui-button ui-button-primary" %>
+      </div>
+    </div>
+  </div>
+
+  <section class="panel user-profile-strip">
+    <div class="user-profile-strip-main">
+      <div class="user-profile-avatar"><%= @cliente.nombre.to_s.first(2).upcase %></div>
+      <div class="user-profile-copy">
+        <strong><%= @cliente.nombre %></strong>
+        <span><%= @cliente.email.presence || "Correo pendiente" %></span>
+      </div>
+    </div>
+
+    <div class="user-profile-metrics expediente-hero-metrics">
+      <article class="mini-metric-card">
+        <span>Cotizaciones</span>
+        <strong><%= @cotizaciones.size %></strong>
+      </article>
+      <article class="mini-metric-card">
+        <span>Documentos</span>
+        <strong><%= @expediente_cliente.total_documentos %></strong>
+      </article>
+      <article class="mini-metric-card">
+        <span>Proyectos</span>
+        <strong><%= @proyectos.size %></strong>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel product-tabs-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Vista del expediente</h2>
+        <p>Navega por áreas funcionales sin perder el contexto del cliente.</p>
+      </div>
+      <%= render "shared/badge", text: "Prefacturación", tone: "info" %>
+    </div>
+
+    <div class="product-tabs" role="tablist" aria-label="Secciones del expediente del cliente">
+      <button type="button" class="product-tab is-active" data-tabs-target="tab" data-tab-id="resumen" data-action="tabs#switch" role="tab" aria-selected="true">
+        <span class="product-tab-accent product-tab-accent-blue"></span>
+        <span class="product-tab-icon"><%= icon("users") %></span>
+        <span class="product-tab-copy">
+          <strong>Resumen</strong>
+          <small>Perfil, estado y preparación</small>
+        </span>
+        <span class="product-tab-step">01</span>
+      </button>
+
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="cotizaciones" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-violet"></span>
+        <span class="product-tab-icon"><%= icon("receipt") %></span>
+        <span class="product-tab-copy">
+          <strong>Cotizaciones</strong>
+          <small>Estado comercial y montos</small>
+        </span>
+        <span class="product-tab-step">02</span>
+      </button>
+
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="documentos" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-green"></span>
+        <span class="product-tab-icon"><%= icon("report") %></span>
+        <span class="product-tab-copy">
+          <strong>Documentos</strong>
+          <small>Archivos del expediente y soporte</small>
+        </span>
+        <span class="product-tab-step">03</span>
+      </button>
+
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="proyectos" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-cyan"></span>
+        <span class="product-tab-icon"><%= icon("contract") %></span>
+        <span class="product-tab-copy">
+          <strong>Proyectos</strong>
+          <small>Ejecución originada por firma</small>
+        </span>
+        <span class="product-tab-step">04</span>
+      </button>
+
+      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="actividad" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="product-tab-accent product-tab-accent-amber"></span>
+        <span class="product-tab-icon"><%= icon("dashboard") %></span>
+        <span class="product-tab-copy">
+          <strong>Actividad</strong>
+          <small>Eventos recientes del cliente</small>
+        </span>
+        <span class="product-tab-step">05</span>
+      </button>
+    </div>
+  </section>
+
+  <%= render "resumen", cliente: @cliente, expediente_cliente: @expediente_cliente, cotizacion_principal: @cotizacion_principal, cotizaciones_por_estado: @cotizaciones_por_estado, proyectos: @proyectos, documentos: @documentos %>
+  <%= render "cotizaciones", cliente: @cliente, cotizaciones: @cotizaciones, cotizaciones_por_estado: @cotizaciones_por_estado %>
+  <%= render "documentos", cliente: @cliente, expediente_cliente: @expediente_cliente, documentos: @documentos %>
+  <%= render "proyectos", proyectos: @proyectos %>
+  <%= render "actividad", actividad: @actividad %>
+</section>
