@@ -166,6 +166,7 @@ class ApplicationController < ActionController::Base
   end
 
   def ruta_segura_post_login
+    return dashboard_path if current_usuario&.root?
     return dashboard_path if puede?(:ver, "DASHBOARD")
     return companies_path if puede?(:ver, "COMPANIAS")
     return clientes_path if defined?(clientes_path) && puede?(:ver, "CLIENTES")
