@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "copenet-rails",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [".claude/rvm-rails-server.sh"],
+      "port": 3000
+    }
+  ]
+}
