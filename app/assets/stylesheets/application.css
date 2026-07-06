@@ -1037,6 +1037,20 @@ html.theme-dark .user-menu-trigger .user-meta span {
 .badge-danger { background: rgba(222, 93, 93, 0.14); color: var(--danger); border-color: rgba(222, 93, 93, 0.18); }
 .badge-info { background: rgba(61, 139, 253, 0.14); color: var(--info); border-color: rgba(61, 139, 253, 0.18); }
 
+/* Dashboard: jerarquia tipografica mas limpia.
+   Solo los titulos (h1/h2/h3) conservan negrita; el resto (etiquetas,
+   porcentajes/badges y el numero de las KPI) usa peso normal, y el
+   numero de las KPI se reduce ~2pt para bajar la carga visual. */
+.dashboard-page .kpi-value {
+  font-size: clamp(1.2rem, 1.5vw, 1.6rem);
+  font-weight: 500;
+}
+
+.dashboard-page .eyebrow,
+.dashboard-page .badge {
+  font-weight: 500;
+}
+
 .dashboard-grid,
 .module-page-grid {
   display: grid;
