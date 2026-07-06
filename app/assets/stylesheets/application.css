@@ -466,6 +466,9 @@ input {
 }
 
 .sidebar-promo-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   margin-top: 14px;
   min-height: 36px;
   padding: 8px 14px;
