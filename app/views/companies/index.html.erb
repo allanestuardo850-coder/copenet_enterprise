@@ -64,10 +64,10 @@
                 <td><%= company.notification_email.presence || "Sin configurar" %></td>
                 <td><%= company.fel_scenario_code.presence || "Sin definir" %></td>
                 <td class="table-actions">
-                  <%= link_to "Ver", company_path(company), class: "table-link" %>
-                  <%= link_to "Editar", edit_company_path(company), class: "table-link" %>
-                  <%= link_to "Configurar", configuration_company_path(company), class: "table-link" %>
-                  <button type="button" class="table-link table-link-danger button-link">Eliminar</button>
+                  <%= table_action_link "Ver", company_path(company), action: :view %>
+                  <%= table_action_link "Editar", edit_company_path(company), action: :edit %>
+                  <%= table_action_link "Configurar", configuration_company_path(company), action: :configure %>
+                  <button type="button" class="table-link table-link-danger table-action-icon table-action-delete button-link" title="Eliminar" aria-label="Eliminar"><%= icon("trash") %></button>
                 </td>
               </tr>
             <% end %>

@@ -285,6 +285,8 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
+  color: inherit;
+  text-decoration: none;
   padding: 8px 8px;
   overflow: hidden;
   position: relative;
@@ -1830,6 +1832,41 @@ html.theme-dark .filter-select {
   font-weight: 700;
   margin-left: 10px;
   font-size: 0.8rem;
+}
+
+.table-action-icon {
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  margin-left: 6px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  vertical-align: middle;
+  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.table-action-icon:hover {
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  transform: translateY(-1px);
+}
+
+.table-action-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.table-action-delete {
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+.table-action-delete:hover {
+  background: color-mix(in srgb, var(--danger) 15%, transparent);
 }
 
 .table-link-danger {

@@ -31,12 +31,49 @@ module EnterpriseHelper
       "credit-card" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/><path d="M6 14.5h4"/></svg>',
       "calendar" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17"/><path d="M8 3v4"/><path d="M16 3v4"/></svg>',
       "refresh" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 8a7.5 7.5 0 0 0-13.2-1.5M4 12a7.5 7.5 0 0 0 13.2 1.5"/><path d="M20 4v4h-4"/><path d="M4 20v-4h4"/></svg>',
+      "eye" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.4-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.4 6.5-9.5 6.5S2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+      "pencil" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4.2L19.4 8.8a2.4 2.4 0 0 0 0-3.4l-.8-.8a2.4 2.4 0 0 0-3.4 0L4 15.8Z"/><path d="m13.8 6.2 4 4"/></svg>',
+      "gear" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5c.08-.49.08-1.01 0-1.5l1.8-1.4-1.9-3.2-2.2.9a7.5 7.5 0 0 0-1.3-.8L15.5 5h-7l-.3 2.5c-.46.22-.9.49-1.3.8l-2.2-.9-1.9 3.2 1.8 1.4a6 6 0 0 0 0 1.5l-1.8 1.4 1.9 3.2 2.2-.9c.4.31.84.58 1.3.8l.3 2.5h7l.3-2.5c.46-.22.9-.49 1.3-.8l2.2.9 1.9-3.2Z"/></svg>',
+      "folder" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h4.2l2 2.5H18A2.5 2.5 0 0 1 20.5 10v6.5A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M3.5 10h17"/></svg>',
+      "trash" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg>',
       "file-text" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 16.5h6"/></svg>',
       "coins-stack" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"/><path d="M4.5 12v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6"/></svg>',
       "user-group" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1"/><circle cx="8.5" cy="7" r="4"/><path d="M15.5 3.2a4 4 0 0 1 0 7.6"/><path d="M22 19v-1a4 4 0 0 0-3-3.8"/></svg>'
     }
 
     icons.fetch(name.to_s, icons["dashboard"]).html_safe
+  end
+
+  TABLE_ACTION_ICONS = {
+    view: "eye",
+    edit: "pencil",
+    configure: "gear",
+    expediente: "folder",
+    delete: "trash"
+  }.freeze
+
+  def table_action_link(label, path, action:, **options)
+    classes = ["table-link", "table-action-icon", "table-action-#{action}", options.delete(:class)].compact
+    aria = options.delete(:aria) || {}
+    link_to path, **options.merge(class: classes.join(" "), title: label, aria: aria.merge(label: label)) do
+      icon(TABLE_ACTION_ICONS.fetch(action))
+    end
+  end
+
+  def table_action_button(label, path, method:, action:, confirm: nil, **options)
+    classes = ["table-link", "table-action-icon", "table-action-#{action}", "button-link", options.delete(:class)].compact
+    data = options.delete(:data) || {}
+    data = data.merge(turbo_confirm: confirm) if confirm.present?
+
+    button_to path,
+              **options.merge(method: method,
+                              class: classes.join(" "),
+                              form_class: "inline-form",
+                              data: data,
+                              title: label,
+                              aria: { label: label }) do
+      icon(TABLE_ACTION_ICONS.fetch(action))
+    end
   end
 
   def sidebar_item_classes(active)

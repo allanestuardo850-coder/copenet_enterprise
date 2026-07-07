@@ -38,9 +38,9 @@
               <td><%= modulo_sistema.ruta.presence || "Sin ruta" %></td>
               <td><%= render "shared/badge", text: modulo_sistema.activo? ? "Activo" : "Inactivo", tone: modulo_sistema.activo? ? "success" : "warning" %></td>
               <td class="table-actions">
-                <%= link_to "Ver", modulos_sistema_path(modulo_sistema), class: "table-link" %>
-                <%= link_to "Editar", edit_modulos_sistema_path(modulo_sistema), class: "table-link" %>
-                <%= button_to "Eliminar", modulos_sistema_path(modulo_sistema), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este módulo?" } %>
+                <%= table_action_link "Ver", modulos_sistema_path(modulo_sistema), action: :view %>
+                <%= table_action_link "Editar", edit_modulos_sistema_path(modulo_sistema), action: :edit %>
+                <%= table_action_button "Eliminar", modulos_sistema_path(modulo_sistema), method: :delete, action: :delete, confirm: "¿Deseas eliminar este módulo?" %>
               </td>
             </tr>
           <% end %>

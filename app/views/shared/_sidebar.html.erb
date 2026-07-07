@@ -1,9 +1,9 @@
 <aside class="sidebar" data-shell-target="sidebar">
   <div class="sidebar-brand sidebar-brand-full">
-    <div class="sidebar-brand-logo" aria-label="Copenet">
+    <%= link_to dashboard_path, class: "sidebar-brand-logo", aria: { label: "Copenet" } do %>
       <%= image_tag "copenet-logo.png", class: "sidebar-brand-image sidebar-brand-image-full", alt: "Copenet" %>
       <%= image_tag "copenet-icon.png", class: "sidebar-brand-image sidebar-brand-image-compact", alt: "Copenet" %>
-    </div>
+    <% end %>
     <button class="icon-button mobile-only" type="button" data-action="shell#closeSidebar">
       <%= icon("chevron") %>
     </button>

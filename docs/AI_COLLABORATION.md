@@ -596,6 +596,71 @@ Verificacion:
 - `DESIGN_GUIDELINES.md` queda en 542 lineas.
 - `git diff --check` paso correctamente.
 
+### 2026-07-06 - Apertura de submenus desde sidebar colapsado
+
+Objetivo: cuando el usuario presiona un modulo padre del sidebar que tiene submenu
+(`Administracion`, por ejemplo) estando el sidebar colapsado, el sidebar debe expandirse y
+mostrar ese submenu abierto.
+
+Cambios aplicados:
+
+- `app/javascript/controllers/shell_controller.js`
+  - Se agrego `expandSidebar()` para abrir el sidebar en desktop y mostrarlo en mobile.
+  - `toggleSection()` ahora, si el sidebar esta colapsado, expande el sidebar, cierra otros
+    submenus y abre el submenu del modulo presionado.
+
+Verificacion funcional:
+
+- En `http://localhost:3001/companies`, al tocar un trigger de submenu con sidebar colapsado:
+  `collapsed: false`, `sidebarWidth: 278px`, `openSections: 1`, `visibleSubnavs: 1`.
+
+### 2026-07-06 - Logo del sidebar navega al dashboard
+
+Objetivo: permitir que el usuario vuelva al dashboard presionando el logo de Copenet en el
+sidebar.
+
+Cambios aplicados:
+
+- `app/views/shared/_sidebar.html.erb`
+  - El logo ahora es `link_to dashboard_path` conservando la clase `.sidebar-brand-logo`.
+- `app/assets/stylesheets/application.css`
+  - `.sidebar-brand-logo` mantiene `color: inherit` y `text-decoration: none` para no mostrar
+    estilos visuales de enlace.
+
+Verificacion funcional:
+
+- En `http://localhost:3001/companies`, `.sidebar-brand-logo` renderiza como `<a href="/dashboard">`.
+- Al hacer click en el logo, navega a `http://localhost:3001/dashboard`.
+
+### 2026-07-06 - Iconos SVG para acciones de tabla
+
+Objetivo: reemplazar acciones compactas de tabla con texto (`Ver`, `Editar`, `Configurar`,
+`Eliminar`) por iconos SVG consistentes en toda la plataforma.
+
+Cambios aplicados:
+
+- `app/helpers/enterprise_helper.rb`
+  - Se agregaron iconos `eye`, `pencil` y `trash`.
+  - Se agregaron helpers `table_action_link` y `table_action_button`.
+- Vistas de tablas actualizadas:
+  - Empresas, monedas, roles, modulos del sistema, clientes, usuarios, productos/servicios y
+    cotizaciones.
+- `app/assets/stylesheets/application.css`
+  - Se agrego estilo compacto `.table-action-icon` con fondo pastel, hover y color semantico.
+
+Verificacion funcional:
+
+- En `http://localhost:3001/companies`, la primera fila muestra 4 acciones SVG con
+  `aria-label`: `Ver`, `Editar`, `Configurar`, `Eliminar`, sin texto visible.
+- En `http://localhost:3001/monedas`, el boton de eliminar sigue renderizando como `<button>`
+  con `_method=delete`.
+
+Actualizacion:
+
+- La accion compacta `Expediente` en la tabla de clientes ahora usa icono SVG de carpeta.
+- En `http://localhost:3001/clientes`, `.table-action-expediente` renderiza sin texto visible,
+  con `aria-label="Expediente"` y `fill: none`.
+
 ## Proximos pasos sugeridos
 
 1. ~~Corregir o actualizar los dos tests fallidos para que reflejen el comportamiento esperado.~~ Hecho (2026-07-06).

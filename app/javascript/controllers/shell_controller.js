@@ -51,6 +51,16 @@ export default class extends Controller {
     })
   }
 
+  expandSidebar() {
+    if (window.innerWidth <= 920) {
+      this.sidebarTarget.classList.add(this.sidebarOpenClass)
+      return
+    }
+
+    this.element.classList.remove(this.sidebarCollapsedClass)
+    localStorage.setItem("copenet-sidebar", "expanded")
+  }
+
   handleDocumentClick(event) {
     if (!this.hasSidebarTarget) return
     if (event.target.closest("[data-action*='shell#toggleSidebar']")) return
@@ -80,13 +90,16 @@ export default class extends Controller {
   }
 
   toggleSection(event) {
-    if (this.element.classList.contains(this.sidebarCollapsedClass)) {
-      this.closeSidebarSections()
-      return
-    }
-
     const section = event.currentTarget.closest(".sidebar-section")
     if (!section) return
+
+    if (this.element.classList.contains(this.sidebarCollapsedClass)) {
+      this.expandSidebar()
+      this.closeSidebarSections()
+      section.classList.add("is-open")
+      event.currentTarget.setAttribute("aria-expanded", "true")
+      return
+    }
 
     const isOpen = section.classList.toggle("is-open")
     event.currentTarget.setAttribute("aria-expanded", isOpen ? "true" : "false")

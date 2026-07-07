@@ -494,9 +494,9 @@
                 </td>
                 <td><%= l(cotizacion.created_at, format: :short) rescue cotizacion.created_at.strftime("%d/%m/%Y %H:%M") %></td>
                 <td class="table-actions">
-                  <%= link_to "Ver", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: cotizacion.id), class: "table-link" %>
+                  <%= table_action_link "Ver", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: cotizacion.id), action: :view %>
                   <% unless cotizacion.firmada? %>
-                    <%= link_to "Editar", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: cotizacion.id, modo: "editar"), class: "table-link" %>
+                    <%= table_action_link "Editar", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: cotizacion.id, modo: "editar"), action: :edit %>
                   <% end %>
                   <%= link_to "PDF", cotizacion_pdf_productos_servicio_path(@producto_servicio, cotizacion_id: cotizacion.id), class: "table-link" %>
                 </td>

@@ -28,10 +28,10 @@
               <td><%= render "shared/badge", text: rol.activo? ? "Activo" : "Inactivo", tone: rol.activo? ? "success" : "warning" %></td>
               <td><%= rol.usuarios.count %></td>
               <td class="table-actions">
-                <%= link_to "Ver", rol_path(rol), class: "table-link" %>
-                <%= link_to "Editar", edit_rol_path(rol), class: "table-link" %>
+                <%= table_action_link "Ver", rol_path(rol), action: :view %>
+                <%= table_action_link "Editar", edit_rol_path(rol), action: :edit %>
                 <%= link_to "Permisos", permisos_rol_path(rol), class: "table-link" %>
-                <%= button_to "Eliminar", rol_path(rol), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este rol?" } %>
+                <%= table_action_button "Eliminar", rol_path(rol), method: :delete, action: :delete, confirm: "¿Deseas eliminar este rol?" %>
               </td>
             </tr>
           <% end %>

@@ -129,9 +129,9 @@
                 <td><%= render "shared/badge", text: usuario.root? ? "Root" : "Estándar", tone: usuario.root? ? "primary" : "info" %></td>
                 <td><%= usuario_fecha(usuario.ultimo_acceso_en) %></td>
                 <td class="table-actions">
-                  <%= link_to "Ver", usuario_path(usuario), class: "table-link" %>
-                  <%= link_to "Editar", edit_usuario_path(usuario), class: "table-link" %>
-                  <%= button_to "Eliminar", usuario_path(usuario), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este usuario?" } %>
+                  <%= table_action_link "Ver", usuario_path(usuario), action: :view %>
+                  <%= table_action_link "Editar", edit_usuario_path(usuario), action: :edit %>
+                  <%= table_action_button "Eliminar", usuario_path(usuario), method: :delete, action: :delete, confirm: "¿Deseas eliminar este usuario?" %>
                 </td>
               </tr>
             <% end %>

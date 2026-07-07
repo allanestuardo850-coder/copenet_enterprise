@@ -75,10 +75,10 @@
                              tone: producto_servicio.activo? ? "success" : "warning" %>
                 </td>
                 <td class="table-actions">
-                  <%= link_to "Ver", productos_servicio_path(producto_servicio), class: "table-link" %>
+                  <%= table_action_link "Ver", productos_servicio_path(producto_servicio), action: :view %>
                   <%= link_to "Cotizar", cotizacion_productos_servicio_path(producto_servicio), class: "table-link" %>
-                  <%= link_to "Editar", edit_productos_servicio_path(producto_servicio), class: "table-link" %>
-                  <%= button_to "Eliminar", productos_servicio_path(producto_servicio), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este producto o servicio?" } %>
+                  <%= table_action_link "Editar", edit_productos_servicio_path(producto_servicio), action: :edit %>
+                  <%= table_action_button "Eliminar", productos_servicio_path(producto_servicio), method: :delete, action: :delete, confirm: "¿Deseas eliminar este producto o servicio?" %>
                 </td>
               </tr>
             <% end %>

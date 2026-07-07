@@ -56,9 +56,9 @@
                 <td><%= [cliente.contacto_principal, cliente.email].compact.reject(&:blank?).join(" · ").presence || "-" %></td>
                 <td><%= cliente.expediente_cliente.present? ? "Listo" : "Pendiente" %></td>
                 <td class="table-actions">
-                  <%= link_to "Ver", cliente_path(cliente), class: "table-link" %>
-                  <%= link_to "Expediente", expediente_cliente_path(cliente), class: "table-link" %>
-                  <%= link_to "Editar", edit_cliente_path(cliente), class: "table-link" %>
+                  <%= table_action_link "Ver", cliente_path(cliente), action: :view %>
+                  <%= table_action_link "Expediente", expediente_cliente_path(cliente), action: :expediente %>
+                  <%= table_action_link "Editar", edit_cliente_path(cliente), action: :edit %>
                 </td>
               </tr>
             <% end %>

@@ -37,9 +37,9 @@
                 <td><%= moneda.simbolo %></td>
                 <td><%= render "shared/badge", text: moneda.activo? ? "Activa" : "Inactiva", tone: moneda.activo? ? "success" : "warning" %></td>
                 <td class="table-actions">
-                  <%= link_to "Ver", moneda_path(moneda), class: "table-link" %>
-                  <%= link_to "Editar", edit_moneda_path(moneda), class: "table-link" %>
-                  <%= button_to "Eliminar", moneda_path(moneda), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar esta moneda?" } %>
+                  <%= table_action_link "Ver", moneda_path(moneda), action: :view %>
+                  <%= table_action_link "Editar", edit_moneda_path(moneda), action: :edit %>
+                  <%= table_action_button "Eliminar", moneda_path(moneda), method: :delete, action: :delete, confirm: "¿Deseas eliminar esta moneda?" %>
                 </td>
               </tr>
             <% end %>
