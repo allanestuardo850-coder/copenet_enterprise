@@ -1,93 +1,142 @@
+<% content_for :body_class, "dashboard-reference-shell" %>
+
 <section class="page-section dashboard-page">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Executive Overview</p>
+  <div class="page-heading dash-heading">
+    <div class="page-heading-copy">
       <h1><%= @page_title %></h1>
-      <p><%= @page_description %></p>
+      <% if @page_description.present? %>
+        <p><%= @page_description %></p>
+      <% end %>
     </div>
-    <%= render "shared/button", label: @page_action[:label], href: @page_action[:href], variant: "primary" %>
+    <div class="dash-header-actions">
+      <button type="button" class="dash-btn">
+        <span class="dash-btn-icon"><%= icon("calendar") %></span>
+        <%= @page_period %>
+        <span class="dash-btn-caret"><%= icon("chevron_down") %></span>
+      </button>
+      <%= link_to @page_action[:href], class: "dash-btn dash-btn-accent" do %>
+        <span class="dash-btn-icon"><%= icon("refresh") %></span>
+        <%= @page_action[:label] %>
+      <% end %>
+    </div>
   </div>
 
-  <div class="kpi-grid">
+  <div class="kpi-grid dash-kpi-grid">
     <% @kpis.each do |kpi| %>
       <%= render "shared/kpi_card", kpi: kpi %>
     <% end %>
   </div>
 
   <div class="dashboard-grid">
-    <div class="dashboard-main-stack">
-      <div class="panel chart-panel chart-panel-wide">
-        <div class="panel-header">
-          <div>
-            <h2>Ingresos vs Gastos</h2>
-            <p>Comparativo mensual consolidado</p>
-          </div>
-          <%= render "shared/badge", text: "Actualizado hoy", tone: "info" %>
+    <div class="panel chart-panel chart-panel-wide">
+      <div class="panel-header">
+        <div>
+          <h2>Resumen financiero mensual</h2>
         </div>
-        <%= render "shared/chart_placeholder", title: "Bar chart", subtitle: "Ingresos vs Gastos", type: "bars" %>
+        <div class="seg-toggle" role="group" aria-label="Rango de tiempo">
+          <button type="button" class="seg-item is-active">Mes actual</button>
+          <button type="button" class="seg-item">6 meses</button>
+          <button type="button" class="seg-item">12 meses</button>
+        </div>
       </div>
-
-      <div class="dashboard-split">
-        <div class="panel chart-panel">
-          <div class="panel-header">
-            <div>
-              <h2>Distribución de cobros</h2>
-              <p>Cartera por estado de recuperación</p>
-            </div>
-            <%= render "shared/badge", text: "Cobranza", tone: "primary" %>
-          </div>
-          <%= render "shared/chart_placeholder", title: "Donut chart", subtitle: "Distribución de cobros", type: "donut" %>
-        </div>
-
-        <div class="panel chart-panel">
-          <div class="panel-header">
-            <div>
-              <h2>Tendencia mensual</h2>
-              <p>Evolución de facturación y utilidad</p>
-            </div>
-            <%= render "shared/badge", text: "12 meses", tone: "success" %>
-          </div>
-          <%= render "shared/chart_placeholder", title: "Line chart", subtitle: "Tendencia mensual", type: "line" %>
-        </div>
+      <div class="chart-legend">
+        <span class="legend-item"><i class="legend-swatch" style="background: var(--primary)"></i>Ingresos</span>
+        <span class="legend-item"><i class="legend-swatch" style="background: var(--primary); opacity: 0.3"></i>Costos</span>
+        <span class="legend-item"><i class="legend-line" style="background: var(--success)"></i>Utilidad</span>
+      </div>
+      <div class="chart-body">
+        <%= dashboard_barline_chart(**@finance) %>
       </div>
     </div>
 
-    <aside class="dashboard-side-stack">
-      <div class="panel activity-panel">
-        <div class="panel-header">
-          <div>
-            <h2>Actividad reciente</h2>
-            <p>Eventos relevantes del día</p>
-          </div>
+    <aside class="panel pendientes-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Pendientes críticos</h2>
         </div>
-        <div class="activity-list">
-          <% @recent_activity.each do |activity| %>
-            <article class="activity-item">
-              <div class="activity-dot"></div>
-              <div>
-                <h3><%= activity[:item] %></h3>
-                <p><%= activity[:detail] %></p>
-              </div>
-              <%= render "shared/badge", text: activity[:status], tone: activity[:tone] %>
-            </article>
-          <% end %>
-        </div>
+      </div>
+      <div class="pendientes-list">
+        <% @pendientes.each do |item| %>
+          <article class="pendiente-item">
+            <span class="pendiente-icon kpi-icon-<%= item[:tone] %>"><%= icon(item[:icon]) %></span>
+            <div class="pendiente-body">
+              <h3><%= item[:title] %></h3>
+              <p><%= item[:detail] %></p>
+            </div>
+            <%= render "shared/badge", text: item[:status], tone: item[:tone] %>
+          </article>
+        <% end %>
       </div>
     </aside>
   </div>
 
-  <section class="page-subsection">
-    <div class="section-heading">
-      <div>
-        <p class="eyebrow">Módulos</p>
-        <h2>Accesos rápidos</h2>
+  <div class="dashboard-split">
+    <div class="panel cartera-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Estado de cartera</h2>
+        </div>
       </div>
-      <p class="section-caption">Base visual lista para crecer hacia operaciones, finanzas y administración.</p>
+      <div class="cartera-body">
+        <div class="cartera-donut">
+          <%= dashboard_donut_chart(segments: @cartera[:segments]) %>
+        </div>
+        <div class="cartera-legend">
+          <% @cartera[:segments].each do |seg| %>
+            <div class="cartera-row">
+              <span class="cartera-label"><i class="legend-dot" style="background: <%= tone_color(seg[:tone]) %>"></i><%= seg[:label] %></span>
+              <span class="cartera-value"><%= seg[:display] %></span>
+              <span class="cartera-pct"><%= seg[:pct] %></span>
+            </div>
+          <% end %>
+          <div class="cartera-row cartera-total">
+            <span class="cartera-label">Total cartera</span>
+            <span class="cartera-value"><%= @cartera[:total] %></span>
+            <span class="cartera-pct"></span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="module-grid">
-      <% @modules.each do |mod| %>
-        <%= render "shared/module_card", module_item: mod %>
+    <div class="panel tendencia-panel">
+      <div class="panel-header">
+        <div class="trend-title-row">
+          <h2>Tendencia de facturación</h2>
+          <div class="chart-legend trend-inline-legend">
+            <% @tendencia[:series].each do |serie| %>
+              <span class="legend-item"><i class="legend-line" style="background: <%= tone_color(serie[:tone]) %>"></i><%= serie[:label] %></span>
+            <% end %>
+          </div>
+        </div>
+        <div class="trend-stats">
+          <% @tendencia[:series].each do |serie| %>
+            <div class="trend-stat trend-stat-<%= serie[:tone] %>">
+              <span class="trend-stat-label"><%= serie[:label] %></span>
+              <span class="trend-stat-value"><%= serie[:total] %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+      <div class="chart-body">
+        <%= dashboard_trend_chart(months: @tendencia[:months], series: @tendencia[:series], max: @tendencia[:max]) %>
+      </div>
+    </div>
+  </div>
+
+  <section class="page-subsection">
+    <div class="section-heading quick-heading-panel">
+      <div>
+        <h2>Accesos rápidos</h2>
+      </div>
+    </div>
+
+    <div class="quick-grid">
+      <% quick_tones = %w[primary success info warning primary success info primary success] %>
+      <% @modules.each_with_index do |mod, i| %>
+        <%= link_to mod[:href], class: "quick-card" do %>
+          <span class="kpi-icon kpi-icon-<%= quick_tones[i % quick_tones.size] %>"><%= icon(mod[:icon]) %></span>
+          <span class="quick-label"><%= mod[:title] %></span>
+        <% end %>
       <% end %>
     </div>
   </section>

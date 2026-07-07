@@ -1,12 +1,8 @@
 <aside class="sidebar" data-shell-target="sidebar">
-  <% logo_sidebar = branding_image(:logo_principal, css_class: "sidebar-brand-image", alt: branding_texto(:nombre_plataforma, "Copenet Enterprise")) %>
-  <div class="sidebar-brand <%= 'sidebar-brand-full' if logo_sidebar.present? %>">
-    <div class="sidebar-brand-mark <%= 'has-image sidebar-brand-mark-full' if logo_sidebar.present? %>" aria-hidden="true">
-      <% if logo_sidebar.present? %>
-        <%= logo_sidebar %>
-      <% else %>
-        <span class="sidebar-brand-mark-core"></span>
-      <% end %>
+  <div class="sidebar-brand sidebar-brand-full">
+    <div class="sidebar-brand-logo" aria-label="Copenet">
+      <%= image_tag "copenet-logo.png", class: "sidebar-brand-image sidebar-brand-image-full", alt: "Copenet" %>
+      <%= image_tag "copenet-icon.png", class: "sidebar-brand-image sidebar-brand-image-compact", alt: "Copenet" %>
     </div>
     <button class="icon-button mobile-only" type="button" data-action="shell#closeSidebar">
       <%= icon("chevron") %>
@@ -19,7 +15,7 @@
         <% open = navigation_section_open?(item, @current_page) %>
         <div class="<%= sidebar_section_classes(open) %>">
           <button class="sidebar-section-trigger" type="button" data-action="shell#toggleSection" aria-expanded="<%= open %>">
-            <span class="sidebar-item-icon"><%= icon(item[:icon]) %></span>
+            <span class="sidebar-item-icon"><%= sidebar_icon(item[:icon]) %></span>
             <span class="sidebar-item-label"><%= item[:label] %></span>
             <span class="sidebar-section-chevron"><%= icon("chevron") %></span>
           </button>

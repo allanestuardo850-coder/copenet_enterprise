@@ -17,8 +17,7 @@
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="icon" href="/icon.png?v=20260706-transparent" type="image/png">
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
@@ -27,7 +26,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="app-body" data-controller="shell loading" data-shell-sidebar-open-class="is-open" data-shell-menu-open-class="is-open" data-shell-dark-class="theme-dark" data-shell-sidebar-collapsed-class="sidebar-collapsed">
+  <body class="app-body <%= content_for?(:body_class) ? yield(:body_class) : nil %>" data-controller="shell loading" data-shell-sidebar-open-class="is-open" data-shell-menu-open-class="is-open" data-shell-dark-class="theme-dark" data-shell-sidebar-collapsed-class="sidebar-collapsed">
     <%= render "shared/page_loader" %>
     <div class="app-shell">
       <%= render "shared/sidebar" %>

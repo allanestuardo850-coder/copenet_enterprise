@@ -1,526 +1,542 @@
-# COPENET ENTERPRISE
-## Enterprise Design System
+# Copenet Enterprise
+## Guia Visual Oficial de Plataforma
 
 ---
 
-# OBJETIVO
+# Objetivo
 
-Todo el sistema debe verse como un ERP/CRM SaaS financiero moderno.
+Copenet Enterprise debe sentirse como una plataforma SaaS financiera moderna: ejecutiva,
+clara, densa y confiable. El dashboard actual es la referencia visual principal para el resto
+del sistema.
 
-Cada pantalla debe sentirse como un producto comercial terminado.
+Cada pantalla nueva o modificada debe parecer parte del mismo producto:
 
-NO Bootstrap tradicional.
+- Sidebar azul marino oscuro.
+- Header claro, compacto y funcional.
+- Contenido sobre fondo gris azulado muy claro.
+- Cards blancas con borde tenue.
+- Iconos SVG lineales.
+- Graficas grandes, legibles y bien proporcionadas.
+- Informacion densa pero respirable.
 
-NO formularios como listas verticales largas.
-
-NO tablas antiguas.
-
-NO espacios desperdiciados.
-
-NO colores saturados.
-
-El sistema debe transmitir:
-
-- Enterprise
-- SaaS
-- Fintech
-- Stripe
-- Notion
-- Linear
-- Hubspot
-- Atlassian
-- Odoo Enterprise
+No se debe volver a estilos tipo Bootstrap basico, tablas antiguas, formularios verticales
+interminables, colores saturados ni espacios vacios sin proposito.
 
 ---
 
-# PRINCIPIOS
+# Principios Visuales
 
-Siempre priorizar el contenido.
+1. La informacion manda.
+   La pantalla debe permitir leer, comparar y actuar rapidamente.
 
-El usuario debe ver la mayor cantidad de información útil posible.
+2. Densidad alta, no saturacion.
+   Usar el espacio disponible de forma eficiente, con gutters consistentes y bloques bien
+   proporcionados.
 
-Toda pantalla debe verse profesional, limpia y ordenada.
+3. Diseño ejecutivo.
+   La UI debe verse sobria, financiera y comercial, no como landing page ni como maqueta
+   decorativa.
 
-Densidad alta pero respirable: mucha información, sin sensación de saturación.
+4. Componentes consistentes.
+   Reutilizar patrones del dashboard: KPIs, paneles, badges, graficas, listas y accesos
+   rapidos.
 
-Todo se construye con cards sobre un fondo neutro claro.
-
-Ningún bloque debe sentirse vacío.
-
----
-
-# LAYOUT GENERAL
-
-La plataforma se compone SIEMPRE de tres zonas:
-
-1. Sidebar vertical oscuro a la izquierda (íconos).
-2. Header claro superior fijo.
-3. Área de contenido a la derecha, sobre fondo gris muy claro.
-
-El contenido se organiza en una grilla de cards.
-
-El área de trabajo ocupa todo el ancho disponible restante.
+5. Nada debe parecer improvisado.
+   Si una pantalla se ve diferente al dashboard sin una razon funcional clara, debe ajustarse.
 
 ---
 
-# COLORES
+# Layout General
 
-Fondo de la aplicación:
+La plataforma usa siempre tres zonas:
 
-Gris muy claro, casi blanco.
+1. Sidebar lateral izquierdo.
+   Azul marino oscuro, colapsable, con iconos principales y logo de Copenet.
 
-Cards:
+2. Header superior.
+   Claro, compacto, con buscador, acciones rapidas, switch claro/oscuro y usuario.
 
-Blanco puro.
+3. Area de contenido.
+   Fondo gris claro, ancho completo disponible y composicion en grillas de cards.
 
-Sidebar:
-
-Azul marino profundo (navy oscuro).
-
-Color principal:
-
-Azul moderno (royal blue).
-
-Se usa en: item activo, enlaces, líneas de gráfica, botones primarios, badges informativos.
-
-Colores secundarios (siempre en tono suave, nunca saturado):
-
-- Verde → positivo, éxito, cobros, tendencias al alza.
-- Naranja / Ámbar → atención, advertencia, cartera vencida.
-- Rojo → crítico, negativo, vencido, alerta.
-- Morado → utilidad, métricas secundarias.
-- Grises → texto, bordes, ejes, elementos neutros.
-
-Los íconos de las cards siempre van dentro de un círculo con fondo pastel del color correspondiente.
-
-Bordes y divisores: gris muy tenue.
-
-Nunca usar sombras duras ni colores planos fuertes.
+El contenido debe iniciar cerca del header, sin separaciones exageradas. Las pantallas deben
+aprovechar el ancho completo de trabajo.
 
 ---
 
-# TIPOGRAFÍA
+# Paleta
 
-Utilizar Google Font:
+Usar una paleta clara, financiera y poco saturada.
 
-Inter
+## Fondos
 
-o
+- Fondo de app: gris azulado muy claro.
+- Cards y paneles: blanco puro o casi blanco.
+- Bordes: azul/gris muy tenue.
+- Sidebar: navy profundo con gradiente sutil.
 
-Plus Jakarta Sans
+## Color Primario
 
-Una sola familia en toda la plataforma.
+Azul Copenet / royal blue.
 
-Jerarquía:
+Usos:
 
-Título de pantalla (H1)
-Grande y en negrita.
+- Acciones principales.
+- Links destacados.
+- Serie principal de graficas.
+- Estados informativos.
+- Item activo o resaltado.
 
-Subtítulo de pantalla
-Texto gris medio, peso normal, debajo del H1.
+## Colores Semanticos
 
-Título de card (H2)
-Mediano, semibold.
+- Verde: cobros, exito, positivo, crecimiento.
+- Naranja/ambar: advertencia, atencion, cartera vencida.
+- Rojo: alerta, critico, vencido, variacion negativa.
+- Morado: utilidad, metricas secundarias, apoyo visual.
+- Gris/azul grisaceo: texto secundario, ejes, divisores y elementos neutros.
 
-Etiqueta de campo / label
-Pequeño, gris, peso medio.
-
-Valor / número KPI
-Grande y en negrita, color oscuro.
-
-Texto normal
-Tamaño base, peso normal.
-
-Texto secundario
-Pequeño, gris.
-
-Regla:
-
-Solo títulos y valores llevan negrita.
-
-Labels, descripciones, porcentajes y textos de apoyo van en peso normal.
-
-Jamás usar fuentes grandes innecesarias fuera de títulos y valores.
+Todos los tonos semanticos deben usarse en version pastel para fondos y en color intenso solo
+para texto, icono o linea.
 
 ---
 
-# ICONOGRAFÍA
+# Tipografia
 
-Utilizar únicamente:
+La plataforma usa una sola familia tipografica. Actualmente el layout carga `Montserrat`; toda
+pantalla debe respetar esa familia salvo que se haga una migracion global deliberada.
 
-Heroicons
+Jerarquia:
 
-o
+- H1 de pantalla: grande, oscuro, peso alto.
+- H2/H3 de card: compacto, oscuro, peso alto.
+- Labels: pequeños, peso medio, color azul/gris.
+- Valores KPI: grandes, legibles, peso medio-alto, no excesivamente pesados.
+- Texto auxiliar: pequeño, color gris/azul.
 
-Lucide Icons
+Reglas:
 
-Nunca iconografía Bootstrap.
-
-Estilo de línea (outline), delgado y consistente.
-
-Los íconos deben aparecer en:
-
-Sidebar, header, cards, KPIs, listas, badges, tabs, botones, tablas, accesos rápidos, estados.
-
-En cards y KPIs el ícono siempre va dentro de un círculo con fondo pastel.
-
----
-
-# ESPACIADO
-
-Reducir espacios muertos.
-
-Reducir márgenes excesivos.
-
-Reducir altura de headers.
-
-Padding compacto y uniforme en todas las cards.
-
-Separación consistente entre cards (gutter uniforme).
-
-Optimizar el uso del espacio vertical.
-
-Las pantallas nunca deben sentirse vacías.
+- No usar textos enormes dentro de cards compactas.
+- No poner todo en negrita.
+- Los numeros importantes deben verse claros, pero no pesados ni agresivos.
+- Descripciones largas solo cuando aporten valor. En dashboard se prefiere titulo limpio sin
+  subtitulo innecesario.
 
 ---
 
-# SIDEBAR
+# Iconografia
 
-Sidebar tipo SaaS, fondo azul marino oscuro.
+Usar iconos SVG lineales, consistentes y con `currentColor`.
 
-Modo icono: barra angosta con íconos verticales.
+No usar:
 
-Logo de la plataforma arriba, dentro de un cuadro redondeado.
+- Emojis.
+- Fuentes de iconos.
+- Iconos rasterizados para acciones o modulos.
+- Iconografia Bootstrap si rompe el estilo lineal.
 
-Ícono activo resaltado con un cuadro redondeado azul de fondo.
+Usos esperados:
 
-Íconos modernos, agrupados por módulos.
+- Sidebar.
+- Header.
+- KPIs.
+- Accesos rapidos.
+- Listas de pendientes.
+- Botones.
+- Tabs.
+- Estados y badges cuando aplique.
 
-Colapsable y responsive.
-
-Ícono de configuración anclado al fondo.
-
-Comportamiento:
-
-- Desktop → visible (icono o expandido).
-- Tablet → colapsado.
-- Mobile → menú hamburguesa.
-
----
-
-# HEADER
-
-Header claro, compacto, de poca altura.
-
-Debe contener, de izquierda a derecha:
-
-1. Botón hamburguesa (colapsar sidebar).
-2. Buscador ancho con ícono de lupa y placeholder ("Buscar empresas, cuentas o reportes.").
-3. Notificaciones con badge numérico.
-4. Mensajes con badge numérico.
-5. Accesos rápidos (ícono de grilla).
-6. Selector Claro / Oscuro (ícono + switch).
-7. Usuario: avatar con iniciales, nombre, correo y chevron.
-
-No debe ocupar demasiada altura.
+En KPIs, accesos rapidos y listas, el icono debe vivir dentro de un circulo o chip pastel del
+tono correspondiente.
 
 ---
 
-# ENCABEZADO DE PÁGINA
+# Sidebar
 
-Debajo del header, cada pantalla abre con:
+El sidebar es un elemento global del producto y no debe rediseñarse desde pantallas internas.
 
-Título grande en negrita (ej: "Dashboard Ejecutivo").
+## Estado abierto
 
-Subtítulo gris de una línea que describe la pantalla.
+- Fondo navy profundo.
+- Logo horizontal de Copenet arriba.
+- Items con icono SVG a la izquierda y texto a la derecha.
+- Submenus permitidos solo en estado abierto.
+- Espaciado vertical compacto pero legible.
 
-Alineadas a la derecha, en la misma fila, las acciones principales:
+## Estado colapsado
 
-- Filtros o selector de periodo (ej: botón "Mayo 2024" con ícono de calendario y chevron).
-- Botón de acción principal (ej: "Actualizar datos" con ícono).
+- Ancho reducido.
+- Solo iconos principales visibles.
+- Logo compacto transparente de Copenet arriba.
+- Submenus cerrados automaticamente.
+- Si se intenta tocar un item con submenu mientras esta colapsado, no debe abrir children.
 
-Las acciones principales SIEMPRE van arriba, nunca solo al final de la pantalla.
+## Comportamiento
 
----
-
-# BOTONES
-
-Botón primario:
-
-Azul, texto claro, esquinas redondeadas, con ícono cuando aplique.
-
-Botón secundario:
-
-Fondo blanco, borde tenue, texto oscuro o azul, con ícono.
-
-Los botones principales SIEMPRE visibles en la parte superior.
-
-Acciones típicas siempre accesibles:
-
-[Nuevo] [Guardar] [Editar] [Eliminar] [Exportar] [Configurar] [Actualizar]
-
-Nunca colocar la acción principal únicamente al final.
+- El cierre debe ser suave, no brusco.
+- Al hacer click fuera del sidebar, en el logo o al navegar a otra pantalla, el sidebar puede
+  colapsarse segun la logica actual.
+- Al colapsar, cualquier submenu abierto debe cerrarse y dejar `aria-expanded="false"`.
+- En mobile, el sidebar funciona como panel/hamburguesa.
 
 ---
 
-# CARDS
+# Header
 
-Todas las pantallas se componen de cards.
+El header debe ser claro, compacto y constante en toda la plataforma.
 
-Cada card con:
+Elementos esperados:
 
-- Bordes redondeados.
-- Sombra suave.
-- Borde tenue.
+1. Boton de menu/sidebar.
+2. Buscador ancho con icono.
+3. Notificaciones con badge.
+4. Mensajes con badge.
+5. Accesos rapidos o grid.
+6. Switch claro/oscuro con animacion.
+7. Usuario con avatar, nombre, correo y chevron.
+
+Reglas:
+
+- No ocupar demasiada altura.
+- No convertirlo en hero ni en bloque decorativo.
+- El switch claro/oscuro debe funcionar y animarse.
+- Mantener el header global fuera de cambios especificos de una pantalla.
+
+---
+
+# Encabezado de Pantalla
+
+Cada pantalla inicia con una fila superior clara:
+
+- Titulo principal a la izquierda.
+- Acciones principales a la derecha.
+- Subtitulo solo si realmente ayuda a entender la pantalla.
+
+En el dashboard el titulo debe ser simplemente `Dashboard`, sin descripcion secundaria.
+
+Acciones tipicas:
+
+- Selector de periodo.
+- Actualizar datos.
+- Nuevo registro.
+- Exportar.
+- Configurar.
+- Guardar.
+
+Las acciones principales deben estar arriba, no escondidas al final.
+
+---
+
+# Cards y Paneles
+
+Las cards son la unidad base de la plataforma.
+
+Estilo:
+
 - Fondo blanco.
-- Padding compacto.
-- Espaciado uniforme entre sí.
+- Radio moderado, aproximadamente 8 a 12px.
+- Borde tenue.
+- Sombra muy suave o ninguna si el borde ya define el panel.
+- Padding compacto y consistente.
+- Alturas proporcionadas al contenido.
 
-Cuando la card tiene título, va en la parte superior (H2) con su acción o control a la derecha (toggle, badge o botón).
+Reglas:
+
+- No meter cards dentro de cards.
+- No dejar paneles vacios o con graficas diminutas.
+- El titulo de card va arriba, con controles a la derecha si aplica.
+- Si un panel contiene grafica, la grafica debe ocupar la mayor parte util del panel.
 
 ---
 
 # KPIs
 
-Fila de tarjetas de indicador en la parte superior del dashboard.
+Los KPIs del dashboard son el patron oficial.
 
-Cada tarjeta KPI contiene:
+Cada KPI debe contener:
 
-1. Ícono dentro de un círculo con fondo pastel (color según el KPI).
-2. Label pequeño y gris (ej: "Ingresos del mes").
-3. Valor grande en negrita (ej: "$254,900").
-4. Variación (delta) con flecha de color y comparación:
-   - Verde con flecha ▲ para positivo.
-   - Rojo con flecha ▼ para negativo.
-   - Texto de referencia gris (ej: "vs abril 2024").
+1. Icono a la izquierda dentro de un circulo pastel.
+2. Texto/informacion centrada visualmente dentro del resto de la card.
+3. Label compacto.
+4. Valor en quetzales cuando sea dinero: `Q254,900`.
+5. Delta con flecha y color semantico.
+6. Texto comparativo corto: `vs abril 2024`.
 
-Mostrar entre 4 y 6 KPIs en una sola fila.
+Reglas:
 
-Nunca dejar el bloque de KPIs incompleto o vacío.
-
----
-
-# BADGES
-
-Etiquetas de estado en forma de píldora.
-
-Fondo pastel tenue + texto del mismo color.
-
-Nunca en negrita fuerte.
-
-Mapa de tonos:
-
-- Rojo → Alerta / Vencido / Crítico.
-- Naranja → Atención / Por vencer.
-- Azul → Pendiente / Informativo.
-- Verde → Revisión / Aprobado / Completado.
-- Morado → Secundario / Utilidad.
-
-Usar badges en listas, tablas, estados y encabezados de card.
+- Los valores no deben verse excesivamente negritos.
+- Los iconos permanecen alineados a la izquierda.
+- El texto principal se centra dentro de la zona disponible.
+- Usar entre 4 y 6 KPIs por fila en desktop.
+- En mobile, reacomodar a menos columnas.
 
 ---
 
-# GRÁFICAS
+# Graficas
 
-Las gráficas siempre viven dentro de una card con título y controles.
+Las graficas deben ser utiles, grandes y legibles. No se aceptan graficas pequeñas dentro de
+paneles grandes.
 
-Tipos a usar:
+Tipos oficiales:
 
-- Barras comparativas (ej: Ingresos vs Costos) con línea de tendencia superpuesta (Utilidad).
-- Donut con leyenda a un costado (color, etiqueta, valor en negrita y porcentaje) y total al pie.
-- Líneas múltiples para tendencias (Facturación, Cobros, Utilidad).
+- Barras comparativas con linea superpuesta.
+- Donut con leyenda lateral.
+- Lineas multiples para tendencias.
 
-Controles dentro de la card:
+Reglas:
 
-- Selector de rango segmentado (ej: "Mes actual / 6 meses / 12 meses").
-- Leyenda clara con puntos de color.
-- Pequeñas píldoras de resumen con el valor de cada serie.
+- Toda grafica vive en una card/panel con titulo.
+- La leyenda debe estar cerca del titulo o encima de la grafica.
+- Ejes y grillas en gris tenue.
+- Colores consistentes: azul, verde, morado, naranja segun semantica.
+- Los labels no deben chocar ni verse diminutos.
+- La grafica debe ocupar de esquina a esquina el ancho util del panel cuando corresponda.
+- Si hay resumenes de serie, usar chips pastel pequeños alineados a la derecha.
 
-Ejes y grillas en gris muy tenue.
+## Donut / Estado de Cartera
 
-Colores de serie consistentes con la paleta (azul, verde, morado).
+- Donut grande, no decorativo.
+- Leyenda a la derecha o debajo segun responsive.
+- Cada fila de leyenda: color, label, valor y porcentaje.
+- Total separado con divisor tenue.
+- Los segmentos deben coincidir exactamente con colores de leyenda.
 
-Nunca gráficas planas sin contexto ni sin leyenda.
+## Tendencias
 
----
-
-# LISTAS
-
-Para paneles tipo "Pendientes críticos", "Actividad reciente" o "Alertas".
-
-Cada fila contiene:
-
-- Ícono en círculo pastel a la izquierda.
-- Título en negrita.
-- Descripción secundaria en gris.
-- Badge de estado alineado a la derecha.
-
-Filas separadas por espacio uniforme, sin líneas duras.
+- Grafica ancha.
+- Leyenda junto al titulo cuando el espacio lo permite.
+- Resumenes de Facturacion, Cobros y Utilidad como chips arriba a la derecha.
 
 ---
 
-# ACCESOS RÁPIDOS
+# Listas de Pendientes y Alertas
 
-Bloque inferior del dashboard con título "Accesos rápidos".
+Patron para `Pendientes criticos`, alertas, actividad o tareas:
 
-Grilla de cards de módulo.
+- Icono circular pastel a la izquierda.
+- Titulo compacto y claro.
+- Descripcion breve.
+- Badge de estado a la derecha.
+- Divisores tenues o separacion sutil.
 
-Cada card:
-
-- Ícono en círculo pastel.
-- Nombre del módulo.
-- Card clickeable completa.
-
-Ejemplos: Empresas, Cuentas, Productos y Servicios, Costos, Cobros, Facturación, Contratos, Reportes, Configuración.
-
-Distribuir en filas parejas que llenen el ancho.
+No usar listas planas sin jerarquia visual.
 
 ---
 
-# TABLAS
+# Badges
 
-Las tablas son un componente principal del sistema.
+Los badges son pildoras suaves, no botones pesados.
 
-Siempre incluir:
+Mapa:
 
-Buscar, Filtros, Ordenamiento, Badges de estado, Paginación, Acciones por fila.
+- Rojo: Alerta, Vencido, Critico.
+- Naranja: Atencion, Por vencer.
+- Azul: Pendiente, Informativo.
+- Verde: Revision, Aprobado, Completado.
+- Morado: Secundario, Utilidad.
 
-Estilo limpio: encabezado tenue, filas espaciadas, hover suave.
+Reglas:
 
-No usar tablas Bootstrap básicas.
+- Fondo pastel.
+- Texto del mismo tono en version intensa.
+- Peso medio-alto, nunca exagerado.
+- Tamaño compacto.
 
 ---
 
-# FORMULARIOS
+# Accesos Rapidos
 
-Los formularios nunca serán una lista vertical enorme.
+El bloque de accesos rapidos debe verse integrado al resto del dashboard.
 
-Agrupar la información por bloques, cada bloque en su propia card.
+Patron:
+
+- Titulo dentro de una barra/panel blanco de lado a lado.
+- Cards de modulo en grilla.
+- Icono circular pastel a la izquierda.
+- Texto del modulo claro y compacto.
+- Card completa clickeable.
+
+Ejemplos:
+
+- Empresas.
+- Cuentas.
+- Productos y Servicios.
+- Costos.
+- Cobros.
+- Facturacion.
+- Contratos.
+- Reportes.
+- Configuracion.
+
+---
+
+# Tablas
+
+Las tablas deben verse como herramientas de trabajo modernas.
+
+Obligatorio cuando aplique:
+
+- Buscador.
+- Filtros.
+- Ordenamiento.
+- Badges de estado.
+- Acciones por fila.
+- Paginacion.
+- Hover suave.
+
+No usar tablas Bootstrap basicas ni encabezados pesados.
+
+Las tablas viven dentro de paneles blancos con borde tenue.
+
+---
+
+# Formularios
+
+Los formularios deben organizar informacion, no producir listas largas.
+
+Reglas:
+
+- Agrupar campos por secciones.
+- Usar cards/paneles por bloque logico.
+- Usar columnas cuando el ancho lo permita.
+- Poner acciones principales visibles arriba o en footer fijo del formulario si el flujo lo
+  requiere.
+- Labels pequeños y claros.
+- Inputs con borde tenue y foco azul.
+
+Ejemplos de secciones:
+
+- Informacion General.
+- Configuracion Comercial.
+- Configuracion Financiera.
+- Operacion.
+- Facturacion.
+- Contabilidad.
+- Documentos.
+
+---
+
+# Tabs y Controles Segmentados
+
+No usar tabs Bootstrap tradicionales.
+
+Los tabs deben sentirse como controles de producto:
+
+- Segmentados.
+- Compactos.
+- Con estado activo claro.
+- Con icono cuando ayude.
+- Bordes suaves.
 
 Ejemplo:
 
-Información General, Configuración Comercial, Configuración Financiera, Configuración Operativa, Configuración FEL, Configuración Contable.
-
-Distribuir los campos en columnas cuando el espacio lo permita.
+`Mes actual | 6 meses | 12 meses`
 
 ---
 
-# TABS
+# Dashboard como Referencia Base
 
-No usar tabs tradicionales ni pestañas Bootstrap.
+La composicion actual del dashboard es el patron visual de la plataforma.
 
-Los tabs deben verse como módulos:
+Orden:
 
-[ General ] [ Comercial ] [ Financiero ] [ Operación ] [ Facturación ]
+1. Header global.
+2. Titulo `Dashboard` y acciones a la derecha.
+3. Fila de 5 KPIs.
+4. Resumen financiero mensual + Pendientes criticos.
+5. Estado de cartera + Tendencia de facturacion.
+6. Accesos rapidos.
 
-Cada tab con ícono, estado activo, bordes suaves y animación.
+Reglas tomadas del dashboard:
 
----
-
-# DASHBOARD
-
-Composición obligatoria, de arriba hacia abajo:
-
-1. Encabezado de página (título, subtítulo, filtro de periodo, acción principal).
-2. Fila de KPIs (4 a 6 tarjetas).
-3. Fila principal: gráfica financiera amplia + panel de pendientes/alertas.
-4. Fila secundaria: estado de cartera (donut) + tendencia (líneas).
-5. Accesos rápidos (grilla de módulos).
-
-Debe contener: KPIs, gráficas, actividad, alertas, accesos rápidos e indicadores.
-
-Nunca dejar espacios vacíos.
+- Los paneles deben estar proporcionados.
+- Las graficas deben ser grandes y ocupar su espacio.
+- Los iconos de KPIs quedan a la izquierda; la informacion se centra.
+- Los valores monetarios usan quetzales (`Q`).
+- Las leyendas de graficas se colocan cerca del titulo.
+- Las cards no deben sentirse huecas ni desbalanceadas.
+- El modo claro/oscuro debe conservar jerarquia y contraste.
 
 ---
 
-# MODO OSCURO
+# Modo Claro y Oscuro
 
-Toda pantalla debe soportar Modo Claro y Modo Oscuro.
+Toda pantalla debe soportar ambos modos.
 
-No crear dos diseños.
+Reglas:
 
-Usar variables de color para todo (fondos, texto, bordes, superficies).
-
-El switch de tema vive en el header.
-
----
-
-# RESPONSIVE
-
-Todo componente debe adaptarse a Desktop, Tablet y Mobile.
-
-En pantallas menores, las grillas de KPIs, cards y accesos rápidos se reacomodan en menos columnas.
-
-El sidebar colapsa y pasa a hamburguesa según el dispositivo.
+- No hardcodear colores sin equivalente en dark mode.
+- Usar variables o overrides claros.
+- Mantener contraste suficiente.
+- El switch del header debe animarse y cambiar realmente el tema.
+- Las graficas deben seguir legibles en dark mode.
 
 ---
 
-# UX
+# Responsive
 
-Toda pantalla debe responder rápidamente.
+Desktop:
 
-Incluir: hover, focus, animaciones suaves y microinteracciones.
+- Sidebar visible/colapsable.
+- Grillas amplias.
+- KPIs en una fila cuando el ancho lo permite.
 
-Transiciones sutiles al cambiar de sección, abrir menús o cambiar de tema.
+Tablet:
 
-Sin exageraciones.
+- Grillas bajan columnas.
+- Sidebar tiende a colapsarse.
 
----
+Mobile:
 
-# ESTRUCTURA DE PANTALLAS
-
-Cada pantalla sigue la misma estructura:
-
-Breadcrumb (si aplica)
-
-↓
-
-Título
-
-↓
-
-Descripción
-
-↓
-
-Botones principales / filtros
-
-↓
-
-KPIs (si aplica)
-
-↓
-
-Contenido principal (cards, gráficas)
-
-↓
-
-Tablas o formularios
+- Sidebar como menu.
+- Cards en una columna.
+- Graficas mantienen altura minima util.
+- Botones y filtros pueden envolver, pero sin romper layout.
 
 ---
 
-# MENÚS
+# Animaciones e Interaccion
 
-Jerarquía oficial de módulos:
+Las animaciones deben ser suaves y discretas.
 
-Dashboard, Administración, Cobros, Operación, Reportes, Configuración.
+Usar transiciones para:
 
-Nunca crear menús fuera de esta estructura sin autorización.
+- Colapsar sidebar.
+- Mostrar/ocultar labels.
+- Switch claro/oscuro.
+- Hover de cards o botones.
+- Apertura/cierre de menus.
+
+No usar animaciones llamativas ni lentas. El sistema debe sentirse rapido.
 
 ---
 
-# DESARROLLO
+# Reglas de Implementacion
 
-Antes de crear o modificar cualquier pantalla:
+Antes de modificar una pantalla:
 
-1. Analizar este documento.
+1. Compararla visualmente contra el dashboard.
+2. Reutilizar clases, helpers y componentes existentes.
+3. Mantener sidebar/header globales intactos salvo que el cambio sea global e intencional.
+4. Usar SVG para iconos.
+5. Usar cards y paneles con proporciones utiles.
+6. Validar modo claro y oscuro.
+7. Revisar responsive basico.
+8. Documentar cambios relevantes en `docs/AI_COLLABORATION.md`.
 
-2. Mantener el mismo estilo y la misma paleta.
+Si un cambio mejora una pantalla pero rompe la consistencia global, no debe aceptarse.
 
-3. No reinventar el diseño.
+---
 
-4. Reutilizar cards, KPIs, badges, gráficas y patrones ya definidos.
+# Checklist Rapido
 
-5. Todo debe verse parte del mismo producto.
-
-6. Si una pantalla rompe el estándar, corregirla antes de continuar.
+- Se ve como Copenet Enterprise y no como Bootstrap generico.
+- Usa fondo gris claro y cards blancas.
+- El contenido esta alineado y proporcionado.
+- No hay espacios muertos grandes.
+- Las graficas son legibles.
+- Los iconos son SVG lineales.
+- Los colores respetan semantica.
+- Los valores monetarios usan `Q`.
+- El sidebar colapsado muestra solo iconos principales.
+- El modo oscuro funciona.
+- Mobile no rompe textos ni controles.

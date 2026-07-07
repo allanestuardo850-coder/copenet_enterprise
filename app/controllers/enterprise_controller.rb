@@ -2,16 +2,46 @@ class EnterpriseController < ApplicationController
   def dashboard
     @current_page = :dashboard
     @page_title = "Dashboard"
-    @page_description = "Vista ejecutiva con indicadores financieros y operativos de la plataforma."
-    @page_action = { label: "Exportar resumen", href: "#" }
+    @page_description = nil
+    @page_period = "Mayo 2024"
+    @page_action = { label: "Actualizar datos", href: dashboard_path }
     @kpis = [
-      { title: "Total ingresos", value: "$248,900", change: "+12.4%", trend: "up", tone: "primary" },
-      { title: "Cobros del mes", value: "$91,240", change: "+7.1%", trend: "up", tone: "success" },
-      { title: "Facturas emitidas", value: "1,284", change: "+18.0%", trend: "up", tone: "primary" },
-      { title: "Cuentas activas", value: "326", change: "+4 nuevas", trend: "up", tone: "info" },
-      { title: "Cobros vencidos", value: "28", change: "-6.5%", trend: "down", tone: "warning" },
-      { title: "Utilidad estimada", value: "$58,430", change: "+9.8%", trend: "up", tone: "success" }
+      { title: "Ingresos del mes", value: "Q254,900", change: "12.8%", compare: "vs abril 2024", trend: "up", tone: "success", icon: "trending-up" },
+      { title: "Cobros aplicados", value: "Q91,240", change: "7.8%", compare: "vs abril 2024", trend: "up", tone: "primary", icon: "dollar" },
+      { title: "Facturas emitidas", value: "1,284", change: "10.0%", compare: "vs abril 2024", trend: "up", tone: "info", icon: "file-text" },
+      { title: "Cobros vencidos", value: "Q28,630", change: "4.9%", compare: "vs abril 2024", trend: "down", tone: "warning", icon: "alert" },
+      { title: "Utilidad estimada", value: "Q58,430", change: "3.4%", compare: "vs abril 2024", trend: "up", tone: "success", icon: "credit-card" }
     ]
+    @finance = {
+      months: %w[Ene Feb Mar Abr May],
+      ingresos: [258, 255, 210, 246, 256],
+      costos: [110, 122, 96, 106, 112],
+      utilidad: [104, 122, 95, 118, 112],
+      max: 300
+    }
+    @pendientes = [
+      { icon: "coins-stack", title: "28 cobros vencidos", detail: "Total por cobrar Q28,630", status: "Alerta", tone: "danger" },
+      { icon: "calendar", title: "6 contratos por vencer", detail: "Próximos 30 días", status: "Atención", tone: "warning" },
+      { icon: "file-text", title: "12 facturas pendientes de emisión", detail: "Por un valor de Q12,350", status: "Pendiente", tone: "primary" },
+      { icon: "user-group", title: "5 cuentas nuevas por validar", detail: "Requieren revisión y aprobación", status: "Revisión", tone: "success" }
+    ]
+    @cartera = {
+      segments: [
+        { label: "Cobro vigente", value: 96_400, display: "Q96,400", pct: "41.3%", tone: "success" },
+        { label: "En gestión", value: 72_130, display: "Q72,130", pct: "30.9%", tone: "primary" },
+        { label: "Vencida", value: 64_670, display: "Q64,670", pct: "27.8%", tone: "warning" }
+      ],
+      total: "Q233,200"
+    }
+    @tendencia = {
+      months: %w[Dic Ene Feb Mar Abr May],
+      max: 300,
+      series: [
+        { label: "Facturación", total: "Q1,284,300", tone: "primary", values: [150, 152, 158, 235, 250, 256] },
+        { label: "Cobros", total: "Q979,420", tone: "success", values: [120, 126, 132, 176, 196, 206] },
+        { label: "Utilidad", total: "Q234,870", tone: "info", values: [60, 62, 66, 82, 78, 82] }
+      ]
+    }
     @modules = [
       { title: "Empresas", description: "Administra clientes corporativos, sucursales y estados operativos.", href: companies_path, icon: "building" },
       { title: "Cuentas", description: "Centraliza cuentas comerciales, financieras y de control interno.", href: accounts_path, icon: "wallet" },
@@ -22,12 +52,6 @@ class EnterpriseController < ApplicationController
       { title: "Contratos", description: "Controla acuerdos, renovaciones y hitos de servicio.", href: contracts_path, icon: "contract" },
       { title: "Reportes", description: "Accede a paneles ejecutivos y cortes operativos.", href: reports_path, icon: "report" },
       { title: "Configuración", description: "Ajusta parámetros generales y catálogos visuales.", href: settings_path, icon: "settings" }
-    ]
-    @recent_activity = [
-      { item: "Cobro aplicado a Grupo Aurora", detail: "Colección automática confirmada", status: "Completado", tone: "success" },
-      { item: "Factura INV-2048 generada", detail: "Facturación mensual de servicios cloud", status: "Emitida", tone: "primary" },
-      { item: "Contrato de soporte por vencer", detail: "Renovación requerida en 5 días", status: "Atención", tone: "warning" },
-      { item: "Carga de costos operativos", detail: "Registro consolidado del área logística", status: "En revisión", tone: "info" }
     ]
   end
 
