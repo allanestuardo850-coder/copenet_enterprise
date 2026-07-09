@@ -49,9 +49,28 @@ class ApplicationController < ActionController::Base
     return @permiso_efectivo_cache[cache_key] if @permiso_efectivo_cache.key?(cache_key)
 
     permiso_directo = permiso_directo_precargado(usuario, modulo_sistema)
-    return permiso_directo.public_send("puede_#{accion}?") if permiso_directo
+    return permiso_habilitado?(permiso_directo, accion) if permiso_directo
 
     @permiso_efectivo_cache[cache_key] = permiso_base_por_rol_precargado(usuario, modulo_sistema, accion)
+  end
+
+  def permiso_habilitado?(permiso, accion)
+    case accion.to_sym
+    when :ver
+      permiso.puede_ver?
+    when :crear
+      permiso.puede_crear?
+    when :editar
+      permiso.puede_editar?
+    when :eliminar
+      permiso.puede_eliminar?
+    when :exportar
+      permiso.puede_exportar?
+    when :configurar
+      permiso.puede_configurar?
+    else
+      false
+    end
   end
 
   def modulo_sistema_por_codigo
@@ -90,7 +109,7 @@ class ApplicationController < ActionController::Base
         (!permiso_rol.association(:modulo_sistema).loaded? || permiso_rol.modulo_sistema.activo?)
     end
 
-    permiso.present? && permiso.public_send("puede_#{accion}?")
+    permiso.present? && permiso_habilitado?(permiso, accion)
   end
 
   def authorize_modulo!
@@ -157,24 +176,34 @@ class ApplicationController < ActionController::Base
   def set_navigation
     return @navigation_items = [] unless usuario_signed_in?
 
-    admin_children = []
-    admin_children << { key: :companies, label: "Compañías", path: companies_path, icon: "building" } if current_usuario.root? || puede?(:ver, "COMPANIAS")
-    admin_children << { key: :usuarios, label: "Usuarios", path: usuarios_path, icon: "users" } if current_usuario.root? || puede?(:ver, "USUARIOS")
-    admin_children << { key: :roles, label: "Roles y Permisos", path: roles_path, icon: "shield" } if current_usuario.root? || puede?(:ver, "ROLES")
-    admin_children << { key: :monedas, label: "Monedas", path: monedas_path, icon: "coins" } if current_usuario.root? || puede?(:ver, "MONEDAS")
-    admin_children << { key: :modulos_sistema, label: "Módulos del Sistema", path: modulos_sistema_index_path, icon: "layers" } if current_usuario.root? || puede?(:ver, "MODULOS_SISTEMA")
-    cobros_children = []
-    cobros_children << { key: :clientes, label: "Clientes", path: clientes_path, icon: "users" } if current_usuario.root? || puede?(:ver, "CLIENTES")
-    cobros_children << { key: :productos_servicios, label: "Productos y Servicios", path: productos_servicios_path, icon: "box" } if current_usuario.root? || puede?(:ver, "PRODUCTOS_SERVICIOS")
-    cobros_children << { key: :cotizaciones, label: "Cotizaciones", path: cotizaciones_path, icon: "report" } if current_usuario.root? || puede?(:ver, "COTIZACIONES")
+    admin_children = navigation_items_for(
+      [
+        [:companies, "Compañías", companies_path, "building", "COMPANIAS"],
+        [:usuarios, "Usuarios", usuarios_path, "users", "USUARIOS"],
+        [:roles, "Roles y Permisos", roles_path, "shield", "ROLES"],
+        [:monedas, "Monedas", monedas_path, "coins", "MONEDAS"],
+        [:modulos_sistema, "Módulos del Sistema", modulos_sistema_index_path, "layers", "MODULOS_SISTEMA"]
+      ]
+    )
+    cobros_children = navigation_items_for(
+      [
+        [:clientes, "Clientes", clientes_path, "users", "CLIENTES"],
+        [:productos_servicios, "Productos y Servicios", productos_servicios_path, "box", "PRODUCTOS_SERVICIOS"],
+        [:cotizaciones, "Cotizaciones", cotizaciones_path, "report", "COTIZACIONES"]
+      ]
+    )
     reportes_children = []
     reportes_children << { key: :reports, label: "Reportes", path: reports_path, icon: "report" } if current_usuario.root?
     configuracion_children = []
-    configuracion_children << { key: :parametros, label: "Parámetros", path: parametros_path, icon: "settings" } if current_usuario.root?
-    configuracion_children << { key: :auditoria, label: "Auditoría", path: auditoria_path, icon: "shield" } if current_usuario.root?
+    if current_usuario.root?
+      configuracion_children << { key: :parametros, label: "Parámetros", path: parametros_path, icon: "settings" }
+      configuracion_children << { key: :auditoria, label: "Auditoría", path: auditoria_path, icon: "shield" }
+    end
 
     @navigation_items = []
-    @navigation_items << { key: :dashboard, label: "Dashboard", path: dashboard_path, icon: "dashboard" } if current_usuario.root? || puede?(:ver, "DASHBOARD")
+    if current_usuario.root? || puede?(:ver, "DASHBOARD")
+      @navigation_items << { key: :dashboard, label: "Dashboard", path: dashboard_path, icon: "dashboard" }
+    end
     @navigation_items << {
       key: :administracion,
       label: "Administración",
@@ -209,6 +238,14 @@ class ApplicationController < ActionController::Base
         { key: :contracts, label: "Contratos", path: contracts_path, icon: "contract" }
       ]
     ) if current_usuario.root?
+  end
+
+  def navigation_items_for(items)
+    items.filter_map do |key, label, path, icon_name, modulo_codigo|
+      next unless current_usuario.root? || puede?(:ver, modulo_codigo)
+
+      { key: key, label: label, path: path, icon: icon_name }
+    end
   end
 
   def ruta_segura_post_login
