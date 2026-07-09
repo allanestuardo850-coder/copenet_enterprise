@@ -34,41 +34,101 @@
     <div class="panel-header">
       <div>
         <h2>Información general</h2>
-        <p>Datos base para la administración operativa y comercial de la empresa.</p>
       </div>
     </div>
 
-    <div class="detail-grid">
-      <div class="detail-item"><span>Nombre comercial</span><strong><%= company.commercial_name.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Razón social</span><strong><%= company.legal_name.presence || "-" %></strong></div>
-      <div class="detail-item"><span>NIT</span><strong><%= company.tax_id.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Tipo de empresa</span><strong><%= company.company_type.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Correo electrónico</span><strong><%= company.email.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Correo comercial</span><strong><%= company.correo_comercial.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Teléfono</span><strong><%= company.phone.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Web corporativa</span><strong><%= company.web.presence || "-" %></strong></div>
-      <div class="detail-item">
-        <span>Color primario</span>
-        <strong style="color:<%= company.branding_primary_color_display %>;"><%= company.branding_primary_color_display %></strong>
-      </div>
-      <div class="detail-item">
-        <span>Color secundario</span>
-        <strong style="color:<%= company.branding_secondary_color_display %>;"><%= company.branding_secondary_color_display %></strong>
-      </div>
-      <div class="detail-item">
-        <span>Color de acento</span>
-        <strong style="color:<%= company.branding_accent_color_display %>;"><%= company.branding_accent_color_display %></strong>
-      </div>
-      <div class="detail-item detail-item-full"><span>Dirección</span><strong><%= company.address.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Estado</span><strong><%= company.status.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Activa</span><strong><%= company.active? ? "Sí" : "No" %></strong></div>
-    </div>
+    <div class="company-detail-general-grid">
+      <section class="company-detail-card">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("users") %></span>
+          <div>
+            <h3>Datos generales</h3>
+            <p>Información base de la empresa.</p>
+          </div>
+        </div>
+        <div class="company-detail-field-grid">
+          <div class="company-detail-field"><span>Nombre comercial</span><strong><%= company.commercial_name.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Razón social</span><strong><%= company.legal_name.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>NIT</span><strong><%= company.tax_id.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Tipo de empresa</span><strong><%= company.company_type.presence || "-" %></strong></div>
+        </div>
+      </section>
 
-    <% if company.logo.attached? %>
-      <div class="branding-preview-card">
-        <%= image_tag company.logo, class: "branding-preview-image", alt: "Logo corporativo" %>
-      </div>
-    <% end %>
+      <section class="company-detail-card">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("message") %></span>
+          <div>
+            <h3>Contacto</h3>
+            <p>Canales principales de comunicación.</p>
+          </div>
+        </div>
+        <div class="company-detail-field-grid">
+          <div class="company-detail-field"><span>Correo electrónico</span><strong><%= company.email.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Correo comercial</span><strong><%= company.correo_comercial.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Teléfono</span><strong><%= company.phone.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Web corporativa</span><strong><%= company.web.presence || "-" %></strong></div>
+        </div>
+      </section>
+
+      <section class="company-detail-card company-detail-card-full">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("pencil") %></span>
+          <div>
+            <h3>Identidad visual</h3>
+            <p>Colores y logotipo corporativo.</p>
+          </div>
+        </div>
+        <div class="company-detail-visual-grid">
+          <div class="company-detail-color" style="--company-detail-color:<%= company.branding_primary_color_display %>;">
+            <span>Color primario</span>
+            <strong><i></i><%= company.branding_primary_color_display %></strong>
+          </div>
+          <div class="company-detail-color" style="--company-detail-color:<%= company.branding_secondary_color_display %>;">
+            <span>Color secundario</span>
+            <strong><i></i><%= company.branding_secondary_color_display %></strong>
+          </div>
+          <div class="company-detail-color" style="--company-detail-color:<%= company.branding_accent_color_display %>;">
+            <span>Color de acento</span>
+            <strong><i></i><%= company.branding_accent_color_display %></strong>
+          </div>
+          <div class="company-detail-logo-preview">
+            <% if company.logo.attached? %>
+              <%= image_tag company.logo, class: "branding-preview-image", alt: "Logo corporativo" %>
+            <% else %>
+              <span><%= icon("building") %></span>
+            <% end %>
+          </div>
+        </div>
+      </section>
+
+      <section class="company-detail-card company-detail-card-address">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("map-pin") %></span>
+          <div>
+            <h3>Dirección</h3>
+            <p>Ubicación fiscal y comercial.</p>
+          </div>
+        </div>
+        <div class="company-detail-field company-detail-field-wide">
+          <span>Dirección fiscal y comercial</span>
+          <strong><%= company.address.presence || "-" %></strong>
+        </div>
+      </section>
+
+      <section class="company-detail-card company-detail-card-status">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("bar-chart") %></span>
+          <div>
+            <h3>Estado</h3>
+            <p>Operación actual de la empresa.</p>
+          </div>
+        </div>
+        <div class="company-detail-field-grid">
+          <div class="company-detail-field"><span>Estado</span><strong><%= company.status.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Activa</span><strong><%= company.active? ? "Sí" : "No" %></strong></div>
+        </div>
+      </section>
+    </div>
   </section>
 
   <section class="panel module-tab-panel company-detail-panel" data-tabs-target="panel" data-tab-id="fel" hidden>
