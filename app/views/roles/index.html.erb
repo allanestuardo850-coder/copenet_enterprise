@@ -26,7 +26,7 @@
               <td><%= rol.nombre %></td>
               <td><%= rol.descripcion.presence || "-" %></td>
               <td><%= render "shared/badge", text: rol.activo? ? "Activo" : "Inactivo", tone: rol.activo? ? "success" : "warning" %></td>
-              <td><%= rol.usuarios.count %></td>
+              <td><%= rol.usuarios.size %></td>
               <td class="table-actions">
                 <%= link_to "Ver", rol_path(rol), class: "table-link" %>
                 <%= link_to "Editar", edit_rol_path(rol), class: "table-link" %>

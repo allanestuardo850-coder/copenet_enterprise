@@ -13,6 +13,11 @@ class CompaniesController < ApplicationController
 
     @companies = Company.order(:commercial_name, :legal_name)
     @companies = apply_filters(@companies)
+    @companies_total_count = @companies.count
+    @companies_per_page = companies_per_page
+    @companies_total_pages = [(@companies_total_count.to_f / @companies_per_page).ceil, 1].max
+    @companies_page = [[params[:page].to_i, 1].max, @companies_total_pages].min
+    @companies = @companies.offset((@companies_page - 1) * @companies_per_page).limit(@companies_per_page)
   end
 
   def show
@@ -27,9 +32,11 @@ class CompaniesController < ApplicationController
   def create
     @current_page = :companies
     @company = Company.new(company_params)
+    @company.active = true
+    @company.status = "Activa"
 
     if @company.save
-      redirect_to @company, notice: "Empresa creada correctamente."
+      redirect_to companies_path, notice: "Empresa creada correctamente."
     else
       render :new, status: :unprocessable_entity
     end
@@ -41,9 +48,13 @@ class CompaniesController < ApplicationController
 
   def update
     @current_page = :companies
+    attrs = company_params
+    inactive = ActiveModel::Type::Boolean.new.cast(attrs.delete(:inactive))
+    attrs[:active] = !inactive
+    attrs[:status] = inactive ? "Inactiva" : "Activa"
 
-    if @company.update(company_params)
-      redirect_to @company, notice: "Empresa actualizada correctamente."
+    if @company.update(attrs)
+      redirect_to companies_path, notice: "Empresa actualizada correctamente."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -72,6 +83,7 @@ class CompaniesController < ApplicationController
       :address,
       :status,
       :active,
+      :inactive,
       :color_primario,
       :color_secundario,
       :color_acento,
@@ -128,5 +140,11 @@ class CompaniesController < ApplicationController
             end
 
     scope
+  end
+
+  def companies_per_page
+    allowed = [10, 20, 50, 100]
+    value = params[:per_page].to_i
+    allowed.include?(value) ? value : 10
   end
 end

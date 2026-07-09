@@ -1,51 +1,37 @@
-<section class="page-section user-admin-page">
-  <div class="page-heading">
-    <div class="page-heading-copy">
-      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-        <%= link_to "Dashboard", dashboard_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to "Empresas", companies_path %>
-        <span><%= icon("chevron") %></span>
-        <strong><%= @company.commercial_name.presence || @company.legal_name %></strong>
-      </nav>
-      <p class="eyebrow">Detalle de Empresa</p>
-      <h1><%= @company.commercial_name.presence || @company.legal_name %></h1>
-      <p>Vista central para administrar identidad, certificación y plantilla comercial por empresa.</p>
-    </div>
-    <div class="page-heading-side">
-      <div class="user-heading-meta">
-        <%= render "shared/badge", text: @company.active? ? "Activa" : "Inactiva", tone: @company.active? ? "success" : "warning" %>
-        <%= render "shared/badge", text: @company.quote_format_name.present? ? "Formato propio" : "Formato global", tone: @company.quote_format_name.present? ? "primary" : "info" %>
+<section class="page-section company-show-page">
+  <section class="company-show-hero">
+    <div class="company-show-identity">
+      <div class="company-show-logo">
+        <% if @company.logo.attached? %>
+          <%= image_tag @company.logo, alt: "Logo corporativo" %>
+        <% else %>
+          <%= (@company.commercial_name.presence || @company.legal_name).to_s.first(2).upcase %>
+        <% end %>
       </div>
-      <div class="page-actions-inline">
-        <%= link_to "Editar empresa", edit_company_path(@company), class: "ui-button ui-button-primary" %>
-        <%= link_to "Configurar", configuration_company_path(@company), class: "ui-button ui-button-secondary" %>
-        <%= link_to "Volver", companies_path, class: "ui-button ui-button-secondary" %>
-      </div>
-    </div>
-  </div>
 
-  <section class="panel user-profile-strip">
-    <div class="user-profile-strip-main">
-      <div class="user-profile-avatar"><%= (@company.commercial_name.presence || @company.legal_name).to_s.first(2).upcase %></div>
-      <div class="user-profile-copy">
-        <strong><%= @company.commercial_name.presence || @company.legal_name %></strong>
-        <span><%= @company.email.presence || @company.notification_email.presence || "Sin correo principal" %></span>
+      <div class="company-show-copy">
+        <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+          <%= link_to "Dashboard", dashboard_path %>
+          <span><%= icon("chevron") %></span>
+          <%= link_to "Empresas", companies_path %>
+          <span><%= icon("chevron") %></span>
+          <strong>Detalle</strong>
+        </nav>
+        <span class="company-show-eyebrow">Registro de compañía</span>
+        <h1><%= @company.commercial_name.presence || @company.legal_name %></h1>
+        <p><%= @company.legal_name.presence || "Sin razón social registrada" %></p>
+
+        <div class="company-show-badges">
+          <%= render "shared/badge", text: @company.active? ? "Activa" : "Inactiva", tone: @company.active? ? "success" : "warning" %>
+          <%= render "shared/badge", text: @company.fel_token.present? ? "FEL configurado" : "FEL pendiente", tone: @company.fel_token.present? ? "success" : "warning" %>
+          <%= render "shared/badge", text: @company.quote_format_name.present? ? "Formato propio" : "Formato global", tone: @company.quote_format_name.present? ? "primary" : "info" %>
+        </div>
       </div>
     </div>
-    <div class="user-profile-metrics">
-      <article class="mini-metric-card">
-        <span>Configuración FEL</span>
-        <strong><%= @company.fel_token.present? ? "Lista" : "Pendiente" %></strong>
-      </article>
-      <article class="mini-metric-card">
-        <span>Formato PDF</span>
-        <strong><%= @company.quote_format_name.present? ? "Propio" : "Global" %></strong>
-      </article>
-      <article class="mini-metric-card">
-        <span>Contacto comercial</span>
-        <strong><%= @company.quote_contact_name.presence || "Pendiente" %></strong>
-      </article>
+
+    <div class="company-show-actions" aria-label="Acciones de compañía">
+      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, companies_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
+      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_company_path(@company), class: "company-show-action-button company-show-action-primary", title: "Editar empresa", aria: { label: "Editar empresa" } %>
     </div>
   </section>
 

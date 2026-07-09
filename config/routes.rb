@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   delete "logout", to: "sesiones#destroy"
 
   get "dashboard", to: "enterprise#dashboard"
+  get "dashboard/finance", to: "enterprise#dashboard_finance"
   get "services", to: redirect("/productos_servicios")
   get "parametros", to: "enterprise#parametros"
   patch "parametros", to: "enterprise#actualizar_parametros"

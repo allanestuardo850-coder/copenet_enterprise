@@ -26,12 +26,14 @@ class ApplicationController < ActionController::Base
   def require_login
     return if usuario_signed_in?
 
-    redirect_to login_path, alert: "Debes iniciar sesión para continuar."
+    redirect_to login_path
   end
 
   def puede?(accion, modulo_codigo)
     return false unless usuario_signed_in?
-    modulo_sistema = ModuloSistema.find_by(codigo: modulo_codigo)
+    return true if current_usuario.root?
+
+    modulo_sistema = modulo_sistema_por_codigo[modulo_codigo.to_s]
     return false unless modulo_sistema
 
     permiso_efectivo(current_usuario, modulo_sistema, accion)
@@ -40,11 +42,55 @@ class ApplicationController < ActionController::Base
   def permiso_efectivo(usuario, modulo_sistema, accion)
     return false if usuario.blank? || modulo_sistema.blank?
     return true if usuario.root?
+    precargar_permisos_usuario(usuario)
 
-    permiso_directo = usuario.permiso_directo_para(modulo_sistema)
+    cache_key = [usuario.id, modulo_sistema.id, accion.to_sym]
+    @permiso_efectivo_cache ||= {}
+    return @permiso_efectivo_cache[cache_key] if @permiso_efectivo_cache.key?(cache_key)
+
+    permiso_directo = permiso_directo_precargado(usuario, modulo_sistema)
     return permiso_directo.public_send("puede_#{accion}?") if permiso_directo
 
-    usuario.permiso_base_por_rol(modulo_sistema, accion)
+    @permiso_efectivo_cache[cache_key] = permiso_base_por_rol_precargado(usuario, modulo_sistema, accion)
+  end
+
+  def modulo_sistema_por_codigo
+    @modulo_sistema_por_codigo ||= ModuloSistema.activos.index_by(&:codigo)
+  end
+
+  def precargar_permisos_usuario(usuario)
+    return if @permisos_usuario_precargados
+
+    ActiveRecord::Associations::Preloader.new(
+      records: [usuario],
+      associations: [:usuario_permisos, { roles: { permisos: :modulo_sistema } }]
+    ).call
+    @permisos_usuario_precargados = true
+  end
+
+  def permiso_directo_precargado(usuario, modulo_sistema)
+    if usuario.usuario_permisos.loaded?
+      usuario.usuario_permisos.detect { |permiso| permiso.modulo_sistema_id == modulo_sistema.id }
+    else
+      usuario.permiso_directo_para(modulo_sistema)
+    end
+  end
+
+  def permiso_base_por_rol_precargado(usuario, modulo_sistema, accion)
+    permisos = if usuario.roles.loaded?
+                 usuario.roles.select(&:activo?).flat_map do |rol|
+                   rol.permisos.loaded? ? rol.permisos : rol.permisos.includes(:modulo_sistema)
+                 end
+               else
+                 usuario.permisos_activos
+               end
+
+    permiso = permisos.find do |permiso_rol|
+      permiso_rol.modulo_sistema_id == modulo_sistema.id &&
+        (!permiso_rol.association(:modulo_sistema).loaded? || permiso_rol.modulo_sistema.activo?)
+    end
+
+    permiso.present? && permiso.public_send("puede_#{accion}?")
   end
 
   def authorize_modulo!
@@ -65,7 +111,7 @@ class ApplicationController < ActionController::Base
     case controller_name
     when "enterprise"
       case action_name
-      when "dashboard" then "DASHBOARD"
+      when "dashboard", "dashboard_finance" then "DASHBOARD"
       else nil
       end
     when "monedas"

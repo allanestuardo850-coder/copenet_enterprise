@@ -1,62 +1,47 @@
-<section class="page-section user-module-page">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Administración</p>
-      <h1>Usuarios</h1>
-      <p>Administra usuarios internos, privilegios root, roles operativos y acceso a módulos del sistema.</p>
-    </div>
+<section class="page-section user-module-page user-index-page">
+  <div class="page-heading user-index-heading">
+    <h1>Usuarios</h1>
     <div class="page-actions-inline">
       <%= link_to "Exportar", "#", class: "ui-button ui-button-secondary" %>
-      <%= link_to "Nuevo Usuario", new_usuario_path, class: "ui-button ui-button-primary" %>
+      <%= link_to "Nuevo usuario", new_usuario_path, class: "ui-button ui-button-primary" %>
     </div>
   </div>
 
-  <section class="kpi-grid user-kpi-grid">
-    <article class="kpi-card kpi-card-primary">
-      <div class="kpi-meta">
-        <span class="kpi-title">Usuarios Registrados</span>
-        <%= render "shared/badge", text: "Directorio", tone: "info" %>
+  <section class="user-index-kpi-grid">
+    <article class="user-index-kpi-card">
+      <span class="user-index-kpi-icon"><%= icon("user-group") %></span>
+      <div>
+        <span class="user-index-kpi-title">Usuarios Registrados</span>
+        <strong class="user-index-kpi-value"><%= @usuario_stats[:total] %></strong>
       </div>
-      <strong class="kpi-value"><%= @usuario_stats[:total] %></strong>
-      <p class="kpi-footer">Base total de usuarios creados en la plataforma.</p>
     </article>
 
-    <article class="kpi-card kpi-card-success">
-      <div class="kpi-meta">
-        <span class="kpi-title">Usuarios Activos</span>
-        <%= render "shared/badge", text: "Operativos", tone: "success" %>
+    <article class="user-index-kpi-card">
+      <span class="user-index-kpi-icon"><%= icon("user") %></span>
+      <div>
+        <span class="user-index-kpi-title">Usuarios Activos</span>
+        <strong class="user-index-kpi-value"><%= @usuario_stats[:activos] %></strong>
       </div>
-      <strong class="kpi-value"><%= @usuario_stats[:activos] %></strong>
-      <p class="kpi-footer">Usuarios con acceso habilitado actualmente.</p>
     </article>
 
-    <article class="kpi-card kpi-card-info">
-      <div class="kpi-meta">
-        <span class="kpi-title">Usuarios Root</span>
-        <%= render "shared/badge", text: "Crítico", tone: "primary" %>
+    <article class="user-index-kpi-card">
+      <span class="user-index-kpi-icon"><%= icon("shield-outline") %></span>
+      <div>
+        <span class="user-index-kpi-title">Usuarios Root</span>
+        <strong class="user-index-kpi-value"><%= @usuario_stats[:roots] %></strong>
       </div>
-      <strong class="kpi-value"><%= @usuario_stats[:roots] %></strong>
-      <p class="kpi-footer">Perfiles con control administrativo total.</p>
     </article>
 
-    <article class="kpi-card kpi-card-warning">
-      <div class="kpi-meta">
-        <span class="kpi-title">Usuarios con Roles</span>
-        <%= render "shared/badge", text: "Asignados", tone: "warning" %>
+    <article class="user-index-kpi-card">
+      <span class="user-index-kpi-icon"><%= icon("user-role") %></span>
+      <div>
+        <span class="user-index-kpi-title">Usuarios con Roles</span>
+        <strong class="user-index-kpi-value"><%= @usuario_stats[:con_roles] %></strong>
       </div>
-      <strong class="kpi-value"><%= @usuario_stats[:con_roles] %></strong>
-      <p class="kpi-footer">Usuarios ya vinculados a roles del sistema.</p>
     </article>
   </section>
 
-  <section class="panel filters-panel">
-    <div class="panel-header">
-      <div>
-        <h2>Filtros de Búsqueda</h2>
-        <p>Ubica usuarios por nombre, correo, estado o nivel administrativo.</p>
-      </div>
-    </div>
-
+  <section class="panel filters-panel user-index-panel user-index-filters-panel">
     <%= form_with url: usuarios_path, method: :get, class: "filters-form" do %>
       <div class="filters-bar">
         <label class="search-shell inline-search-shell">
@@ -64,6 +49,7 @@
           <%= text_field_tag :query, @filters[:query], placeholder: "Buscar por nombre, apellido o correo" %>
         </label>
         <div class="filter-chip-list filter-select-list">
+          <%= hidden_field_tag :per_page, @usuarios_per_page %>
           <%= select_tag :status,
                          options_for_select([["Todos los estados", ""], ["Activos", "activo"], ["Inactivos", "inactivo"]], @filters[:status]),
                          class: "filter-select" %>
@@ -77,66 +63,81 @@
     <% end %>
   </section>
 
-  <section class="panel">
+  <section class="panel user-index-panel user-index-table-panel">
     <div class="panel-header">
-      <div>
-        <h2>Listado de Usuarios</h2>
-        <p>Vista central para operar el acceso interno, revisar actividad y administrar privilegios.</p>
-      </div>
-      <%= render "shared/badge", text: "#{@usuarios.size} registros", tone: "info" %>
+      <h2>Listado de Usuarios</h2>
+      <%= render "shared/badge", text: "#{@usuarios_total_count} #{@usuarios_total_count == 1 ? 'registro' : 'registros'}", tone: "info" %>
     </div>
 
     <% if @usuarios.any? %>
-      <div class="table-shell">
+      <div class="table-shell user-index-table-shell">
         <table class="data-table usuarios-table">
           <thead>
             <tr>
-              <th>Usuario</th>
-              <th>Roles</th>
+              <th>Fotografía</th>
+              <th>Nombre del usuario</th>
+              <th>Correo electrónico</th>
+              <th>Rol</th>
               <th>Estado</th>
               <th>Nivel</th>
-              <th>Último Acceso</th>
+              <th>Último acceso</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             <% @usuarios.each do |usuario| %>
+              <% rol_principal = usuario.roles.first %>
               <tr>
                 <td>
-                  <div class="table-user-cell">
-                    <div class="table-user-avatar"><%= usuario.nombre.to_s.first&.upcase %><%= usuario.apellido.to_s.first&.upcase %></div>
-                    <div class="table-user-copy">
-                      <strong><%= usuario.nombre_completo %></strong>
-                      <span><%= usuario.email %></span>
-                    </div>
+                  <div class="user-index-avatar">
+                    <%= usuario.nombre.to_s.first&.upcase %><%= usuario.apellido.to_s.first&.upcase %>
                   </div>
                 </td>
-                <td>
-                  <div class="table-chip-stack">
-                    <% if usuario.roles.any? %>
-                      <% usuario.roles.limit(2).each do |rol| %>
-                        <span class="role-chip"><%= rol.nombre %></span>
-                      <% end %>
-                      <% if usuario.roles.size > 2 %>
-                        <span class="role-chip role-chip-muted">+<%= usuario.roles.size - 2 %> más</span>
-                      <% end %>
-                    <% else %>
-                      <span class="role-chip role-chip-muted">Sin roles</span>
-                    <% end %>
-                  </div>
-                </td>
-                <td><%= render "shared/badge", text: usuario.activo? ? "Activo" : "Inactivo", tone: usuario.activo? ? "success" : "warning" %></td>
-                <td><%= render "shared/badge", text: usuario.root? ? "Root" : "Estándar", tone: usuario.root? ? "primary" : "info" %></td>
-                <td><%= usuario_fecha(usuario.ultimo_acceso_en) %></td>
+                <td class="user-index-name"><%= usuario.nombre_completo %></td>
+                <td class="user-index-email"><%= usuario.email %></td>
+                <td><span class="user-index-chip user-index-chip-primary"><%= rol_principal&.nombre || "Sin rol" %></span></td>
+                <td><span class="user-index-chip user-index-chip-success"><%= usuario.activo? ? "Activo" : "Inactivo" %></span></td>
+                <td><span class="user-index-chip user-index-chip-level"><%= usuario.root? ? "Root" : "Estándar" %></span></td>
+                <td class="user-index-date"><%= usuario_fecha(usuario.ultimo_acceso_en) %></td>
                 <td class="table-actions">
-                  <%= link_to "Ver", usuario_path(usuario), class: "table-link" %>
-                  <%= link_to "Editar", edit_usuario_path(usuario), class: "table-link" %>
-                  <%= button_to "Eliminar", usuario_path(usuario), method: :delete, class: "table-link table-link-danger button-link", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este usuario?" } %>
+                  <%= table_action_link "Ver", usuario_path(usuario), action: :view %>
+                  <%= table_action_link "Editar", edit_usuario_path(usuario), action: :edit %>
                 </td>
               </tr>
             <% end %>
           </tbody>
         </table>
+      </div>
+
+      <div class="table-pagination">
+        <div class="pagination-controls">
+          <%= form_with url: usuarios_path, method: :get, class: "pagination-size-form" do %>
+            <%= hidden_field_tag :query, @filters[:query] if @filters[:query].present? %>
+            <%= hidden_field_tag :status, @filters[:status] if @filters[:status].present? %>
+            <%= hidden_field_tag :root, @filters[:root] if @filters[:root].present? %>
+            <label for="usuarios_per_page">Resultados</label>
+            <%= select_tag :per_page,
+                           options_for_select([[10, 10], [20, 20], [50, 50], [100, 100]], @usuarios_per_page),
+                           id: "usuarios_per_page",
+                           class: "filter-select pagination-size-select",
+                           onchange: "this.form.submit()" %>
+          <% end %>
+
+          <nav class="pagination-nav" aria-label="Paginación de usuarios">
+          <% pagination_params = request.query_parameters.except("page").merge(per_page: @usuarios_per_page) %>
+          <%= link_to "Anterior",
+                      usuarios_path(pagination_params.merge(page: @usuarios_page - 1)),
+                      class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @usuarios_page <= 1}",
+                      aria: { disabled: @usuarios_page <= 1 } %>
+
+          <span class="pagination-current">Página <%= @usuarios_page %> de <%= @usuarios_total_pages %></span>
+
+          <%= link_to "Siguiente",
+                      usuarios_path(pagination_params.merge(page: @usuarios_page + 1)),
+                      class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @usuarios_page >= @usuarios_total_pages}",
+                      aria: { disabled: @usuarios_page >= @usuarios_total_pages } %>
+          </nav>
+        </div>
       </div>
     <% else %>
       <%= render "shared/empty_state",

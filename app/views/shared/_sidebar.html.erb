@@ -9,7 +9,7 @@
       <% end %>
     </div>
     <button class="icon-button mobile-only" type="button" data-action="shell#closeSidebar">
-      <%= icon("chevron") %>
+      <%= icon("close") %>
     </button>
   </div>
 
@@ -21,7 +21,6 @@
           <button class="sidebar-section-trigger" type="button" data-action="shell#toggleSection" aria-expanded="<%= open %>">
             <span class="sidebar-item-icon"><%= icon(item[:icon]) %></span>
             <span class="sidebar-item-label"><%= item[:label] %></span>
-            <span class="sidebar-section-chevron"><%= icon("chevron") %></span>
           </button>
           <div class="sidebar-subnav">
             <% item[:children].each do |child| %>

@@ -5,7 +5,9 @@ class Company < ApplicationRecord
   has_one_attached :quote_logo
   has_many :producto_servicios, dependent: :nullify
 
-  attr_accessor :remove_logo, :remove_quote_logo
+  attr_accessor :inactive, :remove_logo, :remove_quote_logo
+
+  scope :activas, -> { where(active: true) }
 
   validates :notification_email,
             format: { with: URI::MailTo::EMAIL_REGEXP },
@@ -29,6 +31,7 @@ class Company < ApplicationRecord
             format: { with: HEX_COLOR_REGEX, message: "debe ser un color hexadecimal válido" },
             allow_blank: true
 
+  after_update :inactivar_catalogo_asociado, if: :saved_change_to_active?
   after_commit :purge_quote_logo_if_marked
 
   def quote_title_display
@@ -103,6 +106,12 @@ class Company < ApplicationRecord
     normalizar_hex(color_acento.presence || "#6EB8FF")
   end
 
+  def inactive
+    return @inactive unless @inactive.nil?
+
+    !active?
+  end
+
   private
 
   def normalizar_hex(valor)
@@ -115,5 +124,11 @@ class Company < ApplicationRecord
     return unless quote_logo.attached?
 
     quote_logo.purge_later
+  end
+
+  def inactivar_catalogo_asociado
+    return if active?
+
+    producto_servicios.update_all(activo: false, estado_catalogo: "Inactivo", updated_at: Time.current)
   end
 end

@@ -11,6 +11,11 @@ class UsuariosController < ApplicationController
 
     @usuarios = Usuario.includes(:roles).order(:nombre, :apellido)
     @usuarios = aplicar_filtros_usuarios(@usuarios)
+    @usuarios_total_count = @usuarios.count
+    @usuarios_per_page = usuarios_per_page
+    @usuarios_total_pages = [(@usuarios_total_count.to_f / @usuarios_per_page).ceil, 1].max
+    @usuarios_page = [[params[:page].to_i, 1].max, @usuarios_total_pages].min
+    @usuarios = @usuarios.offset((@usuarios_page - 1) * @usuarios_per_page).limit(@usuarios_per_page)
     @usuario_stats = {
       total: Usuario.count,
       activos: Usuario.where(activo: true).count,
@@ -197,5 +202,11 @@ class UsuariosController < ApplicationController
     scope = scope.where(activo: @filters[:status] == "activo") if @filters[:status].in?(%w[activo inactivo])
     scope = scope.where(root: @filters[:root] == "si") if @filters[:root].in?(%w[si no])
     scope
+  end
+
+  def usuarios_per_page
+    allowed = [10, 20, 50, 100]
+    value = params[:per_page].to_i
+    allowed.include?(value) ? value : 10
   end
 end

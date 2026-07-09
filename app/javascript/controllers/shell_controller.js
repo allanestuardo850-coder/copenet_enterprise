@@ -7,6 +7,12 @@ export default class extends Controller {
   connect() {
     this.applyStoredTheme()
     this.applyStoredSidebar()
+    this.handleDocumentClick = this.handleDocumentClick.bind(this)
+    document.addEventListener("click", this.handleDocumentClick)
+  }
+
+  disconnect() {
+    document.removeEventListener("click", this.handleDocumentClick)
   }
 
   toggleSidebar() {
@@ -16,11 +22,66 @@ export default class extends Controller {
     }
 
     const isCollapsed = this.element.classList.toggle(this.sidebarCollapsedClass)
+    if (isCollapsed) this.closeSidebarSections()
     localStorage.setItem("copenet-sidebar", isCollapsed ? "collapsed" : "expanded")
   }
 
   closeSidebar() {
     this.sidebarTarget.classList.remove(this.sidebarOpenClass)
+    this.closeSidebarSections()
+  }
+
+  collapseSidebar() {
+    if (window.innerWidth <= 920) {
+      this.closeSidebar()
+      return
+    }
+
+    this.element.classList.add(this.sidebarCollapsedClass)
+    this.closeSidebarSections()
+    localStorage.setItem("copenet-sidebar", "collapsed")
+  }
+
+  closeSidebarSections() {
+    if (!this.hasSidebarTarget) return
+
+    this.sidebarTarget.querySelectorAll(".sidebar-section.is-open").forEach((section) => {
+      this.setSectionOpen(section, false)
+    })
+  }
+
+  setSectionOpen(section, open) {
+    section.classList.toggle("is-open", open)
+    section.querySelector(".sidebar-section-trigger")?.setAttribute("aria-expanded", open ? "true" : "false")
+  }
+
+  expandSidebar() {
+    if (window.innerWidth <= 920) {
+      this.sidebarTarget.classList.add(this.sidebarOpenClass)
+      return
+    }
+
+    this.element.classList.remove(this.sidebarCollapsedClass)
+    localStorage.setItem("copenet-sidebar", "expanded")
+  }
+
+  handleDocumentClick(event) {
+    if (!this.hasSidebarTarget) return
+    if (event.target.closest("[data-action*='shell#toggleSidebar']")) return
+
+    const sidebarIsExpanded = !this.element.classList.contains(this.sidebarCollapsedClass)
+    const clickInsideSidebar = this.sidebarTarget.contains(event.target)
+    const clickedSidebarLink = event.target.closest(".sidebar-item[href]")
+    const clickedLogo = event.target.closest(".sidebar-brand-logo")
+
+    if (window.innerWidth <= 920) {
+      if (!clickInsideSidebar || clickedSidebarLink || clickedLogo) this.closeSidebar()
+      return
+    }
+
+    if (sidebarIsExpanded && (!clickInsideSidebar || clickedSidebarLink || clickedLogo)) {
+      this.collapseSidebar()
+    }
   }
 
   toggleMenu() {
@@ -36,8 +97,16 @@ export default class extends Controller {
     const section = event.currentTarget.closest(".sidebar-section")
     if (!section) return
 
-    const isOpen = section.classList.toggle("is-open")
-    event.currentTarget.setAttribute("aria-expanded", isOpen ? "true" : "false")
+    if (this.element.classList.contains(this.sidebarCollapsedClass)) {
+      this.expandSidebar()
+      this.closeSidebarSections()
+      this.setSectionOpen(section, true)
+      return
+    }
+
+    const shouldOpen = !section.classList.contains("is-open")
+    this.closeSidebarSections()
+    this.setSectionOpen(section, shouldOpen)
   }
 
   toggleTheme() {
