@@ -28,7 +28,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="app-body" data-controller="shell loading" data-shell-sidebar-open-class="is-open" data-shell-menu-open-class="is-open" data-shell-dark-class="theme-dark" data-shell-sidebar-collapsed-class="sidebar-collapsed">
+  <body class="<%= ["app-body", content_for(:body_class)].compact.join(" ") %>" data-controller="shell loading" data-shell-sidebar-open-class="is-open" data-shell-menu-open-class="is-open" data-shell-dark-class="theme-dark" data-shell-sidebar-collapsed-class="sidebar-collapsed">
     <%= render "shared/page_loader" %>
     <div class="app-shell">
       <%= render "shared/sidebar" %>
