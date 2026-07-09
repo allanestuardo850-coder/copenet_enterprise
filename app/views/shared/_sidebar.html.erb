@@ -1,20 +1,8 @@
 <aside class="sidebar" data-shell-target="sidebar">
-  <% logo_alt = branding_texto(:nombre_plataforma, "Copenet") %>
-  <% logo_sidebar_full = branding_image(:logo_principal, css_class: "sidebar-brand-image sidebar-brand-image-full", alt: logo_alt) %>
-  <% logo_sidebar_compact = branding_image(:logo_principal, css_class: "sidebar-brand-image sidebar-brand-image-compact", alt: logo_alt) %>
   <div class="sidebar-brand sidebar-brand-full">
     <%= link_to dashboard_path, class: "sidebar-brand-logo", aria: { label: "Ir al dashboard" } do %>
-      <% if logo_sidebar_full.present? %>
-        <%= logo_sidebar_full %>
-        <%= logo_sidebar_compact %>
-      <% else %>
-        <span class="sidebar-brand-wordmark sidebar-brand-image-full" aria-hidden="true">
-          <span class="sidebar-brand-wordmark-main">Cope<span>NET</span></span>
-        </span>
-        <span class="sidebar-brand-compact sidebar-brand-image-compact" aria-hidden="true">
-          <span>C</span>
-        </span>
-      <% end %>
+      <%= image_tag "/copenet-logo.png", class: "sidebar-brand-image sidebar-brand-image-full", alt: "Copenet" %>
+      <%= image_tag "/copenet-icon.png", class: "sidebar-brand-image sidebar-brand-image-compact", alt: "Copenet" %>
     <% end %>
     <button class="icon-button mobile-only" type="button" data-action="shell#closeSidebar">
       <%= icon("close") %>
@@ -27,7 +15,7 @@
         <% open = navigation_section_open?(item, @current_page) %>
         <div class="<%= sidebar_section_classes(open) %>">
           <button class="sidebar-section-trigger" type="button" data-action="shell#toggleSection" aria-expanded="<%= open %>">
-            <span class="sidebar-item-icon"><%= icon(item[:icon]) %></span>
+            <span class="sidebar-item-icon"><%= sidebar_icon(item[:icon]) %></span>
             <span class="sidebar-item-label"><%= item[:label] %></span>
           </button>
           <div class="sidebar-subnav">
