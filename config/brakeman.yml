@@ -1,0 +1,9 @@
+---
+# El repositorio versiona un bundle vendorizado (cache/, gems/, etc.).
+# Se le indica a Brakeman que no analice esas carpetas de terceros.
+:skip_files:
+  - "cache/"
+  - "extensions/"
+  - "gems/"
+  - "plugins/"
+  - "specifications/"

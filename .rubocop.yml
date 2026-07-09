@@ -1,5 +1,23 @@
+inherit_from: .rubocop_todo.yml
+
 # Omakase Ruby styling for Rails
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
+# Conserva los Exclude heredados y agrega los nuestros en vez de reemplazarlos
+inherit_mode:
+  merge:
+    - Exclude
+
+# El repositorio versiona un bundle vendorizado (cache/, gems/, etc.).
+# Se excluye del linter para que no inspeccione gemas de terceros ni sus
+# propios .rubocop.yml (p. ej. mini_mime hereda de rubocop-discourse).
+AllCops:
+  Exclude:
+    - "cache/**/*"
+    - "extensions/**/*"
+    - "gems/**/*"
+    - "plugins/**/*"
+    - "specifications/**/*"
 
 # Overwrite or add rules to create your own house style
 #
