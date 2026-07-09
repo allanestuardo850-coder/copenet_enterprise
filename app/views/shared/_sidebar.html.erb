@@ -1,13 +1,21 @@
 <aside class="sidebar" data-shell-target="sidebar">
-  <% logo_sidebar = branding_image(:logo_principal, css_class: "sidebar-brand-image", alt: branding_texto(:nombre_plataforma, "Copenet Enterprise")) %>
-  <div class="sidebar-brand <%= 'sidebar-brand-full' if logo_sidebar.present? %>">
-    <div class="sidebar-brand-mark <%= 'has-image sidebar-brand-mark-full' if logo_sidebar.present? %>" aria-hidden="true">
-      <% if logo_sidebar.present? %>
-        <%= logo_sidebar %>
+  <% logo_alt = branding_texto(:nombre_plataforma, "Copenet") %>
+  <% logo_sidebar_full = branding_image(:logo_principal, css_class: "sidebar-brand-image sidebar-brand-image-full", alt: logo_alt) %>
+  <% logo_sidebar_compact = branding_image(:logo_principal, css_class: "sidebar-brand-image sidebar-brand-image-compact", alt: logo_alt) %>
+  <div class="sidebar-brand sidebar-brand-full">
+    <%= link_to dashboard_path, class: "sidebar-brand-logo", aria: { label: "Ir al dashboard" } do %>
+      <% if logo_sidebar_full.present? %>
+        <%= logo_sidebar_full %>
+        <%= logo_sidebar_compact %>
       <% else %>
-        <span class="sidebar-brand-mark-core"></span>
+        <span class="sidebar-brand-wordmark sidebar-brand-image-full" aria-hidden="true">
+          <span class="sidebar-brand-wordmark-main">Cope<span>NET</span></span>
+        </span>
+        <span class="sidebar-brand-compact sidebar-brand-image-compact" aria-hidden="true">
+          <span>C</span>
+        </span>
       <% end %>
-    </div>
+    <% end %>
     <button class="icon-button mobile-only" type="button" data-action="shell#closeSidebar">
       <%= icon("close") %>
     </button>

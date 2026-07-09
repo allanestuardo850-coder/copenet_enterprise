@@ -297,6 +297,61 @@ input {
   display: block;
 }
 
+.sidebar-brand-wordmark {
+  width: min(170px, 100%);
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+}
+
+.sidebar-brand-wordmark-main {
+  color: #ffffff;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.sidebar-brand-wordmark-main span {
+  display: inline;
+  color: #16a8ff;
+  font-style: italic;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.sidebar-brand-compact {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+}
+
+.sidebar-brand-compact span {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  border: 4px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 0;
+  position: relative;
+}
+
+.sidebar-brand-compact span::after {
+  content: "";
+  width: 18px;
+  height: 18px;
+  border: 4px solid #16a8ff;
+  border-right-color: transparent;
+  border-radius: 50%;
+}
+
 .sidebar-brand-image-full {
   opacity: 1;
 }
@@ -5948,6 +6003,16 @@ html.theme-dark .branding-preview-card {
 
   .app-body.sidebar-collapsed .sidebar-brand-image {
     display: block;
+  }
+
+  .app-body.sidebar-collapsed .sidebar-brand-image-full {
+    width: min(170px, 100%);
+    max-height: 45px;
+    opacity: 1;
+  }
+
+  .app-body.sidebar-collapsed .sidebar-brand-image-compact {
+    opacity: 0;
   }
 
   .app-body.sidebar-collapsed .sidebar-brand-copy,
