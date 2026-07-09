@@ -7,40 +7,6 @@
     </div>
   </div>
 
-  <section class="user-index-kpi-grid">
-    <article class="user-index-kpi-card">
-      <span class="user-index-kpi-icon"><%= icon("user-group") %></span>
-      <div>
-        <span class="user-index-kpi-title">Usuarios Registrados</span>
-        <strong class="user-index-kpi-value"><%= @usuario_stats[:total] %></strong>
-      </div>
-    </article>
-
-    <article class="user-index-kpi-card">
-      <span class="user-index-kpi-icon"><%= icon("user") %></span>
-      <div>
-        <span class="user-index-kpi-title">Usuarios Activos</span>
-        <strong class="user-index-kpi-value"><%= @usuario_stats[:activos] %></strong>
-      </div>
-    </article>
-
-    <article class="user-index-kpi-card">
-      <span class="user-index-kpi-icon"><%= icon("shield-outline") %></span>
-      <div>
-        <span class="user-index-kpi-title">Usuarios Root</span>
-        <strong class="user-index-kpi-value"><%= @usuario_stats[:roots] %></strong>
-      </div>
-    </article>
-
-    <article class="user-index-kpi-card">
-      <span class="user-index-kpi-icon"><%= icon("user-role") %></span>
-      <div>
-        <span class="user-index-kpi-title">Usuarios con Roles</span>
-        <strong class="user-index-kpi-value"><%= @usuario_stats[:con_roles] %></strong>
-      </div>
-    </article>
-  </section>
-
   <section class="panel filters-panel user-index-panel user-index-filters-panel">
     <%= form_with url: usuarios_path, method: :get, class: "filters-form" do %>
       <div class="filters-bar">

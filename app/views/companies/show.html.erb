@@ -10,13 +10,6 @@
       </div>
 
       <div class="company-show-copy">
-        <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-          <%= link_to "Dashboard", dashboard_path %>
-          <span><%= icon("chevron") %></span>
-          <%= link_to "Empresas", companies_path %>
-          <span><%= icon("chevron") %></span>
-          <strong>Detalle</strong>
-        </nav>
         <span class="company-show-eyebrow">Registro de compañía</span>
         <h1><%= @company.commercial_name.presence || @company.legal_name %></h1>
         <p><%= @company.legal_name.presence || "Sin razón social registrada" %></p>

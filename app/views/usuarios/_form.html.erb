@@ -18,7 +18,6 @@
     <div class="panel-header">
       <div>
         <h2>Configuración del Usuario</h2>
-        <p>Completa el registro por módulos para mantener la edición compacta y más operativa.</p>
       </div>
       <%= render "shared/badge", text: usuario.persisted? ? "Edición" : "Nuevo registro", tone: "info" %>
     </div>
@@ -52,7 +51,6 @@
     <div class="panel-header">
       <div>
         <h2>Información General</h2>
-        <p>Datos personales y estado operativo del usuario dentro de la plataforma.</p>
       </div>
     </div>
 
@@ -88,7 +86,6 @@
     <div class="panel-header">
       <div>
         <h2>Seguridad y Credenciales</h2>
-        <p>Define credenciales de acceso. En edición puedes dejarlo vacío si no deseas cambiar la contraseña.</p>
       </div>
     </div>
 
@@ -108,7 +105,6 @@
     <div class="panel-header">
       <div>
         <h2>Roles y Alcance Operativo</h2>
-        <p>Asigna los roles que servirán como base funcional del acceso del usuario.</p>
       </div>
       <%= render "shared/badge", text: "#{@roles.size} roles disponibles", tone: "info" %>
     </div>

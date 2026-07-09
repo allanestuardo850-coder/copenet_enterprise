@@ -1,15 +1,6 @@
 <section class="page-section expediente-page" data-controller="tabs" data-tabs-default-value="<%= @tab_activa.presence || "resumen" %>">
   <div class="page-heading">
     <div class="page-heading-copy">
-      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-        <%= link_to "Dashboard", dashboard_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to "Clientes", clientes_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to @cliente.nombre, cliente_path(@cliente) %>
-        <span><%= icon("chevron") %></span>
-        <strong>Expediente</strong>
-      </nav>
       <h1><%= @expediente_cliente.titulo %></h1>
       <p>Consola previa a facturación para entender el estado comercial, documental y operativo del cliente.</p>
     </div>

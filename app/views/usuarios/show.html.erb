@@ -1,13 +1,6 @@
 <section class="page-section user-admin-page" data-controller="tabs" data-tabs-default-value="resumen">
   <div class="page-heading">
     <div class="page-heading-copy">
-      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-        <%= link_to "Dashboard", dashboard_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to "Usuarios", usuarios_path %>
-        <span><%= icon("chevron") %></span>
-        <strong><%= @usuario.nombre_completo %></strong>
-      </nav>
       <h1><%= @usuario.nombre_completo %></h1>
       <p>Perfil administrativo y permisos operativos del usuario seleccionado.</p>
     </div>
@@ -80,13 +73,12 @@
     <div class="panel-header">
       <div>
         <h2>Información del Usuario</h2>
-        <p>Datos del perfil y resumen administrativo del acceso actual.</p>
       </div>
     </div>
 
     <div class="module-page-grid user-summary-grid">
       <section class="panel nested-panel">
-        <div class="detail-grid">
+        <div class="detail-grid detail-grid-soft">
           <div class="detail-item"><span>Correo</span><strong><%= @usuario.email %></strong></div>
           <div class="detail-item"><span>Nombre</span><strong><%= @usuario.nombre_completo %></strong></div>
           <div class="detail-item"><span>Cargo</span><strong><%= usuario_valor(nil) %></strong></div>
@@ -106,7 +98,6 @@
     <div class="panel-header">
       <div>
         <h2>Últimas Actividades</h2>
-        <p>Timeline administrativo de referencia del perfil.</p>
       </div>
     </div>
 

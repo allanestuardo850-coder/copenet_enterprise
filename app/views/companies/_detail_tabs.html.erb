@@ -135,12 +135,11 @@
     <div class="panel-header">
       <div>
         <h2>Configuración Fel / Infile</h2>
-        <p>Parámetros internos de certificación y datos fiscales de la empresa.</p>
       </div>
       <%= render "shared/badge", text: "Interno", tone: "warning" %>
     </div>
 
-    <div class="detail-grid">
+    <div class="detail-grid detail-grid-soft">
       <div class="detail-item"><span>Prefijo Infile</span><strong><%= company.infile_prefix.presence || "-" %></strong></div>
       <div class="detail-item"><span>Llave Infile</span><strong><%= company.infile_key.presence || "-" %></strong></div>
       <div class="detail-item"><span>Prefijo firma</span><strong><%= company.infile_signature_prefix.presence || "-" %></strong></div>
@@ -156,7 +155,6 @@
     <div class="panel-header">
       <div>
         <h2>Branding y contacto comercial</h2>
-        <p>Datos de identidad comercial que se imprimen en la cotización emitida por esta empresa.</p>
       </div>
       <%= render "shared/badge", text: "Cotización", tone: "info" %>
     </div>
@@ -167,23 +165,20 @@
       </div>
     <% end %>
 
-    <div class="detail-grid">
+    <div class="detail-grid detail-grid-soft">
       <div class="detail-item"><span>Formato de cotización</span><strong><%= company.quote_format_name.presence || "-" %></strong></div>
       <div class="detail-item"><span>URL de contacto</span><strong><%= company.quote_website_url.presence || "-" %></strong></div>
       <div class="detail-item"><span>Nombre de contacto</span><strong><%= company.quote_contact_name.presence || "-" %></strong></div>
       <div class="detail-item"><span>Cargo o área</span><strong><%= company.quote_contact_role.presence || "-" %></strong></div>
       <div class="detail-item"><span>Correo de contacto</span><strong><%= company.quote_contact_email.presence || "-" %></strong></div>
       <div class="detail-item"><span>Teléfono de contacto</span><strong><%= company.quote_contact_phone.presence || "-" %></strong></div>
-      <div class="detail-item">
+      <div class="company-detail-color" style="--company-detail-color:<%= company.quote_table_header_color_display %>;">
         <span>Color de encabezados de tabla</span>
-        <strong>
-          <span style="display:inline-flex;width:18px;height:18px;border-radius:999px;background:<%= company.quote_table_header_color_display %>;border:1px solid rgba(15,23,42,.12);vertical-align:middle;margin-right:8px;"></span>
-          <%= company.quote_table_header_color_display %>
-        </strong>
+        <strong><i></i><%= company.quote_table_header_color_display %></strong>
       </div>
-      <div class="detail-item">
+      <div class="company-detail-color" style="--company-detail-color:<%= company.quote_contact_text_color_display %>;">
         <span>Color de datos de contacto</span>
-        <strong style="color:<%= company.quote_contact_text_color_display %>;"><%= company.quote_contact_text_color_display %></strong>
+        <strong><i></i><%= company.quote_contact_text_color_display %></strong>
       </div>
       <div class="detail-item detail-item-full"><span>Texto inferior del PDF</span><strong><%= company.quote_footer_note.presence || "-" %></strong></div>
     </div>
@@ -193,11 +188,10 @@
     <div class="panel-header">
       <div>
         <h2>Plantilla del documento comercial</h2>
-        <p>Textos de portada, carta, términos y firma usados al generar el PDF de la empresa.</p>
       </div>
     </div>
 
-    <div class="detail-grid">
+    <div class="detail-grid detail-grid-soft">
       <div class="detail-item"><span>Título visible del PDF</span><strong><%= company.quote_title.presence || "-" %></strong></div>
       <div class="detail-item"><span>Subtítulo del PDF</span><strong><%= company.quote_subtitle.presence || "-" %></strong></div>
       <div class="detail-item"><span>Nombre de firma</span><strong><%= company.quote_signature_name.presence || company.quote_contact_name.presence || "-" %></strong></div>

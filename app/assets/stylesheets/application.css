@@ -993,7 +993,7 @@ html.theme-dark .user-menu-trigger .user-meta span {
 }
 
 .page-heading {
-  align-items: flex-start;
+  align-items: center;
 }
 
 .page-heading-copy {
@@ -2583,7 +2583,7 @@ html.theme-dark select.text-input option {
 .company-fel-panel .field-group label {
   color: #071d55;
   font-size: 0.74rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
 }
@@ -2679,7 +2679,7 @@ html.theme-dark select.text-input option {
 .company-quote-panel .field-group label {
   color: #071d55;
   font-size: 0.74rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
 }
@@ -2911,7 +2911,7 @@ html.theme-dark select.text-input option {
 .company-document-panel .field-group label {
   color: #071d55;
   font-size: 0.74rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
 }
@@ -3133,7 +3133,7 @@ html.theme-dark select.text-input option {
 
 .company-show-hero {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: space-between;
   gap: 24px;
   padding: 22px;
@@ -3297,6 +3297,44 @@ html.theme-dark select.text-input option {
 .company-detail-panel .detail-item strong {
   color: #071d55;
   font-weight: 600;
+}
+
+/* Secciones FEL / Cotizacion / Documento (ver): respuestas sin negrita
+   y con mas aire para no saturar */
+.company-detail-panel .detail-grid-soft {
+  gap: 18px;
+}
+
+.company-detail-panel .detail-grid-soft .detail-item {
+  padding: 14px 16px;
+}
+
+.company-detail-panel .detail-grid-soft .detail-item strong {
+  font-weight: 400;
+  margin-top: 7px;
+}
+
+/* Usuarios (ver): respuestas sin negrita y con mas aire para no amontonar */
+.user-summary-grid .detail-grid-soft {
+  gap: 16px;
+}
+
+.user-summary-grid .detail-grid-soft .detail-item {
+  padding: 14px 16px;
+}
+
+.user-summary-grid .detail-grid-soft .detail-item strong {
+  font-weight: 400;
+  margin-top: 6px;
+}
+
+/* Aire despues del titulo de cada seccion para no amontonar la informacion */
+.company-detail-panel .panel-header {
+  margin-bottom: 16px;
+}
+
+.user-admin-page .module-tab-panel .panel-header {
+  margin-bottom: 14px;
 }
 
 .company-detail-general-grid {

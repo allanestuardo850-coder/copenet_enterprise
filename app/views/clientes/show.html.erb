@@ -1,13 +1,6 @@
 <section class="page-section">
   <div class="page-heading">
     <div>
-      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-        <%= link_to "Dashboard", dashboard_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to "Clientes", clientes_path %>
-        <span><%= icon("chevron") %></span>
-        <strong><%= @cliente.nombre %></strong>
-      </nav>
       <h1><%= @cliente.nombre %></h1>
       <p>Ficha comercial base del cliente para cotizaciones, expediente y proyectos.</p>
     </div>

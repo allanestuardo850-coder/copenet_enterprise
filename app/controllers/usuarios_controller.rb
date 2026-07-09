@@ -16,12 +16,6 @@ class UsuariosController < ApplicationController
     @usuarios_total_pages = [(@usuarios_total_count.to_f / @usuarios_per_page).ceil, 1].max
     @usuarios_page = [[params[:page].to_i, 1].max, @usuarios_total_pages].min
     @usuarios = @usuarios.offset((@usuarios_page - 1) * @usuarios_per_page).limit(@usuarios_per_page)
-    @usuario_stats = {
-      total: Usuario.count,
-      activos: Usuario.where(activo: true).count,
-      roots: Usuario.where(root: true).count,
-      con_roles: Usuario.joins(:usuario_roles).distinct.count
-    }
   end
 
   def show
