@@ -1,11 +1,13 @@
-<article class="kpi-card kpi-card-<%= kpi[:tone] %>">
-  <div class="kpi-meta">
-    <span class="kpi-title"><%= kpi[:title] %></span>
-    <%= render "shared/badge", text: kpi[:change], tone: kpi[:tone] %>
+<article class="kpi-card kpi-card-v2">
+  <span class="kpi-icon kpi-icon-<%= kpi[:tone] %>"><%= icon(kpi[:icon]) %></span>
+  <div class="kpi-body">
+    <span class="kpi-label"><%= kpi[:title] %></span>
+    <span class="kpi-value"><%= kpi[:value] %></span>
+    <span class="kpi-delta">
+      <span class="kpi-delta-value trend-<%= kpi[:trend] %>">
+        <%= kpi[:trend] == "up" ? "▲" : "▼" %> <%= kpi[:change] %>
+      </span>
+      <span class="kpi-delta-note"><%= kpi[:compare] %></span>
+    </span>
   </div>
-  <strong class="kpi-value"><%= kpi[:value] %></strong>
-  <p class="kpi-footer">
-    <span class="trend trend-<%= kpi[:trend] %>"><%= kpi[:trend] == "up" ? "▲" : "▼" %></span>
-    Rendimiento frente al periodo anterior
-  </p>
 </article>
