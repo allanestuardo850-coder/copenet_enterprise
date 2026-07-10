@@ -15,6 +15,16 @@ class SesionesController < ApplicationController
     if usuario&.authenticate(params[:password].to_s)
       session[:usuario_id] = usuario.id
       usuario.update_column(:ultimo_acceso_en, Time.current)
+      BitacoraEvento.registrar!(
+        event_type: "acceso.login",
+        description: "Inicio de sesión",
+        subject: usuario,
+        usuario: usuario,
+        metadata: {
+          module_code: "ACCESO",
+          module_name: "Acceso y seguridad"
+        }
+      )
       destino = ruta_segura_post_login
 
       if destino == login_path && !usuario.root?
@@ -31,6 +41,18 @@ class SesionesController < ApplicationController
   end
 
   def destroy
+    if current_usuario.present?
+      BitacoraEvento.registrar!(
+        event_type: "acceso.logout",
+        description: "Cierre de sesión",
+        subject: current_usuario,
+        usuario: current_usuario,
+        metadata: {
+          module_code: "ACCESO",
+          module_name: "Acceso y seguridad"
+        }
+      )
+    end
     reset_session
     redirect_to login_path, notice: "Sesión cerrada correctamente."
   end

@@ -67,20 +67,12 @@ export default class extends Controller {
 
   handleDocumentClick(event) {
     if (!this.hasSidebarTarget) return
-    if (event.target.closest("[data-action*='shell#toggleSidebar']")) return
 
-    const sidebarIsExpanded = !this.element.classList.contains(this.sidebarCollapsedClass)
-    const clickInsideSidebar = this.sidebarTarget.contains(event.target)
-    const clickedSidebarLink = event.target.closest(".sidebar-item[href]")
-    const clickedLogo = event.target.closest(".sidebar-brand-logo")
-
-    if (window.innerWidth <= 920) {
-      if (!clickInsideSidebar || clickedSidebarLink || clickedLogo) this.closeSidebar()
-      return
-    }
-
-    if (sidebarIsExpanded && (!clickInsideSidebar || clickedSidebarLink || clickedLogo)) {
-      this.collapseSidebar()
+    // El sidebar solo se abre u oculta con el boton de hamburguesa (toggleSidebar).
+    // Aqui unicamente cerramos las secciones desplegables al hacer clic fuera del sidebar;
+    // nunca se colapsa ni se cierra el sidebar por clics fuera o en enlaces.
+    if (!this.sidebarTarget.contains(event.target)) {
+      this.closeSidebarSections()
     }
   }
 

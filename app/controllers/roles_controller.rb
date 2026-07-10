@@ -24,33 +24,31 @@ class RolesController < ApplicationController
   def new
     @current_page = :roles
     @rol = Rol.new(activo: true)
-    cargar_permisos
   end
 
   def create
     @current_page = :roles
     @rol = Rol.new(rol_params)
 
-    if guardar_rol_con_permisos
+    if @rol.save
       redirect_to @rol, notice: "Rol creado correctamente."
     else
-      cargar_permisos
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
     @current_page = :roles
-    cargar_permisos
   end
 
   def update
     @current_page = :roles
 
-    if guardar_rol_con_permisos
+    # En edición solo se actualiza la información del rol; los permisos se
+    # asignan desde la vista de detalle (ver) del rol.
+    if @rol.update(rol_params)
       redirect_to @rol, notice: "Rol actualizado correctamente."
     else
-      cargar_permisos
       render :edit, status: :unprocessable_entity
     end
   end
@@ -74,7 +72,10 @@ class RolesController < ApplicationController
 
     sync_permisos_rol
 
-    redirect_to permisos_rol_path(@rol), notice: "Permisos actualizados correctamente."
+    respond_to do |format|
+      format.json { head :ok }
+      format.html { redirect_to rol_path(@rol), notice: "Permisos actualizados correctamente." }
+    end
   end
 
   private

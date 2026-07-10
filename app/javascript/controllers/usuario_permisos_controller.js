@@ -1,17 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
 
+// Guarda los permisos en tiempo real (sin botón): cada cambio en un checkbox
+// envía el formulario por fetch al endpoint de permisos y muestra el estado.
 export default class extends Controller {
+  static targets = ["status"]
+
   connect() {
+    this.form = this.element.closest("form")
+    this.saveTimer = null
     this.updateAllControls()
   }
 
   toggle(event) {
-    const checkbox = event.currentTarget
-    const row = checkbox.closest("[data-modulo-id]")
-    if (!row) return
-
-    this.markPending(row)
+    const row = event.currentTarget.closest("[data-modulo-id]")
+    if (row) this.markDirty(row)
     this.updateAllControls()
+    this.scheduleSave()
   }
 
   toggleAll(event) {
@@ -20,24 +24,44 @@ export default class extends Controller {
     if (!panel) return
 
     const checked = control.checked
-    const rows = Array.from(panel.querySelectorAll("[data-modulo-id]"))
-    const checkboxes = panel.querySelectorAll("input[type='checkbox'][data-permission-action]")
-
-    checkboxes.forEach((input) => {
+    panel.querySelectorAll("input[type='checkbox'][data-permission-action]").forEach((input) => {
       input.checked = checked
     })
-    rows.forEach((row) => this.markPending(row))
+    panel.querySelectorAll("[data-modulo-id]").forEach((row) => this.markDirty(row))
     this.updateAllControls()
+    this.scheduleSave()
   }
 
-  markPending(row) {
-    this.markDirty(row)
+  scheduleSave() {
+    if (!this.form) return
 
-    const status = row.querySelector("[data-permission-status]")
-    if (!status) return
+    this.setStatus("Guardando…", "saving")
+    clearTimeout(this.saveTimer)
+    this.saveTimer = setTimeout(() => this.save(), 500)
+  }
 
-    status.textContent = "Pendiente"
-    status.dataset.state = "saving"
+  async save() {
+    if (!this.form) return
+
+    try {
+      const response = await fetch(this.form.action, {
+        method: "POST",
+        body: new FormData(this.form),
+        headers: { Accept: "application/json", "X-Requested-With": "XMLHttpRequest" }
+      })
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+      this.clearDirty()
+      this.setStatus("Cambios guardados", "saved")
+    } catch (error) {
+      this.setStatus("No se pudo guardar. Intenta de nuevo.", "error")
+    }
+  }
+
+  setStatus(text, state) {
+    if (!this.hasStatusTarget) return
+    this.statusTarget.textContent = text
+    this.statusTarget.dataset.state = state
   }
 
   markDirty(row) {
@@ -50,6 +74,10 @@ export default class extends Controller {
     input.value = moduloId
     input.dataset.dirtyModuloId = moduloId
     this.element.appendChild(input)
+  }
+
+  clearDirty() {
+    this.element.querySelectorAll("input[data-dirty-modulo-id]").forEach((input) => input.remove())
   }
 
   updateAllControls() {

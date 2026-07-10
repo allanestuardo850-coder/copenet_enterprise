@@ -51,7 +51,11 @@ Rails.application.routes.draw do
       get :configuration
     end
   end
-  resources :usuarios, except: [:destroy]
+  resources :usuarios, except: [:destroy] do
+    member do
+      patch :permisos
+    end
+  end
   resources :roles do
     member do
       match :permisos, via: %i[get patch]
