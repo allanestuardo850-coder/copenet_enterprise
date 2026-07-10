@@ -2,7 +2,6 @@
   <div class="page-heading">
     <div class="page-heading-copy">
       <h1><%= @usuario.nombre_completo %></h1>
-      <p>Perfil administrativo y permisos operativos del usuario seleccionado.</p>
     </div>
     <div class="page-heading-side">
       <div class="user-heading-meta">
@@ -12,9 +11,6 @@
       <div class="page-actions-inline">
         <%= link_to "Listado de Registros", usuarios_path, class: "ui-button ui-button-secondary" %>
         <%= link_to "Modificar", edit_usuario_path(@usuario), class: "ui-button ui-button-primary" %>
-        <% unless @usuario.root? && Usuario.where(root: true).count <= 1 %>
-          <%= button_to "Eliminar", usuario_path(@usuario), method: :delete, class: "ui-button ui-button-secondary", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este usuario?" } %>
-        <% end %>
       </div>
     </div>
   </div>
@@ -132,9 +128,7 @@
       </section>
     <% else %>
       <% first_permission_tab = @modulo_sistemas_por_grupo.keys.first.to_s.parameterize.presence || "permisos" %>
-      <div data-controller="tabs usuario-permisos"
-           data-tabs-default-value="<%= first_permission_tab %>"
-           data-usuario-permisos-url-value="<%= permisos_usuario_path(@usuario) %>">
+      <div data-controller="tabs" data-tabs-default-value="<%= first_permission_tab %>">
         <div class="permission-tabs" role="tablist" aria-label="Grupos de permisos">
           <% @modulo_sistemas_por_grupo.each_with_index do |(grupo, modulos), index| %>
             <% tab_id = grupo.to_s.parameterize.presence || "grupo-#{index + 1}" %>
@@ -162,7 +156,7 @@
                 <%= check_box_tag nil,
                                   "1",
                                   false,
-                                  data: { action: "change->usuario-permisos#toggleAll" } %>
+                                  disabled: true %>
                 <span>Todos</span>
               </label>
             </div>
@@ -202,10 +196,7 @@
                           <%= check_box_tag "usuario_permisos[#{modulo.id}][puede_#{accion}]",
                                             "1",
                                             checked,
-                                            data: {
-                                              action: "change->usuario-permisos#toggle",
-                                              permission_action: "puede_#{accion}"
-                                            } %>
+                                            disabled: true %>
                         </td>
                       <% end %>
                     </tr>

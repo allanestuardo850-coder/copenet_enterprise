@@ -10,15 +10,17 @@
       </div>
 
       <div class="company-show-copy">
-        <span class="company-show-eyebrow">Registro de compañía</span>
-        <h1><%= @company.commercial_name.presence || @company.legal_name %></h1>
-        <p><%= @company.legal_name.presence || "Sin razón social registrada" %></p>
+        <div class="company-show-title-row">
+          <h1><%= @company.commercial_name.presence || @company.legal_name %></h1>
 
-        <div class="company-show-badges">
-          <%= render "shared/badge", text: @company.active? ? "Activa" : "Inactiva", tone: @company.active? ? "success" : "warning" %>
-          <%= render "shared/badge", text: @company.fel_token.present? ? "FEL configurado" : "FEL pendiente", tone: @company.fel_token.present? ? "success" : "warning" %>
-          <%= render "shared/badge", text: @company.quote_format_name.present? ? "Formato propio" : "Formato global", tone: @company.quote_format_name.present? ? "primary" : "info" %>
+          <div class="company-show-badges">
+            <%= render "shared/badge", text: @company.active? ? "Activa" : "Inactiva", tone: @company.active? ? "success" : "warning" %>
+            <%= render "shared/badge", text: @company.fel_token.present? ? "FEL configurado" : "FEL pendiente", tone: @company.fel_token.present? ? "success" : "warning" %>
+            <%= render "shared/badge", text: @company.quote_format_name.present? ? "Formato propio" : "Formato global", tone: @company.quote_format_name.present? ? "primary" : "info" %>
+          </div>
         </div>
+
+        <p><%= @company.legal_name.presence || "Sin razón social registrada" %></p>
       </div>
     </div>
 

@@ -1,6 +1,12 @@
 <div class="user-menu" data-shell-target="menu" data-action="click@window->shell#closeMenu">
   <button class="user-menu-trigger" type="button" data-action="shell#toggleMenu">
-    <div class="user-avatar"><%= current_usuario&.nombre.to_s.first&.upcase || "C" %><%= current_usuario&.apellido.to_s.first&.upcase || "E" %></div>
+    <div class="user-avatar">
+      <% if current_usuario&.fotografia&.attached? %>
+        <%= image_tag current_usuario.fotografia, alt: "Fotografía de perfil" %>
+      <% else %>
+        <%= current_usuario&.nombre.to_s.first&.upcase || "C" %><%= current_usuario&.apellido.to_s.first&.upcase || "E" %>
+      <% end %>
+    </div>
     <div class="user-meta">
       <strong><%= [current_usuario&.nombre, current_usuario&.apellido].compact.join(" ").presence || "Invitado" %></strong>
       <span><%= current_usuario&.email.presence || (current_usuario&.root? ? "Usuario root" : current_usuario&.roles&.map(&:nombre)&.join(", ").presence || "Sin rol") %></span>
@@ -10,9 +16,8 @@
 
   <div class="user-menu-dropdown">
     <% if current_usuario %>
-      <a href="<%= usuario_path(current_usuario) %>">Perfil</a>
+      <a href="<%= perfil_path %>">Mi perfil</a>
     <% end %>
-    <a href="#">Preferencias</a>
     <a href="#">Centro de ayuda</a>
     <hr>
     <%= button_to logout_path, method: :delete, class: "dropdown-button", form_class: "dropdown-form" do %>

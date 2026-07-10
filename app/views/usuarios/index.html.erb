@@ -1,12 +1,4 @@
 <section class="page-section user-module-page user-index-page">
-  <div class="page-heading user-index-heading">
-    <h1>Usuarios</h1>
-    <div class="page-actions-inline">
-      <%= link_to "Exportar", "#", class: "ui-button ui-button-secondary" %>
-      <%= link_to "Nuevo usuario", new_usuario_path, class: "ui-button ui-button-primary" %>
-    </div>
-  </div>
-
   <section class="panel filters-panel user-index-panel user-index-filters-panel">
     <%= form_with url: usuarios_path, method: :get, class: "filters-form" do %>
       <div class="filters-bar">
@@ -32,7 +24,9 @@
   <section class="panel user-index-panel user-index-table-panel">
     <div class="panel-header">
       <h2>Listado de Usuarios</h2>
-      <%= render "shared/badge", text: "#{@usuarios_total_count} #{@usuarios_total_count == 1 ? 'registro' : 'registros'}", tone: "info" %>
+      <div class="page-actions-inline">
+        <%= link_to "Nuevo usuario", new_usuario_path, class: "ui-button ui-button-primary" %>
+      </div>
     </div>
 
     <% if @usuarios.any? %>

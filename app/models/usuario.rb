@@ -1,6 +1,8 @@
 class Usuario < ApplicationRecord
   has_secure_password
 
+  has_one_attached :fotografia
+
   has_many :usuario_roles, dependent: :destroy
   has_many :usuario_permisos, dependent: :destroy
   has_many :roles, through: :usuario_roles

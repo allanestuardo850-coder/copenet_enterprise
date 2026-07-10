@@ -87,7 +87,7 @@ export default class extends Controller {
     }).join("")
 
     return `
-      <svg viewBox="0 0 1160 284" class="dash-chart dash-chart-bars" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Resumen financiero mensual">
+      <svg viewBox="0 0 1160 284" class="dash-chart dash-chart-bars" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Resumen financiero">
         ${grid}
         ${bars}
         <polyline points="${linePoints}" fill="none" stroke="var(--success)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>

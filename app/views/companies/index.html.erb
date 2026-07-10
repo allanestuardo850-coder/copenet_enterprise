@@ -1,14 +1,4 @@
 <section class="page-section">
-  <div class="page-heading">
-    <div>
-      <h1><%= @page_title %></h1>
-      <% if @page_description.present? %>
-        <p><%= @page_description %></p>
-      <% end %>
-    </div>
-    <%= link_to "Nueva empresa", new_company_path, class: "ui-button ui-button-primary" %>
-  </div>
-
   <div class="panel filters-panel">
     <%= form_with url: companies_path, method: :get, class: "filters-form" do %>
       <div class="filters-bar">
@@ -36,7 +26,9 @@
       <div>
         <h2>Listado de empresas</h2>
       </div>
-      <%= render "shared/badge", text: "#{@companies_total_count} registros", tone: "info" %>
+      <div class="page-actions-inline">
+        <%= link_to "Nueva empresa", new_company_path, class: "ui-button ui-button-primary" %>
+      </div>
     </div>
 
     <% if @companies.any? %>

@@ -86,6 +86,23 @@ module EnterpriseHelper
     end
   end
 
+  def global_search_items
+    items = []
+    collect_global_search_items(@navigation_items || [], items)
+
+    if current_usuario
+      items << {
+        label: "Mi perfil",
+        path: perfil_path,
+        group: "Cuenta",
+        icon: "user",
+        keywords: ["perfil", "mi perfil", "cuenta", "fotografia", "fotografía", "contraseña"]
+      }
+    end
+
+    items.uniq { |item| item[:path] }
+  end
+
   def sidebar_item_classes(active)
     classes = ["sidebar-item"]
     classes << "is-active" if active
@@ -126,6 +143,54 @@ module EnterpriseHelper
     "badge badge-#{tone}"
   end
 
+  def collect_global_search_items(navigation_items, items, group = nil)
+    navigation_items.each do |item|
+      children = item.fetch(:children, [])
+      next_group = group || item[:label]
+
+      if item[:path].present?
+        items << {
+          label: item[:label],
+          path: item[:path],
+          group: group,
+          icon: item[:icon],
+          keywords: global_search_keywords_for(item, children)
+        }
+      end
+
+      collect_global_search_items(children, items, next_group) if children.any?
+    end
+  end
+
+  def global_search_keywords_for(item, children = [])
+    key = item[:key].to_s
+    aliases = {
+      "dashboard" => ["dashboard", "inicio", "panel"],
+      "administracion" => ["administración", "administracion", "admin"],
+      "companies" => ["empresas", "empresa", "compañías", "compañias", "companias", "compañía", "compania"],
+      "usuarios" => ["usuarios", "usuario", "users"],
+      "roles" => ["roles", "permisos", "roles y permisos"],
+      "monedas" => ["monedas", "divisas"],
+      "modulos_sistema" => ["módulos", "modulos", "sistema"],
+      "cobros" => ["cobros", "comercial"],
+      "clientes" => ["clientes", "cliente", "cuentas"],
+      "productos_servicios" => ["productos", "servicios", "productos y servicios", "catalogo", "catálogo"],
+      "cotizaciones" => ["cotizaciones", "cotizacion", "cotización", "propuestas"],
+      "reportes" => ["reportes", "reporte", "informes"],
+      "configuracion" => ["configuración", "configuracion", "ajustes"],
+      "parametros" => ["parámetros", "parametros", "branding", "marca"],
+      "auditoria" => ["auditoría", "auditoria", "bitacora", "bitácora"],
+      "accounts" => ["cuentas", "accounts"],
+      "costs" => ["costos", "gastos"],
+      "collections" => ["cobros operativos", "cobros"],
+      "invoices" => ["facturación", "facturacion", "facturas"],
+      "contracts" => ["contratos", "contrato"]
+    }
+
+    child_labels = children.map { |child| child[:label] }
+    ([item[:label], key, *aliases.fetch(key, []), *child_labels]).compact.uniq
+  end
+
   def status_badge_tone(value)
     case value
     when "Activa", "Activo", "Disponible", "Completado", "Emitida", "Cobrado", "Aprobado"
@@ -160,7 +225,7 @@ module EnterpriseHelper
     y = ->(v) { (bottom - (v.to_f / max) * plot_h).round(1) }
     steps = (0..3).map { |i| (max * i / 3.0).round }
 
-    svg = +%(<svg viewBox="0 0 1160 284" class="dash-chart dash-chart-bars" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Resumen financiero mensual">)
+    svg = +%(<svg viewBox="0 0 1160 284" class="dash-chart dash-chart-bars" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Resumen financiero">)
     steps.each do |v|
       gy = y.call(v)
       svg << %(<line x1="#{left}" y1="#{gy}" x2="#{right}" y2="#{gy}" class="dash-grid"/>)

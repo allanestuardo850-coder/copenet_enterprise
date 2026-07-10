@@ -1,5 +1,5 @@
 class UsuariosController < ApplicationController
-  before_action :set_usuario, only: %i[show edit update destroy permisos]
+  before_action :set_usuario, only: %i[show edit update]
 
   def index
     @current_page = :usuarios
@@ -36,7 +36,7 @@ class UsuariosController < ApplicationController
 
     if @usuario.save
       sync_roles
-      redirect_to @usuario, notice: "Usuario creado correctamente."
+      redirect_to usuarios_path, notice: "Usuario creado correctamente."
     else
       render :new, status: :unprocessable_entity
     end
@@ -45,6 +45,7 @@ class UsuariosController < ApplicationController
   def edit
     @current_page = :usuarios
     cargar_roles
+    cargar_permisos
   end
 
   def update
@@ -52,57 +53,15 @@ class UsuariosController < ApplicationController
     cargar_roles
 
     if @usuario.update(usuario_update_params)
-      sync_roles
-      redirect_to @usuario, notice: "Usuario actualizado correctamente."
+      Usuario.transaction do
+        role_changed = sync_roles
+        sync_permisos_usuario(role_changed: role_changed)
+      end
+      redirect_to usuarios_path, notice: "Usuario actualizado correctamente."
     else
+      cargar_permisos
       render :edit, status: :unprocessable_entity
     end
-  end
-
-  def destroy
-    if @usuario.root? && Usuario.where(root: true).count <= 1
-      redirect_to usuarios_path, alert: "No puedes eliminar el último usuario root."
-      return
-    end
-
-    @usuario.destroy
-    redirect_to usuarios_path, notice: "Usuario eliminado correctamente."
-  end
-
-  def permisos
-    @current_page = :usuarios
-    modulo_id = params[:modulo_id].presence
-
-    if modulo_id.present?
-      modulo = ModuloSistema.activos.find(modulo_id)
-      values = params.require(:usuario_permisos).permit(
-        :puede_ver,
-        :puede_crear,
-        :puede_editar,
-        :puede_eliminar,
-        :puede_exportar,
-        :puede_configurar
-      ).to_h
-
-      permiso = actualizar_permiso_usuario_para(@usuario, modulo, values)
-      render json: {
-        ok: true,
-        modulo_id: modulo.id,
-        permiso_id: permiso.id,
-        message: "Permisos actualizados"
-      }
-      return
-    end
-
-    cargar_permisos
-
-    params.fetch(:usuario_permisos, {}).each do |submitted_modulo_id, _|
-      modulo = ModuloSistema.activos.find(submitted_modulo_id)
-      values = permiso_usuario_params_for(modulo.id)
-      actualizar_permiso_usuario_para(@usuario, modulo, values)
-    end
-
-    redirect_to usuario_path(@usuario), notice: "Permisos del usuario actualizados correctamente."
   end
 
   private
@@ -141,7 +100,27 @@ class UsuariosController < ApplicationController
   end
 
   def sync_roles
-    @usuario.rol_ids = params.dig(:usuario, :rol_ids).to_a.reject(&:blank?)
+    previous_role_ids = @usuario.rol_ids.map(&:to_s)
+    rol_id = params.dig(:usuario, :rol_id).presence
+    next_role_ids = rol_id.present? ? [rol_id.to_s] : []
+    @usuario.rol_ids = next_role_ids
+    previous_role_ids.sort != next_role_ids.sort
+  end
+
+  def sync_permisos_usuario(role_changed: false)
+    if @usuario.root?
+      @usuario.usuario_permisos.destroy_all
+      return
+    end
+
+    dirty_ids = params.fetch(:usuario_permisos_dirty, []).map(&:to_s)
+    @usuario.usuario_permisos.destroy_all if role_changed
+
+    dirty_ids.each do |submitted_modulo_id|
+      modulo = ModuloSistema.activos.find(submitted_modulo_id)
+      values = permiso_usuario_params_for(modulo.id)
+      actualizar_permiso_usuario_para(@usuario, modulo, values)
+    end
   end
 
   def permiso_usuario_params_for(modulo_id)

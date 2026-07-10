@@ -231,7 +231,7 @@ class EnterpriseController < ApplicationController
   private
 
   DASHBOARD_FINANCE_RANGES = {
-    "current" => 5,
+    "current" => 1,
     "6" => 6,
     "12" => 12
   }.freeze
@@ -239,10 +239,9 @@ class EnterpriseController < ApplicationController
   DASHBOARD_MONTH_LABELS = %w[Ene Feb Mar Abr May Jun Jul Ago Sep Oct Nov Dic].freeze
   DASHBOARD_FINANCE_FALLBACKS = {
     "current" => {
-      months: %w[Ene Feb Mar Abr May],
-      ingresos: [270, 255, 235, 255, 270],
-      costos: [90, 92, 86, 108, 112],
-      utilidad: [118, 138, 88, 150, 130],
+      ingresos: [254.9],
+      costos: [91.24],
+      utilidad: [58.43],
       max: 300
     },
     "6" => {
@@ -299,7 +298,9 @@ class EnterpriseController < ApplicationController
   end
 
   def dashboard_finance_fallback(range_key)
-    DASHBOARD_FINANCE_FALLBACKS.fetch(range_key).merge(range: range_key)
+    fallback = DASHBOARD_FINANCE_FALLBACKS.fetch(range_key)
+    fallback = fallback.merge(months: [DASHBOARD_MONTH_LABELS[Time.zone.today.month - 1]]) if range_key == "current"
+    fallback.merge(range: range_key)
   end
 
   def dashboard_detalle_ingreso(detalle)

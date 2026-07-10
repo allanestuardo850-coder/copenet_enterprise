@@ -1,9 +1,10 @@
-<%= form_with model: usuario, class: "company-form", data: { controller: "tabs", tabs_default_value: "general" } do |form| %>
-  <div class="form-actions form-actions-top">
-    <%= form.submit usuario.persisted? ? "Actualizar Usuario" : "Guardar Usuario", class: "ui-button ui-button-primary submit-button" %>
-    <%= link_to "Cancelar", usuario.persisted? ? usuario_path(usuario) : usuarios_path, class: "ui-button ui-button-secondary" %>
-  </div>
-
+<%= form_with(model: usuario,
+              class: "company-form",
+              data: {
+                controller: "tabs usuario-inactivation",
+                tabs_default_value: "general",
+                usuario_inactivation_original_inactive_value: !usuario.activo?
+              }) do |form| %>
   <% if usuario.errors.any? %>
     <section class="panel form-errors">
       <ul class="error-list">
@@ -19,7 +20,10 @@
       <div>
         <h2>Configuración del Usuario</h2>
       </div>
-      <%= render "shared/badge", text: usuario.persisted? ? "Edición" : "Nuevo registro", tone: "info" %>
+      <div class="form-actions company-form-header-actions">
+        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+        <%= link_to "Cancelar", usuarios_path, class: "ui-button ui-button-secondary" %>
+      </div>
     </div>
 
     <div class="module-tabs" role="tablist" aria-label="Secciones del formulario de usuario">
@@ -44,6 +48,15 @@
           <small>Alcance funcional</small>
         </span>
       </button>
+      <% if usuario.persisted? %>
+        <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="permisos" data-action="tabs#switch" role="tab" aria-selected="false">
+          <span class="module-tab-icon"><%= icon("shield") %></span>
+          <span class="module-tab-copy">
+            <strong>Permisos</strong>
+            <small>Accesos por módulo</small>
+          </span>
+        </button>
+      <% end %>
     </div>
   </section>
 
@@ -69,8 +82,12 @@
       </div>
       <div class="field-group checkbox-group">
         <label class="checkbox-label">
-          <%= form.check_box :activo %>
-          <span>Usuario activo</span>
+          <%= hidden_field_tag "usuario[activo]", "1" %>
+          <%= check_box_tag "usuario[activo]",
+                            "0",
+                            !usuario.activo?,
+                            data: { usuario_inactivation_target: "inactiveInput" } %>
+          <span>Inactivar</span>
         </label>
       </div>
       <div class="field-group checkbox-group">
@@ -110,17 +127,131 @@
     </div>
 
     <div class="checkbox-list checkbox-role-grid">
+      <% rol_actual_id = usuario.roles.first&.id %>
       <% @roles.each do |rol| %>
         <label class="checkbox-label checkbox-card role-select-card">
-          <%= check_box_tag "usuario[rol_ids][]", rol.id, usuario.roles.include?(rol) %>
+          <%= radio_button_tag "usuario[rol_id]", rol.id, rol.id == rol_actual_id %>
           <span><strong><%= rol.nombre %></strong><small><%= rol.descripcion.presence || "Rol disponible para administración interna." %></small></span>
         </label>
       <% end %>
     </div>
   </section>
 
-  <div class="form-actions">
-    <%= form.submit usuario.persisted? ? "Actualizar Usuario" : "Guardar Usuario", class: "ui-button ui-button-primary submit-button" %>
-    <%= link_to "Cancelar", usuario.persisted? ? usuario_path(usuario) : usuarios_path, class: "ui-button ui-button-secondary" %>
-  </div>
+  <% if usuario.persisted? %>
+    <section class="panel form-section module-tab-panel user-permissions-panel" data-tabs-target="panel" data-tab-id="permisos" hidden>
+      <div class="panel-header">
+        <div>
+          <h2>Permisos del usuario</h2>
+        </div>
+      </div>
+
+      <% if usuario.root? %>
+        <section class="root-permissions-card">
+          <div class="root-permissions-icon"><%= icon("shield") %></div>
+          <div>
+            <h3>Acceso total habilitado</h3>
+            <p>Este usuario es root y tiene permiso completo sobre todos los módulos y acciones del sistema.</p>
+          </div>
+        </section>
+      <% else %>
+        <% first_permission_tab = @modulo_sistemas_por_grupo.keys.first.to_s.parameterize.presence || "permisos" %>
+        <div data-controller="tabs usuario-permisos" data-tabs-default-value="<%= first_permission_tab %>">
+          <div class="permission-tabs" role="tablist" aria-label="Grupos de permisos">
+            <% @modulo_sistemas_por_grupo.each_with_index do |(grupo, _modulos), index| %>
+              <% tab_id = grupo.to_s.parameterize.presence || "grupo-#{index + 1}" %>
+              <button type="button"
+                      class="permission-tab <%= 'is-active' if index.zero? %>"
+                      data-tabs-target="tab"
+                      data-tab-id="<%= tab_id %>"
+                      data-action="tabs#switch"
+                      role="tab"
+                      aria-selected="<%= index.zero? ? 'true' : 'false' %>">
+                <span><%= grupo %></span>
+              </button>
+            <% end %>
+          </div>
+
+          <% @modulo_sistemas_por_grupo.each_with_index do |(grupo, modulos), index| %>
+            <% tab_id = grupo.to_s.parameterize.presence || "grupo-#{index + 1}" %>
+            <section class="permission-tab-panel <%= 'is-active' if index.zero? %>"
+                     data-tabs-target="panel"
+                     data-tab-id="<%= tab_id %>"
+                     <%= "hidden" unless index.zero? %>>
+              <div class="permission-tab-header">
+                <h3><%= grupo %></h3>
+                <label class="permission-all-toggle">
+                  <%= check_box_tag nil,
+                                    "1",
+                                    false,
+                                    data: { action: "change->usuario-permisos#toggleAll" } %>
+                  <span>Todos</span>
+                </label>
+              </div>
+
+              <div class="table-shell">
+                <table class="data-table permisos-table permisos-usuario-table">
+                  <thead>
+                    <tr>
+                      <th>Módulo / Función</th>
+                      <th>Código</th>
+                      <th>Estado</th>
+                      <th>Ver</th>
+                      <th>Crear</th>
+                      <th>Editar</th>
+                      <th>Eliminar</th>
+                      <th>Exportar</th>
+                      <th>Configurar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% modulos.each do |modulo| %>
+                      <tr data-modulo-id="<%= modulo.id %>">
+                        <td>
+                          <div class="permission-module-cell">
+                            <strong><%= modulo.nombre %></strong>
+                            <span><%= modulo.descripcion.presence || "Módulo listo para administración y control de accesos." %></span>
+                          </div>
+                        </td>
+                        <td><%= modulo.codigo %></td>
+                        <td>
+                          <span class="permission-save-state" data-permission-status data-state="idle">Listo</span>
+                        </td>
+                        <% UsuariosHelper::ACCIONES_PERMISO.each do |accion| %>
+                          <% checked = permiso_personalizado_usuario(usuario, modulo, accion) %>
+                          <% checked = permiso_base_usuario(usuario, modulo, accion) if checked.nil? %>
+                          <td>
+                            <%= check_box_tag "usuario_permisos[#{modulo.id}][puede_#{accion}]",
+                                              "1",
+                                              checked,
+                                              data: {
+                                                action: "change->usuario-permisos#toggle",
+                                                permission_action: "puede_#{accion}"
+                                              } %>
+                          </td>
+                        <% end %>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          <% end %>
+        </div>
+      <% end %>
+    </section>
+
+    <div class="confirm-modal-backdrop" data-usuario-inactivation-target="modal" hidden>
+      <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="usuario-inactivation-title">
+        <div class="confirm-modal-icon"><%= icon("alert") %></div>
+        <div class="confirm-modal-copy">
+          <h2 id="usuario-inactivation-title">Confirmar inactivación</h2>
+          <p>Al inactivar este usuario, ya no podrá ingresar ni operar dentro de la plataforma.</p>
+        </div>
+        <div class="confirm-modal-actions">
+          <button type="button" class="ui-button ui-button-secondary" data-action="usuario-inactivation#cancel">Cancelar</button>
+          <button type="button" class="ui-button ui-button-primary" data-action="usuario-inactivation#confirm">Confirmar y guardar</button>
+        </div>
+      </div>
+    </div>
+  <% end %>
 <% end %>
