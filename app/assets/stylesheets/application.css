@@ -4200,6 +4200,95 @@ html.theme-dark select.text-input option {
   gap: 18px;
 }
 
+.quote-wizard-page {
+  gap: 16px;
+}
+
+.quote-wizard-layout {
+  align-items: start;
+  grid-template-columns: 1fr;
+}
+
+.quote-wizard-panel {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.quote-wizard-tabs-panel {
+  padding: 18px;
+}
+
+.quote-wizard-tabs-panel .module-tabs {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.quote-wizard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  margin-top: 16px;
+  gap: 16px;
+}
+
+.quote-wizard-step {
+  gap: 16px;
+}
+
+.quote-wizard-step .company-quote-card-header {
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.quote-wizard-step .company-quote-card-header h3 {
+  margin: 0;
+  color: var(--primary-dark);
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.quote-wizard-step .company-quote-card-header p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.quote-wizard-card-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.quote-wizard-card-grid .field-group-full {
+  grid-column: 1 / -1;
+}
+
+.quote-wizard-items-card {
+  padding-bottom: 20px;
+}
+
+.quote-wizard-items-header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.quote-wizard-totals {
+  margin-top: 4px;
+}
+
+.quote-wizard-step .field-group {
+  margin: 0;
+}
+
+.quote-wizard-step .text-area {
+  min-height: 126px;
+}
+
+.quote-wizard-summary-panel .summary-stack {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .quote-table td:nth-child(1) {
   width: 22%;
 }
@@ -6010,6 +6099,38 @@ html.theme-dark .branding-preview-card {
   display: none !important;
 }
 
+.parametros-tabs-panel {
+  padding: 18px;
+}
+
+.parametros-tabs-panel .module-tabs {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.parametros-color-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.parametros-logo-card {
+  min-height: 100%;
+}
+
+.parametros-preview-card {
+  display: grid;
+  gap: 10px;
+}
+
+.parametros-preview-card strong {
+  color: #071d55;
+  font-size: 1.05rem;
+}
+
+.parametros-preview-card p,
+.parametros-preview-card small {
+  margin: 0;
+  color: #526383;
+}
+
 .user-tabs-panel {
   padding: 4px 0 0;
   background: transparent;
@@ -6643,6 +6764,16 @@ html.theme-dark .branding-preview-card {
     grid-template-columns: 1fr;
   }
 
+  .quote-wizard-card-grid,
+  .quote-wizard-tabs-panel .module-tabs,
+  .quote-wizard-items-header {
+    grid-template-columns: 1fr;
+  }
+
+  .quote-wizard-items-header .ui-button {
+    width: 100%;
+  }
+
   .expediente-status-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -6786,6 +6917,11 @@ html.theme-dark .branding-preview-card {
     grid-template-columns: 1fr;
   }
 
+  .parametros-tabs-panel .module-tabs,
+  .parametros-color-grid {
+    grid-template-columns: 1fr;
+  }
+
   .user-admin-summary-row {
     grid-template-columns: 1fr;
   }
@@ -6877,6 +7013,11 @@ html.theme-dark .branding-preview-card {
     grid-template-columns: 1fr;
   }
 
+  .parametros-tabs-panel .module-tabs,
+  .parametros-color-grid {
+    grid-template-columns: 1fr;
+  }
+
   .user-profile-copy span {
     white-space: normal;
   }
@@ -6892,6 +7033,14 @@ html.theme-dark .branding-preview-card {
 
   .quote-summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .quote-wizard-panel {
+    padding: 0;
+  }
+
+  .quote-wizard-tabs-panel {
+    padding: 14px;
   }
 
   .expediente-status-grid,
@@ -6912,6 +7061,7 @@ html.theme-dark .branding-preview-card {
   }
 
   .cotizacion-items-summary,
+  .quote-wizard-summary-panel .summary-stack,
   .precios-maestro-summary,
   .costos-maestro-summary {
     grid-template-columns: 1fr;

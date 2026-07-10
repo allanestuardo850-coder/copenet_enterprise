@@ -1,0 +1,41 @@
+<div class="panel-header">
+  <div>
+    <h2>Resumen económico</h2>
+    <p><%= @cotizacion_seleccionada&.persisted? ? "Cotización seleccionada #{ @cotizacion_seleccionada.codigo }." : "Base comercial del concepto seleccionado." %></p>
+  </div>
+</div>
+
+<div class="summary-stack">
+  <div class="summary-card">
+    <span>Subtotal nominal</span>
+    <strong><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.precio_base) : monto_producto(@producto_servicio, @producto_servicio.precio_base) %></strong>
+  </div>
+  <div class="summary-card">
+    <span>Descuento aplicado</span>
+    <strong><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.monto_descuento) : monto_producto(@producto_servicio, 0) %></strong>
+  </div>
+  <div class="summary-card">
+    <span>Total interno final</span>
+    <strong><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.precio_final) : monto_producto(@producto_servicio, @producto_servicio.precio_base) %></strong>
+  </div>
+  <div class="summary-card">
+    <span>Total facturable</span>
+    <strong><%= number_to_currency((@cotizacion_seleccionada || @cotizacion).total_facturable, unit: "#{moneda_simbolo_producto(@producto_servicio)} ") %></strong>
+  </div>
+  <div class="summary-card">
+    <span>No cobrado CopeNET</span>
+    <strong><%= number_to_currency((@cotizacion_seleccionada || @cotizacion).total_no_cobrado_copenet, unit: "#{moneda_simbolo_producto(@producto_servicio)} ") %></strong>
+  </div>
+  <div class="summary-card">
+    <span>Costo base principal</span>
+    <strong><%= monto_producto(@producto_servicio, total_costos_producto(@producto_servicio)) %></strong>
+  </div>
+  <div class="summary-card">
+    <span>Cotizaciones generadas</span>
+    <strong><%= @cotizaciones.size %></strong>
+  </div>
+  <div class="summary-card">
+    <span>Totales por moneda</span>
+    <strong><%= @cotizacion_seleccionada&.present? ? resumen_totales_por_moneda(@cotizacion_seleccionada.cotizacion_detalles, atributo: :precio, producto_servicio: @producto_servicio) : resumen_totales_por_moneda(@cotizacion.cotizacion_detalles, atributo: :precio, producto_servicio: @producto_servicio) %></strong>
+  </div>
+</div>

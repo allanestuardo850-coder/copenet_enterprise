@@ -1,282 +1,402 @@
-<section class="page-section">
-  <% if @configuracion_sistema.errors.any? %>
-    <section class="panel form-errors">
-      <ul class="error-list">
-        <% @configuracion_sistema.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </section>
-  <% end %>
+<section class="page-section parametros-page">
+  <% color_value = ->(attribute, fallback) do
+       value = @configuracion_sistema.public_send(attribute).presence || fallback
+       value.to_s.start_with?("#") ? value.to_s : "##{value}"
+     end %>
 
-  <%= form_with model: @configuracion_sistema, url: parametros_path, method: :patch, class: "company-form" do |form| %>
-    <section class="panel product-tabs-panel">
+  <%= form_with model: @configuracion_sistema,
+                url: parametros_path,
+                method: :patch,
+                class: "company-form parametros-form",
+                html: { multipart: true },
+                data: {
+                  controller: "tabs",
+                  tabs_default_value: "identidad"
+                } do |form| %>
+    <% if @configuracion_sistema.errors.any? %>
+      <section class="panel form-errors">
+        <ul class="error-list">
+          <% @configuracion_sistema.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+
+    <section class="panel product-tabs-panel parametros-tabs-panel">
       <div class="panel-header">
         <div>
-          <h2>Branding y personalización</h2>
+          <h2>Parámetros</h2>
         </div>
         <div class="form-actions company-form-header-actions">
           <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
           <%= link_to "Cancelar", dashboard_path, class: "ui-button ui-button-secondary" %>
         </div>
       </div>
+
+      <div class="module-tabs" role="tablist" aria-label="Secciones de parámetros">
+        <button type="button" class="module-tab is-active" data-tabs-target="tab" data-tab-id="identidad" data-action="tabs#switch" role="tab" aria-selected="true">
+          <span class="module-tab-icon"><%= icon("building") %></span>
+          <span class="module-tab-copy">
+            <strong>Identidad</strong>
+            <small>Nombre y marca base</small>
+          </span>
+        </button>
+        <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="login" data-action="tabs#switch" role="tab" aria-selected="false">
+          <span class="module-tab-icon"><%= icon("message") %></span>
+          <span class="module-tab-copy">
+            <strong>Login</strong>
+            <small>Mensajes públicos</small>
+          </span>
+        </button>
+        <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="pdf" data-action="tabs#switch" role="tab" aria-selected="false">
+          <span class="module-tab-icon"><%= icon("contract") %></span>
+          <span class="module-tab-copy">
+            <strong>PDF</strong>
+            <small>Plantilla comercial</small>
+          </span>
+        </button>
+        <button type="button" class="module-tab module-tab-emphasis" data-tabs-target="tab" data-tab-id="colores" data-action="tabs#switch" role="tab" aria-selected="false">
+          <span class="module-tab-icon"><%= icon("settings") %></span>
+          <span class="module-tab-copy">
+            <strong>Colores</strong>
+            <small>Paleta visual</small>
+          </span>
+        </button>
+        <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="logos" data-action="tabs#switch" role="tab" aria-selected="false">
+          <span class="module-tab-icon"><%= icon("image") %></span>
+          <span class="module-tab-copy">
+            <strong>Logos</strong>
+            <small>Recursos visuales</small>
+          </span>
+        </button>
+        <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="vista" data-action="tabs#switch" role="tab" aria-selected="false">
+          <span class="module-tab-icon"><%= icon("eye") %></span>
+          <span class="module-tab-copy">
+            <strong>Vista previa</strong>
+            <small>Revisión final</small>
+          </span>
+        </button>
+      </div>
     </section>
 
-    <section class="panel form-section">
-      <div class="panel-header">
+    <section class="panel form-section module-tab-panel company-general-wizard is-active" data-tabs-target="panel" data-tab-id="identidad">
+      <div class="company-general-heading">
+        <span class="company-general-heading-icon"><%= icon("building") %></span>
         <div>
           <h2>Identidad principal</h2>
         </div>
       </div>
 
-      <div class="form-grid">
-        <div class="field-group">
-          <%= form.label :nombre_plataforma, "Nombre de la plataforma" %>
-          <%= form.text_field :nombre_plataforma, class: "text-input" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :nombre_principal, "Nombre principal" %>
-          <%= form.text_field :nombre_principal, class: "text-input" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :nombre_secundario, "Nombre secundario" %>
-          <%= form.text_field :nombre_secundario, class: "text-input" %>
-        </div>
+      <div class="company-general-grid">
+        <section class="company-wizard-card company-wizard-card-full">
+          <div class="company-card-heading">
+            <span class="company-card-icon"><%= icon("building") %></span>
+            <div>
+              <h3>Datos de plataforma</h3>
+              <p>Nombre visible y marca principal del sistema.</p>
+            </div>
+          </div>
+
+          <div class="company-card-grid">
+            <div class="field-group">
+              <%= form.label :nombre_plataforma, "Nombre de la plataforma" %>
+              <%= form.text_field :nombre_plataforma, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :nombre_principal, "Nombre principal" %>
+              <%= form.text_field :nombre_principal, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :nombre_secundario, "Nombre secundario" %>
+              <%= form.text_field :nombre_secundario, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :placeholder_busqueda, "Placeholder de búsqueda" %>
+              <%= form.text_field :placeholder_busqueda, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :loader_mensaje, "Mensaje del loader" %>
+              <%= form.text_field :loader_mensaje, class: "text-input" %>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
 
-    <section class="panel form-section">
-      <div class="panel-header">
+    <section class="panel form-section module-tab-panel company-general-wizard" data-tabs-target="panel" data-tab-id="login" hidden>
+      <div class="company-general-heading">
+        <span class="company-general-heading-icon"><%= icon("message") %></span>
         <div>
-          <h2>Mensajes del sistema</h2>
+          <h2>Login y mensajes</h2>
         </div>
       </div>
 
-      <div class="form-grid">
-        <div class="field-group">
-          <%= form.label :login_eyebrow, "Etiqueta del login" %>
-          <%= form.text_field :login_eyebrow, class: "text-input" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :placeholder_busqueda, "Placeholder de búsqueda" %>
-          <%= form.text_field :placeholder_busqueda, class: "text-input" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :loader_mensaje, "Mensaje del loader" %>
-          <%= form.text_field :loader_mensaje, class: "text-input" %>
-        </div>
-        <div class="field-group field-group-full">
-          <%= form.label :login_titulo, "Título del login" %>
-          <%= form.text_field :login_titulo, class: "text-input" %>
-        </div>
-        <div class="field-group field-group-full">
-          <%= form.label :login_subtitulo, "Subtítulo del login" %>
-          <%= form.text_area :login_subtitulo, rows: 3, class: "text-input text-area" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :promo_titulo, "Título de tarjeta lateral" %>
-          <%= form.text_field :promo_titulo, class: "text-input" %>
-        </div>
-        <div class="field-group field-group-full">
-          <%= form.label :promo_descripcion, "Descripción de tarjeta lateral" %>
-          <%= form.text_area :promo_descripcion, rows: 3, class: "text-input text-area" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :promo_boton_texto, "Texto del botón lateral" %>
-          <%= form.text_field :promo_boton_texto, class: "text-input" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :promo_boton_url, "URL del botón lateral" %>
-          <%= form.text_field :promo_boton_url, class: "text-input", placeholder: "#" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :footer_logo_texto, "Texto del logo de footer" %>
-          <%= form.text_field :footer_logo_texto, class: "text-input" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :footer_logo_etiqueta, "Etiqueta accesible del footer" %>
-          <%= form.text_field :footer_logo_etiqueta, class: "text-input" %>
-        </div>
+      <div class="company-general-grid">
+        <section class="company-wizard-card company-wizard-card-half">
+          <div class="company-card-heading">
+            <span class="company-card-icon"><%= icon("users") %></span>
+            <div>
+              <h3>Pantalla de acceso</h3>
+              <p>Textos visibles antes de iniciar sesión.</p>
+            </div>
+          </div>
+
+          <div class="company-card-grid">
+            <div class="field-group">
+              <%= form.label :login_eyebrow, "Etiqueta del login" %>
+              <%= form.text_field :login_eyebrow, class: "text-input" %>
+            </div>
+            <div class="field-group field-group-full">
+              <%= form.label :login_titulo, "Título del login" %>
+              <%= form.text_field :login_titulo, class: "text-input" %>
+            </div>
+            <div class="field-group field-group-full">
+              <%= form.label :login_subtitulo, "Subtítulo del login" %>
+              <%= form.text_area :login_subtitulo, rows: 4, class: "text-input text-area" %>
+            </div>
+          </div>
+        </section>
+
+        <section class="company-wizard-card company-wizard-card-half">
+          <div class="company-card-heading">
+            <span class="company-card-icon"><%= icon("message") %></span>
+            <div>
+              <h3>Tarjeta lateral</h3>
+              <p>Contenido promocional mostrado en el login.</p>
+            </div>
+          </div>
+
+          <div class="company-card-grid">
+            <div class="field-group">
+              <%= form.label :promo_titulo, "Título de tarjeta lateral" %>
+              <%= form.text_field :promo_titulo, class: "text-input" %>
+            </div>
+            <div class="field-group field-group-full">
+              <%= form.label :promo_descripcion, "Descripción de tarjeta lateral" %>
+              <%= form.text_area :promo_descripcion, rows: 4, class: "text-input text-area" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :promo_boton_texto, "Texto del botón lateral" %>
+              <%= form.text_field :promo_boton_texto, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :promo_boton_url, "URL del botón lateral" %>
+              <%= form.text_field :promo_boton_url, class: "text-input", placeholder: "#" %>
+            </div>
+          </div>
+        </section>
+
+        <section class="company-wizard-card company-wizard-card-full">
+          <div class="company-card-heading">
+            <span class="company-card-icon"><%= icon("image") %></span>
+            <div>
+              <h3>Footer del sidebar</h3>
+              <p>Texto alterno y etiqueta accesible del logo inferior.</p>
+            </div>
+          </div>
+
+          <div class="company-card-grid">
+            <div class="field-group">
+              <%= form.label :footer_logo_texto, "Texto del logo de footer" %>
+              <%= form.text_field :footer_logo_texto, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :footer_logo_etiqueta, "Etiqueta accesible del footer" %>
+              <%= form.text_field :footer_logo_etiqueta, class: "text-input" %>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
 
-    <section class="panel form-section">
-      <div class="panel-header">
+    <section class="panel form-section module-tab-panel company-general-wizard" data-tabs-target="panel" data-tab-id="pdf" hidden>
+      <div class="company-general-heading">
+        <span class="company-general-heading-icon"><%= icon("contract") %></span>
         <div>
           <h2>Plantilla comercial PDF</h2>
         </div>
       </div>
 
-      <div class="form-grid">
-        <div class="field-group">
-          <%= form.label :pdf_titulo, "Título PDF" %>
-          <%= form.text_field :pdf_titulo, class: "text-input" %>
-        </div>
-        <div class="field-group field-group-full">
-          <%= form.label :pdf_subtitulo, "Subtítulo PDF" %>
-          <%= form.text_field :pdf_subtitulo, class: "text-input" %>
-        </div>
-        <div class="field-group field-group-full">
-          <%= form.label :pdf_intro_texto, "Texto de apertura" %>
-          <%= form.text_area :pdf_intro_texto, rows: 4, class: "text-input text-area" %>
-        </div>
-        <div class="field-group field-group-full">
-          <%= form.label :pdf_cierre_texto, "Texto de cierre" %>
-          <%= form.text_area :pdf_cierre_texto, rows: 4, class: "text-input text-area" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :pdf_firma_nombre, "Nombre de firma" %>
-          <%= form.text_field :pdf_firma_nombre, class: "text-input" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :pdf_firma_cargo, "Cargo de firma" %>
-          <%= form.text_field :pdf_firma_cargo, class: "text-input" %>
-        </div>
+      <div class="company-general-grid">
+        <section class="company-wizard-card company-wizard-card-full">
+          <div class="company-card-heading">
+            <span class="company-card-icon"><%= icon("contract") %></span>
+            <div>
+              <h3>Identidad del documento</h3>
+              <p>Título, subtítulo y textos principales de la propuesta.</p>
+            </div>
+          </div>
+
+          <div class="company-card-grid">
+            <div class="field-group">
+              <%= form.label :pdf_titulo, "Título PDF" %>
+              <%= form.text_field :pdf_titulo, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :pdf_subtitulo, "Subtítulo PDF" %>
+              <%= form.text_field :pdf_subtitulo, class: "text-input" %>
+            </div>
+            <div class="field-group field-group-full">
+              <%= form.label :pdf_intro_texto, "Texto de apertura" %>
+              <%= form.text_area :pdf_intro_texto, rows: 4, class: "text-input text-area" %>
+            </div>
+            <div class="field-group field-group-full">
+              <%= form.label :pdf_cierre_texto, "Texto de cierre" %>
+              <%= form.text_area :pdf_cierre_texto, rows: 4, class: "text-input text-area" %>
+            </div>
+          </div>
+        </section>
+
+        <section class="company-wizard-card company-wizard-card-full">
+          <div class="company-card-heading">
+            <span class="company-card-icon"><%= icon("pencil") %></span>
+            <div>
+              <h3>Firma comercial</h3>
+              <p>Nombre y cargo que aparecerán al cierre del documento.</p>
+            </div>
+          </div>
+
+          <div class="company-card-grid">
+            <div class="field-group">
+              <%= form.label :pdf_firma_nombre, "Nombre de firma" %>
+              <%= form.text_field :pdf_firma_nombre, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :pdf_firma_cargo, "Cargo de firma" %>
+              <%= form.text_field :pdf_firma_cargo, class: "text-input" %>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
 
-    <section class="panel form-section">
-      <div class="panel-header">
+    <section class="panel form-section module-tab-panel company-general-wizard" data-tabs-target="panel" data-tab-id="colores" hidden>
+      <div class="company-general-heading">
+        <span class="company-general-heading-icon"><%= icon("settings") %></span>
         <div>
           <h2>Paleta de marca</h2>
         </div>
       </div>
 
-      <div class="form-grid">
-        <div class="field-group">
-          <%= form.label :color_primario, "Color primario" %>
-          <%= form.text_field :color_primario, class: "text-input", placeholder: "#2458e6" %>
+      <section class="company-wizard-card company-wizard-card-full">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("pencil") %></span>
+          <div>
+            <h3>Colores principales</h3>
+            <p>Ajusta cada color con la misma interacción usada en compañía.</p>
+          </div>
         </div>
-        <div class="field-group">
-          <%= form.label :color_secundario, "Color secundario" %>
-          <%= form.text_field :color_secundario, class: "text-input", placeholder: "#0b2d66" %>
+
+        <div class="company-color-grid parametros-color-grid">
+          <% [
+            [:color_primario, "Color primario", "#2458e6"],
+            [:color_secundario, "Color secundario", "#0b2d66"],
+            [:color_acento, "Color de acento", "#6eb8ff"],
+            [:color_sidebar_desde, "Sidebar desde", "#0a2146"],
+            [:color_sidebar_hasta, "Sidebar hasta", "#08172e"],
+            [:color_boton_texto, "Texto de botones", "#ffffff"]
+          ].each do |attribute, label, fallback| %>
+            <% current_color = color_value.call(attribute, fallback) %>
+            <div class="company-color-control" style="--company-color:<%= current_color %>;" data-controller="company-color" data-company-color-fallback-value="<%= current_color %>">
+              <%= form.label attribute, label %>
+              <div class="company-color-slider" data-company-color-target="slider" data-action="pointerdown->company-color#startDrag">
+                <button type="button" class="company-color-handle" role="slider" aria-label="Ajustar <%= label.downcase %>" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" data-company-color-target="handle" data-action="keydown->company-color#nudge"></button>
+              </div>
+              <div class="company-color-row">
+                <span class="company-color-swatch"></span>
+                <%= form.text_field attribute, class: "text-input company-color-input", placeholder: fallback.upcase, data: { company_color_target: "input", action: "input->company-color#type change->company-color#type" } %>
+                <input type="color" class="company-native-color-input" value="<%= current_color %>" data-company-color-target="picker" data-action="input->company-color#pick change->company-color#pick">
+                <button type="button" class="company-color-button" data-action="company-color#openPicker"><%= icon("settings") %> Personalizar</button>
+              </div>
+            </div>
+          <% end %>
         </div>
-        <div class="field-group">
-          <%= form.label :color_acento, "Color acento" %>
-          <%= form.text_field :color_acento, class: "text-input", placeholder: "#6eb8ff" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :color_sidebar_desde, "Sidebar desde" %>
-          <%= form.text_field :color_sidebar_desde, class: "text-input", placeholder: "#0a2146" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :color_sidebar_hasta, "Sidebar hasta" %>
-          <%= form.text_field :color_sidebar_hasta, class: "text-input", placeholder: "#08172e" %>
-        </div>
-        <div class="field-group">
-          <%= form.label :color_boton_texto, "Texto de botones" %>
-          <%= form.text_field :color_boton_texto, class: "text-input", placeholder: "#ffffff" %>
-        </div>
-      </div>
+      </section>
     </section>
 
-    <section class="panel form-section">
-      <div class="panel-header">
+    <section class="panel form-section module-tab-panel company-general-wizard" data-tabs-target="panel" data-tab-id="logos" hidden>
+      <div class="company-general-heading">
+        <span class="company-general-heading-icon"><%= icon("image") %></span>
         <div>
           <h2>Logos y recursos visuales</h2>
         </div>
       </div>
 
-      <div class="branding-assets-grid">
-        <article class="panel nested-panel branding-asset-card">
-          <div class="panel-header nested-panel-header">
-            <div>
-              <h2>Logo principal</h2>
-              <p>Visible en el menú lateral.</p>
+      <div class="company-general-grid">
+        <% [
+          [:logo_principal, :eliminar_logo_principal, "Logo principal", "Visible en el menú lateral.", "logo-principal"],
+          [:logo_login, :eliminar_logo_login, "Logo de login", "Visible en la pantalla pública de acceso.", "logo-login"],
+          [:logo_footer, :eliminar_logo_footer, "Logo de footer", "Visible en el bloque inferior del sidebar.", "logo-footer"]
+        ].each do |attachment, remove_attribute, title, description, input_id| %>
+          <section class="company-wizard-card company-wizard-card-logo parametros-logo-card" data-controller="company-logo">
+            <div class="company-card-heading">
+              <span class="company-card-icon"><%= icon("image") %></span>
+              <div>
+                <h3><%= title %></h3>
+                <p><%= description %></p>
+              </div>
             </div>
-          </div>
-          <% if @configuracion_sistema.logo_principal.attached? %>
-            <div class="branding-preview">
-              <%= image_tag @configuracion_sistema.logo_principal, class: "branding-preview-image", alt: "Logo principal" %>
-            </div>
-          <% end %>
-          <div class="field-group">
-            <%= form.file_field :logo_principal, class: "text-input" %>
-          </div>
-          <div class="field-group checkbox-group">
-            <label class="checkbox-label">
-              <%= form.check_box :eliminar_logo_principal, {}, "1", "0" %>
-              <span>Eliminar logo principal actual</span>
-            </label>
-          </div>
-        </article>
 
-        <article class="panel nested-panel branding-asset-card">
-          <div class="panel-header nested-panel-header">
-            <div>
-              <h2>Logo de login</h2>
-              <p>Visible en la pantalla pública de acceso.</p>
+            <div class="company-logo-dropzone" data-action="dragover->company-logo#dragOver dragleave->company-logo#dragLeave drop->company-logo#drop">
+              <div class="company-logo-preview" data-company-logo-target="preview">
+                <% if @configuracion_sistema.public_send(attachment).attached? %>
+                  <%= image_tag @configuracion_sistema.public_send(attachment), class: "branding-preview-image", alt: title %>
+                <% else %>
+                  <%= icon("building") %>
+                <% end %>
+              </div>
+              <div class="company-logo-copy">
+                <p>Archivos permitidos: .jpg, .png</p>
+                <span>Tamaño máx. 5MB - Min. 200x200px</span>
+                <span>Dim. máx. 500px x 500px</span>
+                <label class="company-upload-button" for="<%= input_id %>"><%= icon("upload") %> Subir logo</label>
+                <%= form.file_field attachment, id: input_id, class: "company-logo-input", accept: "image/png,image/jpeg", data: { company_logo_target: "input", action: "change->company-logo#preview" } %>
+                <% if @configuracion_sistema.public_send(attachment).attached? %>
+                  <label class="checkbox-label checkbox-inline company-remove-logo">
+                    <%= form.check_box remove_attribute, {}, "1", "0" %>
+                    <span>Eliminar logo actual</span>
+                  </label>
+                <% end %>
+              </div>
             </div>
-          </div>
-          <% if @configuracion_sistema.logo_login.attached? %>
-            <div class="branding-preview">
-              <%= image_tag @configuracion_sistema.logo_login, class: "branding-preview-image", alt: "Logo de login" %>
-            </div>
-          <% end %>
-          <div class="field-group">
-            <%= form.file_field :logo_login, class: "text-input" %>
-          </div>
-          <div class="field-group checkbox-group">
-            <label class="checkbox-label">
-              <%= form.check_box :eliminar_logo_login, {}, "1", "0" %>
-              <span>Eliminar logo de login actual</span>
-            </label>
-          </div>
-        </article>
-
-        <article class="panel nested-panel branding-asset-card">
-          <div class="panel-header nested-panel-header">
-            <div>
-              <h2>Logo de footer</h2>
-              <p>Visible en el bloque inferior del sidebar.</p>
-            </div>
-          </div>
-          <% if @configuracion_sistema.logo_footer.attached? %>
-            <div class="branding-preview">
-              <%= image_tag @configuracion_sistema.logo_footer, class: "branding-preview-image", alt: "Logo de footer" %>
-            </div>
-          <% end %>
-          <div class="field-group">
-            <%= form.file_field :logo_footer, class: "text-input" %>
-          </div>
-          <div class="field-group checkbox-group">
-            <label class="checkbox-label">
-              <%= form.check_box :eliminar_logo_footer, {}, "1", "0" %>
-              <span>Eliminar logo de footer actual</span>
-            </label>
-          </div>
-        </article>
+          </section>
+        <% end %>
       </div>
     </section>
 
-    <section class="panel form-section">
-      <div class="panel-header">
+    <section class="panel form-section module-tab-panel company-general-wizard" data-tabs-target="panel" data-tab-id="vista" hidden>
+      <div class="company-general-heading">
+        <span class="company-general-heading-icon"><%= icon("eye") %></span>
         <div>
           <h2>Vista previa de marca</h2>
         </div>
       </div>
 
-      <div class="branding-preview-grid">
-        <article class="branding-preview-card">
+      <div class="company-general-grid">
+        <article class="company-wizard-card company-wizard-card-full parametros-preview-card">
           <span class="branding-preview-label">Aplicación</span>
           <strong><%= @configuracion_sistema.nombre_plataforma.presence || "Copenet Enterprise" %></strong>
           <p><%= @configuracion_sistema.placeholder_busqueda.presence || "Buscar empresas, cuentas o reportes" %></p>
           <div class="branding-preview-swatches">
-            <span class="branding-swatch" style="background: <%= @configuracion_sistema.color_primario.presence || '#2458e6' %>;"></span>
-            <span class="branding-swatch" style="background: <%= @configuracion_sistema.color_secundario.presence || '#0b2d66' %>;"></span>
-            <span class="branding-swatch" style="background: <%= @configuracion_sistema.color_acento.presence || '#6eb8ff' %>;"></span>
+            <span class="branding-swatch" style="background: <%= color_value.call(:color_primario, "#2458e6") %>;"></span>
+            <span class="branding-swatch" style="background: <%= color_value.call(:color_secundario, "#0b2d66") %>;"></span>
+            <span class="branding-swatch" style="background: <%= color_value.call(:color_acento, "#6eb8ff") %>;"></span>
+            <span class="branding-swatch" style="background: <%= color_value.call(:color_sidebar_desde, "#0a2146") %>;"></span>
+            <span class="branding-swatch" style="background: <%= color_value.call(:color_sidebar_hasta, "#08172e") %>;"></span>
+            <span class="branding-swatch" style="background: <%= color_value.call(:color_boton_texto, "#ffffff") %>;"></span>
           </div>
         </article>
 
-        <article class="branding-preview-card">
-          <span class="branding-preview-label">Loader y Login</span>
+        <article class="company-wizard-card company-wizard-card-half parametros-preview-card">
+          <span class="branding-preview-label">Loader y login</span>
           <strong><%= @configuracion_sistema.nombre_principal.presence || "COPENET" %></strong>
           <p><%= @configuracion_sistema.loader_mensaje.presence || "Cargando plataforma..." %></p>
           <small><%= @configuracion_sistema.login_titulo.presence || "Control empresarial con una base moderna y segura" %></small>
         </article>
 
-        <article class="branding-preview-card">
-          <span class="branding-preview-label">PDF Comercial</span>
+        <article class="company-wizard-card company-wizard-card-half parametros-preview-card">
+          <span class="branding-preview-label">PDF comercial</span>
           <strong><%= @configuracion_sistema.pdf_titulo.presence || "Propuesta Comercial Autorizable" %></strong>
           <p><%= @configuracion_sistema.pdf_subtitulo.presence || "Documento comercial generado desde el catálogo maestro del servicio." %></p>
           <small><%= @configuracion_sistema.pdf_firma_nombre.presence || "Equipo Comercial Copenet" %> · <%= @configuracion_sistema.pdf_firma_cargo.presence || "Dirección Comercial" %></small>

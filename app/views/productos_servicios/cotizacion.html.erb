@@ -1,4 +1,4 @@
-<section class="page-section">
+<section class="page-section quote-wizard-page">
   <section class="panel product-tabs-panel">
     <div class="panel-header">
       <div>
@@ -45,15 +45,9 @@
             end %>
   </span>
 
-  <div class="quote-builder-grid">
+  <div class="quote-builder-grid quote-wizard-layout">
     <% if @mostrar_formulario_cotizacion %>
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <h2><%= @cotizacion.persisted? ? "Editar cotización #{ @cotizacion.codigo }" : "Generar Nueva Cotización" %></h2>
-          </div>
-        </div>
-
+      <section class="panel form-section quote-wizard-panel">
         <% if @cotizacion.errors.any? %>
           <section class="panel form-errors">
             <ul class="error-list">
@@ -69,184 +63,240 @@
                       method: @cotizacion.persisted? ? :patch : :post,
                       class: "company-form",
                       data: {
-                        controller: "cotizacion-detalles",
+                        controller: "cotizacion-detalles tabs",
+                        tabs_default_value: "cliente",
                         cotizacion_detalles_index_value: @cotizacion.cotizacion_detalles.size
                       } do |form| %>
-          <div class="form-grid">
-            <div class="field-group">
-              <%= form.label :cliente_id, "Cliente registrado" %>
-              <%= form.select :cliente_id,
-                              options_for_select(@clientes.map { |cliente| ["#{cliente.nombre} · #{client_type_label(cliente)}", cliente.id] }, @cotizacion.cliente_id),
-                              { include_blank: "Selecciona un cliente" },
-                              class: "text-input" %>
-              <p class="field-help">Selecciona un cliente real para activar reglas CopeNET, expediente y proyecto automático.</p>
-            </div>
-            <div class="field-group">
-              <%= form.label :cliente, "Nombre visible en documento" %>
-              <%= form.text_field :cliente, class: "text-input", placeholder: "Nombre del cliente o empresa" %>
-            </div>
-            <div class="field-group">
-              <%= form.label :contacto, "Contacto Comercial" %>
-              <%= form.text_field :contacto, class: "text-input", placeholder: "Nombre del contacto" %>
-            </div>
-            <div class="field-group">
-              <%= form.label :correo, "Correo Electrónico" %>
-              <%= form.email_field :correo, class: "text-input", placeholder: "correo@cliente.com" %>
-            </div>
-            <div class="field-group">
-              <%= form.label :telefono, "Teléfono" %>
-              <%= form.text_field :telefono, class: "text-input", placeholder: "+502 5555-5555" %>
-            </div>
-            <div class="field-group">
-              <%= form.label :vigencia_dias, "Vigencia de la Oferta" %>
-              <%= form.number_field :vigencia_dias, class: "text-input", min: 1, step: 1 %>
-            </div>
-            <div class="field-group">
-              <%= form.label :estado, "Estado inicial" %>
-              <%= form.select :estado,
-                              options_for_select(Cotizacion::ESTADOS.map { |estado| [estado.humanize, estado] }, @cotizacion.estado),
-                              {},
-                              class: "text-input" %>
-            </div>
-            <div class="field-group">
-              <label>Moneda principal del producto</label>
-              <div class="text-input static-field"><%= "#{moneda_simbolo_producto(@producto_servicio)} · #{moneda_nombre_producto(@producto_servicio)}" %></div>
-            </div>
-            <div class="field-group">
-              <%= form.label :precio_base, "Subtotal nominal interno" %>
-              <%= form.number_field :precio_base,
-                                    class: "text-input",
-                                    step: "0.01",
-                                    min: 0,
-                                    readonly: true,
-                                    data: { cotizacion_detalles_target: "subtotalField" } %>
-              <p class="field-help">Se conserva para control interno. La visualización comercial correcta aparece en el resumen por moneda.</p>
-            </div>
-            <div class="field-group">
-              <%= form.label :porcentaje_descuento, "Descuento Aplicado %" %>
-              <%= form.number_field :porcentaje_descuento,
-                                    class: "text-input",
-                                    step: "0.01",
-                                    min: 0,
-                                    max: 100,
-                                    placeholder: "0.00",
-                                    data: { action: "input->cotizacion-detalles#updateTotals", cotizacion_detalles_target: "discountInput" } %>
-              <p class="field-help">Si mezclas monedas, el descuento global se desactiva para evitar cálculos incorrectos.</p>
-            </div>
-            <div class="field-group field-group-full">
-              <div class="panel nested-panel cotizacion-items-panel">
-                <div class="panel-header nested-panel-header">
-                  <div>
-                    <h2>Ítems de la Cotización</h2>
-                    <p>Agrega varios conceptos con descripción y precio. El total se calcula automáticamente al final.</p>
-                  </div>
-                  <button type="button" class="ui-button ui-button-primary ui-button-compact" data-action="cotizacion-detalles#add">
-                    Agregar ítem
-                  </button>
-                </div>
-
-                <div class="cotizacion-items-summary">
-                  <article class="mini-metric-card quote-metric-card">
-                    <span>Subtotal nominal</span>
-                    <strong data-cotizacion-detalles-target="subtotalDisplay"><%= monto_producto(@producto_servicio, @cotizacion.precio_base.presence || 0) %></strong>
-                  </article>
-                  <article class="mini-metric-card quote-metric-card">
-                    <span>Descuento</span>
-                    <strong data-cotizacion-detalles-target="discountDisplay"><%= monto_producto(@producto_servicio, @cotizacion.monto_descuento.presence || 0) %></strong>
-                  </article>
-                  <article class="mini-metric-card quote-metric-card">
-                    <span>Total final</span>
-                    <strong data-cotizacion-detalles-target="finalDisplay"><%= monto_producto(@producto_servicio, @cotizacion.precio_final.presence || @cotizacion.precio_base.presence || 0) %></strong>
-                  </article>
-                </div>
-
-                <div class="currency-summary-panel">
-                  <strong>Totales por moneda</strong>
-                  <div class="currency-summary-list" data-cotizacion-detalles-target="currencySummary">
-                    <% totales_por_moneda(@cotizacion.cotizacion_detalles.reject(&:marked_for_destruction?), atributo: :applied_price, producto_servicio: @producto_servicio).each do |item| %>
-                      <span class="currency-summary-chip"><%= monto_en_moneda(item[:moneda], item[:total]) %></span>
-                    <% end %>
-                  </div>
-                </div>
-
-                <div class="cotizacion-items-list" data-cotizacion-detalles-target="list">
-                  <%= form.fields_for :cotizacion_detalles do |detalle_form| %>
-                    <%= render "cotizacion_detalle_fields", form: detalle_form %>
-                  <% end %>
-                </div>
-
-                <template data-cotizacion-detalles-target="template">
-                  <%= form.fields_for :cotizacion_detalles, CotizacionDetalle.new(moneda_id: @producto_servicio.moneda_id, recurrencia: @producto_servicio.es_recurrente? ? (@producto_servicio.recurrencia.presence || "Mensual") : "Unico", seccion_cotizacion: @producto_servicio.es_recurrente? ? "Cargo mensual" : "Cargo inicial", facturable: @producto_servicio.facturable?, catalog_price: @producto_servicio.precio_base, applied_price: @producto_servicio.precio_base, internal_cost: @producto_servicio.costo_base), child_index: "NEW_RECORD" do |detalle_form| %>
-                    <%= render "cotizacion_detalle_fields", form: detalle_form %>
-                  <% end %>
-                </template>
+          <section class="panel product-tabs-panel quote-wizard-tabs-panel">
+            <div class="panel-header">
+              <div>
+                <h2><%= @cotizacion.persisted? ? "Editar cotización #{ @cotizacion.codigo }" : "Nueva cotización" %></h2>
+              </div>
+              <div class="form-actions company-form-header-actions">
+                <%= form.submit @cotizacion.persisted? ? "Guardar" : "Generar", class: "ui-button ui-button-primary submit-button" %>
+                <% if @cotizacion.persisted? %>
+                  <%= link_to "Cancelar", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: @cotizacion.id), class: "ui-button ui-button-secondary" %>
+                <% end %>
               </div>
             </div>
-            <div class="field-group field-group-full">
-              <%= form.label :alcance_personalizado, "Alcance o Enfoque Personalizado" %>
-              <%= form.text_area :alcance_personalizado, rows: 4, class: "text-input text-area", placeholder: "Describe el enfoque específico de la propuesta para este cliente, alcance, cobertura o combinación comercial." %>
+
+            <div class="module-tabs" role="tablist" aria-label="Secciones para generar cotización">
+              <button type="button" class="module-tab is-active" data-tabs-target="tab" data-tab-id="cliente" data-action="tabs#switch" role="tab" aria-selected="true">
+                <span class="module-tab-icon"><%= icon("users") %></span>
+                <span class="module-tab-copy">
+                  <strong>Cliente</strong>
+                  <small>Datos y contacto</small>
+                </span>
+              </button>
+              <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="condiciones" data-action="tabs#switch" role="tab" aria-selected="false">
+                <span class="module-tab-icon"><%= icon("coins") %></span>
+                <span class="module-tab-copy">
+                  <strong>Condiciones</strong>
+                  <small>Moneda, vigencia y descuento</small>
+                </span>
+              </button>
+              <button type="button" class="module-tab module-tab-emphasis" data-tabs-target="tab" data-tab-id="items" data-action="tabs#switch" role="tab" aria-selected="false">
+                <span class="module-tab-icon"><%= icon("receipt") %></span>
+                <span class="module-tab-copy">
+                  <strong>Ítems</strong>
+                  <small>Conceptos de la propuesta</small>
+                </span>
+              </button>
+              <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="notas" data-action="tabs#switch" role="tab" aria-selected="false">
+                <span class="module-tab-icon"><%= icon("message") %></span>
+                <span class="module-tab-copy">
+                  <strong>Notas</strong>
+                  <small>Alcance y observaciones</small>
+                </span>
+              </button>
+              <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="resumen" data-action="tabs#switch" role="tab" aria-selected="false">
+                <span class="module-tab-icon"><%= icon("report") %></span>
+                <span class="module-tab-copy">
+                  <strong>Resumen económico</strong>
+                  <small>Revisión final</small>
+                </span>
+              </button>
             </div>
-            <div class="field-group field-group-full">
-              <%= form.label :observaciones, "Observaciones de la Cotización" %>
-              <%= form.text_area :observaciones, rows: 4, class: "text-input text-area", placeholder: "Agrega observaciones, condiciones comerciales, exclusiones o notas relevantes para esta propuesta." %>
-            </div>
+          </section>
+
+          <div class="company-general-wizard quote-wizard-grid">
+            <section class="panel form-section module-tab-panel company-wizard-card company-wizard-card-full quote-wizard-step is-active" data-tabs-target="panel" data-tab-id="cliente">
+              <div class="company-quote-card-header">
+                <span class="company-card-icon"><%= icon("users") %></span>
+                <div>
+                  <h3>Cliente y contacto</h3>
+                  <p>Información visible en la cotización y enlace al expediente comercial.</p>
+                </div>
+              </div>
+              <div class="form-grid quote-wizard-card-grid">
+                <div class="field-group field-group-full">
+                  <%= form.label :cliente_id, "Cliente registrado" %>
+                  <%= form.select :cliente_id,
+                                  options_for_select(@clientes.map { |cliente| ["#{cliente.nombre} · #{client_type_label(cliente)}", cliente.id] }, @cotizacion.cliente_id),
+                                  { include_blank: "Selecciona un cliente" },
+                                  class: "text-input filter-select" %>
+                  <p class="field-help">Selecciona un cliente real para activar reglas CopeNET, expediente y proyecto automático.</p>
+                </div>
+                <div class="field-group">
+                  <%= form.label :cliente, "Nombre visible en documento" %>
+                  <%= form.text_field :cliente, class: "text-input", placeholder: "Nombre del cliente o empresa" %>
+                </div>
+                <div class="field-group">
+                  <%= form.label :contacto, "Contacto comercial" %>
+                  <%= form.text_field :contacto, class: "text-input", placeholder: "Nombre del contacto" %>
+                </div>
+                <div class="field-group">
+                  <%= form.label :correo, "Correo electrónico" %>
+                  <%= form.email_field :correo, class: "text-input", placeholder: "correo@cliente.com" %>
+                </div>
+                <div class="field-group">
+                  <%= form.label :telefono, "Teléfono" %>
+                  <%= form.text_field :telefono, class: "text-input", placeholder: "+502 5555-5555" %>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel form-section module-tab-panel company-wizard-card company-wizard-card-full quote-wizard-step" data-tabs-target="panel" data-tab-id="condiciones" hidden>
+              <div class="company-quote-card-header">
+                <span class="company-card-icon"><%= icon("coins") %></span>
+                <div>
+                  <h3>Condiciones comerciales</h3>
+                  <p>Vigencia, moneda, estado inicial y descuento negociado.</p>
+                </div>
+              </div>
+              <div class="form-grid quote-wizard-card-grid">
+                <div class="field-group">
+                  <%= form.label :vigencia_dias, "Vigencia de la oferta" %>
+                  <%= form.number_field :vigencia_dias, class: "text-input", min: 1, step: 1 %>
+                </div>
+                <div class="field-group">
+                  <%= form.label :estado, "Estado inicial" %>
+                  <%= form.select :estado,
+                                  options_for_select(Cotizacion::ESTADOS.map { |estado| [estado.humanize, estado] }, @cotizacion.estado),
+                                  {},
+                                  class: "text-input filter-select" %>
+                </div>
+                <div class="field-group">
+                  <label>Moneda principal del producto</label>
+                  <div class="text-input static-field"><%= "#{moneda_simbolo_producto(@producto_servicio)} · #{moneda_nombre_producto(@producto_servicio)}" %></div>
+                </div>
+                <div class="field-group">
+                  <%= form.label :porcentaje_descuento, "Descuento aplicado %" %>
+                  <%= form.number_field :porcentaje_descuento,
+                                        class: "text-input",
+                                        step: "0.01",
+                                        min: 0,
+                                        max: 100,
+                                        placeholder: "0.00",
+                                        data: { action: "input->cotizacion-detalles#updateTotals", cotizacion_detalles_target: "discountInput" } %>
+                  <p class="field-help">Si mezclas monedas, el descuento global se desactiva para evitar cálculos incorrectos.</p>
+                </div>
+                <div class="field-group field-group-full">
+                  <%= form.label :precio_base, "Subtotal nominal interno" %>
+                  <%= form.number_field :precio_base,
+                                        class: "text-input",
+                                        step: "0.01",
+                                        min: 0,
+                                        readonly: true,
+                                        data: { cotizacion_detalles_target: "subtotalField" } %>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel form-section module-tab-panel company-wizard-card company-wizard-card-full quote-wizard-step quote-wizard-items-card" data-tabs-target="panel" data-tab-id="items" hidden>
+              <div class="company-quote-card-header quote-wizard-items-header">
+                <span class="company-card-icon"><%= icon("receipt") %></span>
+                <div>
+                  <h3>Ítems de la cotización</h3>
+                  <p>Agrega conceptos, descripción, precio aplicado, costo interno y recurrencia.</p>
+                </div>
+                <button type="button" class="ui-button ui-button-primary ui-button-compact" data-action="cotizacion-detalles#add">
+                  Agregar ítem
+                </button>
+              </div>
+
+              <div class="cotizacion-items-summary quote-wizard-totals">
+                <article class="mini-metric-card quote-metric-card">
+                  <span>Subtotal nominal</span>
+                  <strong data-cotizacion-detalles-target="subtotalDisplay"><%= monto_producto(@producto_servicio, @cotizacion.precio_base.presence || 0) %></strong>
+                </article>
+                <article class="mini-metric-card quote-metric-card">
+                  <span>Descuento</span>
+                  <strong data-cotizacion-detalles-target="discountDisplay"><%= monto_producto(@producto_servicio, @cotizacion.monto_descuento.presence || 0) %></strong>
+                </article>
+                <article class="mini-metric-card quote-metric-card">
+                  <span>Total final</span>
+                  <strong data-cotizacion-detalles-target="finalDisplay"><%= monto_producto(@producto_servicio, @cotizacion.precio_final.presence || @cotizacion.precio_base.presence || 0) %></strong>
+                </article>
+              </div>
+
+              <div class="currency-summary-panel">
+                <strong>Totales por moneda</strong>
+                <div class="currency-summary-list" data-cotizacion-detalles-target="currencySummary">
+                  <% totales_por_moneda(@cotizacion.cotizacion_detalles.reject(&:marked_for_destruction?), atributo: :applied_price, producto_servicio: @producto_servicio).each do |item| %>
+                    <span class="currency-summary-chip"><%= monto_en_moneda(item[:moneda], item[:total]) %></span>
+                  <% end %>
+                </div>
+              </div>
+
+              <div class="cotizacion-items-list" data-cotizacion-detalles-target="list">
+                <%= form.fields_for :cotizacion_detalles do |detalle_form| %>
+                  <%= render "cotizacion_detalle_fields", form: detalle_form %>
+                <% end %>
+              </div>
+
+              <template data-cotizacion-detalles-target="template">
+                <%= form.fields_for :cotizacion_detalles, CotizacionDetalle.new(moneda_id: @producto_servicio.moneda_id, recurrencia: @producto_servicio.es_recurrente? ? (@producto_servicio.recurrencia.presence || "Mensual") : "Unico", seccion_cotizacion: @producto_servicio.es_recurrente? ? "Cargo mensual" : "Cargo inicial", facturable: @producto_servicio.facturable?, catalog_price: @producto_servicio.precio_base, applied_price: @producto_servicio.precio_base, internal_cost: @producto_servicio.costo_base), child_index: "NEW_RECORD" do |detalle_form| %>
+                  <%= render "cotizacion_detalle_fields", form: detalle_form %>
+                <% end %>
+              </template>
+            </section>
+
+            <section class="panel form-section module-tab-panel company-wizard-card company-wizard-card-half quote-wizard-step" data-tabs-target="panel" data-tab-id="notas" hidden>
+              <div class="company-quote-card-header">
+                <span class="company-card-icon"><%= icon("contract") %></span>
+                <div>
+                  <h3>Alcance personalizado</h3>
+                  <p>Enfoque específico para el cliente y cobertura de la propuesta.</p>
+                </div>
+              </div>
+              <div class="field-group">
+                <%= form.label :alcance_personalizado, "Alcance o enfoque personalizado" %>
+                <%= form.text_area :alcance_personalizado, rows: 5, class: "text-input text-area", placeholder: "Describe el enfoque específico de la propuesta para este cliente, alcance, cobertura o combinación comercial." %>
+              </div>
+            </section>
+
+            <section class="panel form-section module-tab-panel company-wizard-card company-wizard-card-half quote-wizard-step" data-tabs-target="panel" data-tab-id="notas" hidden>
+              <div class="company-quote-card-header">
+                <span class="company-card-icon"><%= icon("message") %></span>
+                <div>
+                  <h3>Observaciones</h3>
+                  <p>Condiciones, exclusiones o notas relevantes para la negociación.</p>
+                </div>
+              </div>
+              <div class="field-group">
+                <%= form.label :observaciones, "Observaciones de la cotización" %>
+                <%= form.text_area :observaciones, rows: 5, class: "text-input text-area", placeholder: "Agrega observaciones, condiciones comerciales, exclusiones o notas relevantes para esta propuesta." %>
+              </div>
+            </section>
+
+            <section class="panel form-section module-tab-panel company-wizard-card company-wizard-card-full quote-wizard-summary-panel" data-tabs-target="panel" data-tab-id="resumen" hidden>
+              <%= render "cotizacion_resumen_economico" %>
+            </section>
           </div>
 
-          <div class="form-actions">
-            <%= form.submit @cotizacion.persisted? ? "Guardar cambios" : "Generar Cotización", class: "ui-button ui-button-primary submit-button" %>
-            <% if @cotizacion.persisted? %>
-              <%= link_to "Cancelar edición", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: @cotizacion.id), class: "ui-button ui-button-secondary" %>
-            <% end %>
-          </div>
         <% end %>
       </section>
     <% end %>
 
-    <aside class="panel quote-highlight-panel">
-      <div class="panel-header">
-        <div>
-          <h2>Resumen Económico</h2>
-          <p><%= @cotizacion_seleccionada&.persisted? ? "Cotización seleccionada #{ @cotizacion_seleccionada.codigo }." : "Base comercial del concepto seleccionado." %></p>
-        </div>
-      </div>
-
-      <div class="summary-stack">
-        <div class="summary-card">
-          <span>Subtotal nominal</span>
-          <strong><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.precio_base) : monto_producto(@producto_servicio, @producto_servicio.precio_base) %></strong>
-        </div>
-        <div class="summary-card">
-          <span>Descuento aplicado</span>
-          <strong><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.monto_descuento) : monto_producto(@producto_servicio, 0) %></strong>
-        </div>
-        <div class="summary-card">
-          <span>Total interno final</span>
-          <strong><%= @cotizacion_seleccionada&.persisted? ? monto_producto(@producto_servicio, @cotizacion_seleccionada.precio_final) : monto_producto(@producto_servicio, @producto_servicio.precio_base) %></strong>
-        </div>
-        <div class="summary-card">
-          <span>Total facturable</span>
-          <strong><%= number_to_currency((@cotizacion_seleccionada || @cotizacion).total_facturable, unit: "#{moneda_simbolo_producto(@producto_servicio)} ") %></strong>
-        </div>
-        <div class="summary-card">
-          <span>No cobrado CopeNET</span>
-          <strong><%= number_to_currency((@cotizacion_seleccionada || @cotizacion).total_no_cobrado_copenet, unit: "#{moneda_simbolo_producto(@producto_servicio)} ") %></strong>
-        </div>
-        <div class="summary-card">
-          <span>Costo base principal</span>
-          <strong><%= monto_producto(@producto_servicio, total_costos_producto(@producto_servicio)) %></strong>
-        </div>
-        <div class="summary-card">
-          <span>Cotizaciones generadas</span>
-          <strong><%= @cotizaciones.size %></strong>
-        </div>
-        <div class="summary-card">
-          <span>Totales por moneda</span>
-          <strong><%= @cotizacion_seleccionada&.present? ? resumen_totales_por_moneda(@cotizacion_seleccionada.cotizacion_detalles, atributo: :precio, producto_servicio: @producto_servicio) : resumen_totales_por_moneda(@cotizacion.cotizacion_detalles, atributo: :precio, producto_servicio: @producto_servicio) %></strong>
-        </div>
-      </div>
-    </aside>
+    <% unless @mostrar_formulario_cotizacion %>
+      <section class="panel quote-highlight-panel">
+        <%= render "cotizacion_resumen_economico" %>
+      </section>
+    <% end %>
   </div>
 
+  <% unless @mostrar_formulario_cotizacion %>
   <section class="panel">
     <div class="panel-header">
       <div>
@@ -619,4 +669,5 @@
       </div>
     <% end %>
   </section>
+  <% end %>
 </section>
