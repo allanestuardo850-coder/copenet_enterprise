@@ -5694,6 +5694,19 @@ html.theme-dark .productos-servicios-form .cotizacion-item-card-copy span {
   color: #93acca !important;
 }
 
+html.theme-dark .productos-servicios-form .auto-generated-input,
+html.theme-dark .productos-servicios-form .text-input[readonly] {
+  background: linear-gradient(180deg, rgba(22, 42, 64, 0.78), rgba(15, 31, 50, 0.74)) !important;
+  border-color: rgba(119, 150, 196, 0.18) !important;
+  color: #8fa5c4 !important;
+}
+
+html.theme-dark .productos-servicios-form .product-file-dropzone {
+  background:
+    linear-gradient(180deg, rgba(18, 39, 64, 0.98), rgba(12, 28, 47, 0.96)) !important;
+  border-color: rgba(104, 137, 193, 0.24) !important;
+}
+
 html.theme-dark .producto-servicio-show .user-profile-strip {
   background:
     radial-gradient(circle at top left, rgba(41, 94, 214, 0.16), transparent 32%),
@@ -6105,6 +6118,92 @@ html.theme-dark .branding-preview-card {
 
 .parametros-tabs-panel .module-tabs {
   grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.productos-servicios-form .product-wizard-tabs {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.productos-servicios-form .product-wizard-tabs .module-tab {
+  min-height: 58px;
+  padding: 9px 10px;
+}
+
+.productos-servicios-form .product-wizard-tabs .module-tab-icon {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+}
+
+.productos-servicios-form .product-wizard-tabs .module-tab-copy strong {
+  font-size: 0.75rem;
+}
+
+.productos-servicios-form .product-wizard-tabs .module-tab-copy small {
+  font-size: 0.64rem;
+  line-height: 1.25;
+}
+
+.productos-servicios-form .product-tab-panel > .panel-header,
+.productos-servicios-form .nested-panel-header {
+  margin-bottom: 16px;
+}
+
+.productos-servicios-form .product-tab-panel > .panel-header > div,
+.productos-servicios-form .nested-panel-header > div {
+  min-height: 22px;
+}
+
+.productos-servicios-form .auto-generated-input,
+.productos-servicios-form .text-input[readonly] {
+  background: linear-gradient(180deg, #f4f7fb, #eef3f9);
+  border-color: #d9e4f2;
+  color: #7b8da9;
+  box-shadow: none;
+}
+
+.productos-servicios-form .auto-generated-input:focus,
+.productos-servicios-form .text-input[readonly]:focus {
+  box-shadow: 0 0 0 3px rgba(124, 146, 178, 0.1);
+}
+
+.productos-servicios-form .checkbox-group {
+  justify-content: stretch;
+  align-self: end;
+}
+
+.productos-servicios-form .checkbox-label {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.productos-servicios-form .checkbox-label span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.productos-servicios-form .checkbox-label input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
+.productos-servicios-form .product-file-dropzone {
+  grid-template-columns: minmax(140px, 0.34fr) minmax(0, 1fr);
+  min-height: 118px;
+}
+
+.productos-servicios-form .product-file-preview {
+  min-height: 86px;
+}
+
+.productos-servicios-form .product-file-preview svg {
+  width: 34px;
+  height: 34px;
+  color: var(--primary);
 }
 
 .parametros-color-grid {
@@ -6759,6 +6858,10 @@ html.theme-dark .branding-preview-card {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .productos-servicios-form .product-wizard-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .quote-builder-grid,
   .document-list {
     grid-template-columns: 1fr;
@@ -7028,6 +7131,11 @@ html.theme-dark .branding-preview-card {
   }
 
   .product-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .productos-servicios-form .product-wizard-tabs,
+  .productos-servicios-form .product-file-dropzone {
     grid-template-columns: 1fr;
   }
 
