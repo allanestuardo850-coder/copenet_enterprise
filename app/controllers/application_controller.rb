@@ -145,6 +145,14 @@ class ApplicationController < ActionController::Base
       "PRODUCTOS_SERVICIOS"
     when "cotizaciones"
       "COTIZACIONES"
+    when "costos"
+      "COSTOS"
+    when "cobros"
+      "COBROS"
+    when "facturas"
+      "FACTURAS"
+    when "contratos"
+      "CONTRATOS"
     when "usuarios"
       "USUARIOS"
     when "roles"
@@ -189,7 +197,11 @@ class ApplicationController < ActionController::Base
       [
         [:clientes, "Clientes", clientes_path, "users", "CLIENTES"],
         [:productos_servicios, "Productos y Servicios", productos_servicios_path, "box", "PRODUCTOS_SERVICIOS"],
-        [:cotizaciones, "Cotizaciones", cotizaciones_path, "report", "COTIZACIONES"]
+        [:cotizaciones, "Cotizaciones", cotizaciones_path, "report", "COTIZACIONES"],
+        [:costos, "Costos", costos_path, "coins", "COSTOS"],
+        [:cobros_operativos, "Cobros", cobros_path, "receipt", "COBROS"],
+        [:facturas, "Facturación", facturas_path, "invoice", "FACTURAS"],
+        [:contratos, "Contratos", contratos_path, "contract", "CONTRATOS"]
       ]
     )
     reportes_children = []
@@ -229,15 +241,7 @@ class ApplicationController < ActionController::Base
       children: configuracion_children
     } if configuracion_children.any?
 
-    @navigation_items.concat(
-      [
-        { key: :accounts, label: "Cuentas", path: accounts_path, icon: "wallet" },
-        { key: :costs, label: "Costos", path: costs_path, icon: "coins" },
-        { key: :collections, label: "Cobros Operativos", path: collections_path, icon: "receipt" },
-        { key: :invoices, label: "Facturación", path: invoices_path, icon: "invoice" },
-        { key: :contracts, label: "Contratos", path: contracts_path, icon: "contract" }
-      ]
-    ) if current_usuario.root?
+    @navigation_items << { key: :accounts, label: "Cuentas", path: accounts_path, icon: "wallet" } if current_usuario.root?
   end
 
   def navigation_items_for(items)
@@ -259,6 +263,10 @@ class ApplicationController < ActionController::Base
     return modulos_sistema_index_path if puede?(:ver, "MODULOS_SISTEMA")
     return productos_servicios_path if puede?(:ver, "PRODUCTOS_SERVICIOS")
     return cotizaciones_path if puede?(:ver, "COTIZACIONES")
+    return costos_path if puede?(:ver, "COSTOS")
+    return cobros_path if puede?(:ver, "COBROS")
+    return facturas_path if puede?(:ver, "FACTURAS")
+    return contratos_path if puede?(:ver, "CONTRATOS")
 
     login_path
   end

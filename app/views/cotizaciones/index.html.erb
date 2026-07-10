@@ -1,14 +1,5 @@
-<section class="page-section catalog-index-page">
-  <div class="page-heading">
-    <div class="page-heading-copy catalog-title-block">
-      <p class="eyebrow">Cobros</p>
-      <h1>Cotizaciones</h1>
-      <p>Vista central de todas las cotizaciones generadas desde productos y servicios, con acceso rápido a su detalle y PDF.</p>
-    </div>
-    <%= link_to "Nuevo desde Productos", productos_servicios_path, class: "ui-button ui-button-primary" %>
-  </div>
-
-  <div class="panel filters-panel catalog-filters-panel">
+<section class="page-section user-module-page user-index-page cotizaciones-index-page">
+  <section class="panel filters-panel user-index-panel user-index-filters-panel">
     <%= form_with url: cotizaciones_path, method: :get, class: "filters-form" do %>
       <div class="filters-bar">
         <label class="search-shell inline-search-shell">
@@ -24,19 +15,18 @@
         </div>
       </div>
     <% end %>
-  </div>
+  </section>
 
-  <div class="panel catalog-table-panel">
+  <section class="panel user-index-panel user-index-table-panel">
     <div class="panel-header">
-      <div>
-        <h2>Listado General de Cotizaciones</h2>
-        <p>Registro consolidado para seguimiento comercial, validación operativa y generación de documentos PDF.</p>
+      <h2>Listado de cotizaciones</h2>
+      <div class="page-actions-inline">
+        <%= link_to "Nueva desde productos", productos_servicios_path, class: "ui-button ui-button-primary" %>
       </div>
-      <%= render "shared/badge", text: "#{@cotizaciones.size} registros", tone: "info" %>
     </div>
 
     <% if @cotizaciones.any? %>
-      <div class="table-shell catalog-table-shell">
+      <div class="table-shell user-index-table-shell">
         <table class="data-table cotizaciones-table">
           <thead>
             <tr>
@@ -56,15 +46,15 @@
           <tbody>
             <% @cotizaciones.each do |cotizacion| %>
               <tr>
-                <td><strong><%= cotizacion.codigo %></strong></td>
-                <td>
+                <td class="roles-users-count"><%= cotizacion.codigo %></td>
+                <td class="user-index-name">
                   <div><%= cotizacion.producto_servicio&.nombre || "-" %></div>
                   <% if cotizacion.producto_servicio&.codigo.present? %>
                     <small><%= cotizacion.producto_servicio.codigo %></small>
                   <% end %>
                 </td>
                 <td><%= cotizacion[:cliente] %></td>
-                <td><%= cotizacion.cliente_registro&.client_type&.humanize || "-" %></td>
+                <td><span class="user-index-chip user-index-chip-primary"><%= cotizacion.cliente_registro&.client_type&.humanize || "-" %></span></td>
                 <td>
                   <div><%= cotizacion.contacto %></div>
                   <% if cotizacion.correo.present? %>
@@ -73,7 +63,7 @@
                 </td>
                 <td><%= l(cotizacion.created_at.to_date, format: :long) %></td>
                 <td>
-                  <%= render "shared/badge", text: cotizacion.estado.humanize, tone: tono_estado_cotizacion(cotizacion) %>
+                  <span class="user-index-chip user-index-chip-level"><%= cotizacion.estado.humanize %></span>
                   <% unless cotizacion.firmada? %>
                     <%= form_with url: actualizar_estado_cotizacion_path(cotizacion), method: :patch, class: "inline-form" do %>
                       <%= select_tag "cotizacion[estado]",
@@ -91,8 +81,8 @@
                   <% unless cotizacion.firmada? %>
                     <%= table_action_link "Editar", cotizacion_productos_servicio_path(cotizacion.producto_servicio, cotizacion_id: cotizacion.id, modo: "editar"), action: :edit %>
                   <% end %>
-                  <%= link_to "PDF", cotizacion_pdf_productos_servicio_path(cotizacion.producto_servicio, cotizacion_id: cotizacion.id), class: "table-link" %>
-                  <%= link_to "Producto", productos_servicio_path(cotizacion.producto_servicio), class: "table-link" %>
+                  <%= link_to icon("download"), cotizacion_pdf_productos_servicio_path(cotizacion.producto_servicio, cotizacion_id: cotizacion.id), class: "table-link table-action-icon table-action-configure", title: "Descargar PDF", aria: { label: "Descargar PDF" } %>
+                  <%= link_to icon("box"), productos_servicio_path(cotizacion.producto_servicio), class: "table-link table-action-icon table-action-configure", title: "Ver producto", aria: { label: "Ver producto" } %>
                   <% unless cotizacion.firmada? %>
                     <%= button_to "Firmar", actualizar_estado_cotizacion_path(cotizacion, cotizacion: { estado: "firmada", signed_by: current_usuario&.nombre_completo }), method: :patch, class: "table-link button-link", form_class: "inline-form" %>
                   <% end %>
@@ -107,5 +97,5 @@
                  title: "No hay cotizaciones generadas",
                  description: "Cuando generes cotizaciones desde productos y servicios aparecerán aquí para su seguimiento central." %>
     <% end %>
-  </div>
+  </section>
 </section>

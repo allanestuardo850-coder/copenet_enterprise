@@ -1,14 +1,5 @@
-<section class="page-section">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Administración</p>
-      <h1>Clientes</h1>
-      <p>Catálogo de clientes tipificados para aplicar reglas CopeNET, expediente y proyectos.</p>
-    </div>
-    <%= link_to "Nuevo cliente", new_cliente_path, class: "ui-button ui-button-primary" %>
-  </div>
-
-  <div class="panel filters-panel catalog-filters-panel">
+<section class="page-section user-module-page user-index-page clientes-index-page">
+  <section class="panel filters-panel user-index-panel user-index-filters-panel">
     <%= form_with url: clientes_path, method: :get, class: "filters-form" do %>
       <div class="filters-bar">
         <label class="search-shell inline-search-shell">
@@ -16,32 +7,37 @@
           <%= text_field_tag :query, @filtros[:query], placeholder: "Buscar por nombre, correo o contacto" %>
         </label>
         <div class="filter-chip-list filter-select-list">
+          <%= hidden_field_tag :per_page, @clientes_per_page %>
           <%= select_tag :client_type,
                          options_for_select([["Todos los tipos", ""]] + Cliente::CLIENT_TYPES.map { |tipo| [tipo.humanize, tipo] }, @filtros[:client_type]),
                          class: "filter-select" %>
+          <%= select_tag :status,
+                         options_for_select([["Todos los estados", ""], ["Activos", "activo"], ["Inactivos", "inactivo"]], @filtros[:status]),
+                         class: "filter-select" %>
           <%= submit_tag "Aplicar filtros", class: "ui-button ui-button-primary submit-button" %>
+          <%= link_to "Limpiar", clientes_path, class: "ui-button ui-button-secondary" %>
         </div>
       </div>
     <% end %>
-  </div>
+  </section>
 
-  <div class="panel catalog-table-panel">
+  <section class="panel user-index-panel user-index-table-panel">
     <div class="panel-header">
-      <div>
-        <h2>Listado de clientes</h2>
-        <p>Base maestra para cotizaciones, expediente y proyectos.</p>
+      <h2>Listado de clientes</h2>
+      <div class="page-actions-inline">
+        <%= link_to "Nuevo cliente", new_cliente_path, class: "ui-button ui-button-primary" %>
       </div>
-      <%= render "shared/badge", text: "#{@clientes.size} registros", tone: "info" %>
     </div>
 
     <% if @clientes.any? %>
-      <div class="table-shell">
-        <table class="data-table">
+      <div class="table-shell user-index-table-shell">
+        <table class="data-table clientes-table">
           <thead>
             <tr>
               <th>Cliente</th>
               <th>Tipo</th>
               <th>CopeNET</th>
+              <th>Estado</th>
               <th>Contacto</th>
               <th>Expediente</th>
               <th>Acciones</th>
@@ -50,11 +46,12 @@
           <tbody>
             <% @clientes.each do |cliente| %>
               <tr>
-                <td><strong><%= cliente.nombre %></strong></td>
-                <td><%= client_type_label(cliente) %></td>
-                <td><%= cliente.is_copenet_client? ? "Sí" : "No" %></td>
-                <td><%= [cliente.contacto_principal, cliente.email].compact.reject(&:blank?).join(" · ").presence || "-" %></td>
-                <td><%= cliente.expediente_cliente.present? ? "Listo" : "Pendiente" %></td>
+                <td class="user-index-name"><%= cliente.nombre %></td>
+                <td><span class="user-index-chip user-index-chip-primary"><%= client_type_label(cliente) %></span></td>
+                <td><span class="user-index-chip <%= cliente.is_copenet_client? ? "user-index-chip-success" : "user-index-chip-level" %>"><%= cliente.is_copenet_client? ? "Sí" : "No" %></span></td>
+                <td><span class="user-index-chip <%= cliente.activo? ? "user-index-chip-success" : "user-index-chip-warning" %>"><%= cliente.activo? ? "Activo" : "Inactivo" %></span></td>
+                <td class="user-index-email"><%= [cliente.contacto_principal, cliente.email].compact.reject(&:blank?).join(" · ").presence || "-" %></td>
+                <td><span class="user-index-chip <%= cliente.expediente_cliente.present? ? "user-index-chip-success" : "user-index-chip-warning" %>"><%= cliente.expediente_cliente.present? ? "Listo" : "Pendiente" %></span></td>
                 <td class="table-actions">
                   <%= table_action_link "Ver", cliente_path(cliente), action: :view %>
                   <%= table_action_link "Expediente", expediente_cliente_path(cliente), action: :expediente %>
@@ -65,10 +62,41 @@
           </tbody>
         </table>
       </div>
+
+      <div class="table-pagination">
+        <div class="pagination-controls">
+          <%= form_with url: clientes_path, method: :get, class: "pagination-size-form" do %>
+            <%= hidden_field_tag :query, @filtros[:query] if @filtros[:query].present? %>
+            <%= hidden_field_tag :client_type, @filtros[:client_type] if @filtros[:client_type].present? %>
+            <%= hidden_field_tag :status, @filtros[:status] if @filtros[:status].present? %>
+            <label for="clientes_per_page">Resultados</label>
+            <%= select_tag :per_page,
+                           options_for_select([[10, 10], [20, 20], [50, 50], [100, 100]], @clientes_per_page),
+                           id: "clientes_per_page",
+                           class: "filter-select pagination-size-select",
+                           onchange: "this.form.submit()" %>
+          <% end %>
+
+          <nav class="pagination-nav" aria-label="Paginación de clientes">
+            <% pagination_params = request.query_parameters.except("page").merge(per_page: @clientes_per_page) %>
+            <%= link_to "Anterior",
+                        clientes_path(pagination_params.merge(page: @clientes_page - 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @clientes_page <= 1}",
+                        aria: { disabled: @clientes_page <= 1 } %>
+
+            <span class="pagination-current">Página <%= @clientes_page %> de <%= @clientes_total_pages %></span>
+
+            <%= link_to "Siguiente",
+                        clientes_path(pagination_params.merge(page: @clientes_page + 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @clientes_page >= @clientes_total_pages}",
+                        aria: { disabled: @clientes_page >= @clientes_total_pages } %>
+          </nav>
+        </div>
+      </div>
     <% else %>
       <%= render "shared/empty_state",
-                 title: "No hay clientes registrados",
-                 description: "Crea clientes CopeNET y No Socios para activar reglas de precio y expediente." %>
+                 title: @filtros.values.any?(&:present?) ? "No se encontraron clientes" : "No hay clientes registrados",
+                 description: @filtros.values.any?(&:present?) ? "Ajusta la búsqueda o limpia los filtros para ver más resultados." : "Crea clientes CopeNET y No Socios para activar reglas de precio y expediente." %>
     <% end %>
-  </div>
+  </section>
 </section>

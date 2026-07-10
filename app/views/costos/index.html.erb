@@ -1,0 +1,95 @@
+<section class="page-section user-module-page user-index-page costos-index-page">
+  <section class="panel filters-panel user-index-panel user-index-filters-panel">
+    <%= form_with url: costos_path, method: :get, class: "filters-form" do %>
+      <div class="filters-bar">
+        <label class="search-shell inline-search-shell">
+          <span class="search-icon"><%= icon("search") %></span>
+          <%= text_field_tag :query, @filters[:query], placeholder: "Buscar por concepto, centro de costo o proveedor" %>
+        </label>
+        <div class="filter-chip-list filter-select-list">
+          <%= hidden_field_tag :per_page, @costos_per_page %>
+          <%= select_tag :status,
+                         options_for_select([["Todos los estados", ""]] + Costo::ESTADOS.map { |estado| [estado.humanize, estado] }, @filters[:status]),
+                         class: "filter-select" %>
+          <%= submit_tag "Aplicar filtros", class: "ui-button ui-button-primary submit-button" %>
+          <%= link_to "Limpiar", costos_path, class: "ui-button ui-button-secondary" %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="panel user-index-panel user-index-table-panel">
+    <div class="panel-header">
+      <h2>Listado de costos</h2>
+      <div class="page-actions-inline">
+        <%= link_to "Nuevo costo", new_costo_path, class: "ui-button ui-button-primary" %>
+      </div>
+    </div>
+
+    <% if @costos.any? %>
+      <div class="table-shell user-index-table-shell">
+        <table class="data-table costos-table">
+          <thead>
+            <tr>
+              <th>Concepto</th>
+              <th>Centro</th>
+              <th>Clasificación</th>
+              <th>Periodo</th>
+              <th>Monto</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @costos.each do |costo| %>
+              <tr>
+                <td class="user-index-name"><%= costo.concepto %></td>
+                <td class="user-index-email"><%= costo.centro_costo.presence || "-" %></td>
+                <td><span class="user-index-chip user-index-chip-primary"><%= costo.clasificacion.presence || "Sin clasificar" %></span></td>
+                <td><%= costo.periodo.presence || "-" %></td>
+                <td class="roles-users-count"><%= costo.monto_formateado %></td>
+                <td><span class="user-index-chip <%= costo.activo? ? "user-index-chip-success" : "user-index-chip-warning" %>"><%= costo.activo? ? costo.estado.humanize : "Inactivo" %></span></td>
+                <td class="table-actions">
+                  <%= table_action_link "Ver", costo_path(costo), action: :view %>
+                  <%= table_action_link "Editar", edit_costo_path(costo), action: :edit %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-pagination">
+        <div class="pagination-controls">
+          <%= form_with url: costos_path, method: :get, class: "pagination-size-form" do %>
+            <%= hidden_field_tag :query, @filters[:query] if @filters[:query].present? %>
+            <%= hidden_field_tag :status, @filters[:status] if @filters[:status].present? %>
+            <label for="costos_per_page">Resultados</label>
+            <%= select_tag :per_page,
+                           options_for_select([[10, 10], [20, 20], [50, 50], [100, 100]], @costos_per_page),
+                           id: "costos_per_page",
+                           class: "filter-select pagination-size-select",
+                           onchange: "this.form.submit()" %>
+          <% end %>
+
+          <nav class="pagination-nav" aria-label="Paginación de costos">
+            <% pagination_params = request.query_parameters.except("page").merge(per_page: @costos_per_page) %>
+            <%= link_to "Anterior",
+                        costos_path(pagination_params.merge(page: @costos_page - 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @costos_page <= 1}",
+                        aria: { disabled: @costos_page <= 1 } %>
+            <span class="pagination-current">Página <%= @costos_page %> de <%= @costos_total_pages %></span>
+            <%= link_to "Siguiente",
+                        costos_path(pagination_params.merge(page: @costos_page + 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @costos_page >= @costos_total_pages}",
+                        aria: { disabled: @costos_page >= @costos_total_pages } %>
+          </nav>
+        </div>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state",
+                 title: @filters.values.any?(&:present?) ? "No se encontraron costos" : "No hay costos registrados",
+                 description: @filters.values.any?(&:present?) ? "Ajusta la búsqueda o limpia los filtros para ver más resultados." : "Registra costos para alimentar el control financiero operativo." %>
+    <% end %>
+  </section>
+</section>

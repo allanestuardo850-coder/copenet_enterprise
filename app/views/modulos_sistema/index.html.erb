@@ -1,51 +1,95 @@
-<section class="page-section">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Administración</p>
-      <h1>Módulos del Sistema</h1>
-      <p>Gestiona los módulos registrados para navegación, permisos y administración interna.</p>
-    </div>
-    <%= link_to "Nuevo Módulo", new_modulos_sistema_path, class: "ui-button ui-button-primary" %>
-  </div>
-
-  <div class="panel">
-    <div class="panel-header">
-      <div>
-        <h2>Registro de módulos</h2>
-        <p>Listado base para controlar grupos, rutas y disponibilidad operativa.</p>
+<section class="page-section user-module-page user-index-page modulos-sistema-index-page">
+  <section class="panel filters-panel user-index-panel user-index-filters-panel">
+    <%= form_with url: modulos_sistema_index_path, method: :get, class: "filters-form" do %>
+      <div class="filters-bar">
+        <label class="search-shell inline-search-shell">
+          <span class="search-icon"><%= icon("search") %></span>
+          <%= text_field_tag :query, @filters[:query], placeholder: "Buscar por código, nombre, grupo o ruta" %>
+        </label>
+        <div class="filter-chip-list filter-select-list">
+          <%= hidden_field_tag :per_page, @modulos_sistema_per_page %>
+          <%= select_tag :status,
+                         options_for_select([["Todos los estados", ""], ["Activos", "activo"], ["Inactivos", "inactivo"]], @filters[:status]),
+                         class: "filter-select" %>
+          <%= submit_tag "Aplicar filtros", class: "ui-button ui-button-primary submit-button" %>
+          <%= link_to "Limpiar", modulos_sistema_index_path, class: "ui-button ui-button-secondary" %>
+        </div>
       </div>
-      <%= render "shared/badge", text: "#{@modulos_sistema.size} registros", tone: "info" %>
+    <% end %>
+  </section>
+
+  <section class="panel user-index-panel user-index-table-panel">
+    <div class="panel-header">
+      <h2>Listado de módulos</h2>
+      <div class="page-actions-inline">
+        <%= link_to "Nuevo módulo", new_modulos_sistema_path, class: "ui-button ui-button-primary" %>
+      </div>
     </div>
 
-    <div class="table-shell">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th>Grupo</th>
-            <th>Ruta</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @modulos_sistema.each do |modulo_sistema| %>
+    <% if @modulos_sistema.any? %>
+      <div class="table-shell user-index-table-shell">
+        <table class="data-table modulos-sistema-table">
+          <thead>
             <tr>
-              <td><strong><%= modulo_sistema.codigo %></strong></td>
-              <td><%= modulo_sistema.nombre %></td>
-              <td><%= modulo_sistema.grupo.presence || "Sin grupo" %></td>
-              <td><%= modulo_sistema.ruta.presence || "Sin ruta" %></td>
-              <td><%= render "shared/badge", text: modulo_sistema.activo? ? "Activo" : "Inactivo", tone: modulo_sistema.activo? ? "success" : "warning" %></td>
-              <td class="table-actions">
-                <%= table_action_link "Ver", modulos_sistema_path(modulo_sistema), action: :view %>
-                <%= table_action_link "Editar", edit_modulos_sistema_path(modulo_sistema), action: :edit %>
-                <%= table_action_button "Eliminar", modulos_sistema_path(modulo_sistema), method: :delete, action: :delete, confirm: "¿Deseas eliminar este módulo?" %>
-              </td>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Grupo</th>
+              <th>Ruta</th>
+              <th>Estado</th>
+              <th>Acciones</th>
             </tr>
+          </thead>
+          <tbody>
+            <% @modulos_sistema.each do |modulo_sistema| %>
+              <tr>
+                <td class="roles-users-count"><%= modulo_sistema.codigo %></td>
+                <td class="user-index-name"><%= modulo_sistema.nombre %></td>
+                <td><span class="user-index-chip user-index-chip-primary"><%= modulo_sistema.grupo.presence || "Sin grupo" %></span></td>
+                <td class="roles-description"><%= modulo_sistema.ruta.presence || "Sin ruta" %></td>
+                <td><span class="user-index-chip <%= modulo_sistema.activo? ? "user-index-chip-success" : "user-index-chip-warning" %>"><%= modulo_sistema.activo? ? "Activo" : "Inactivo" %></span></td>
+                <td class="table-actions">
+                  <%= table_action_link "Ver", modulos_sistema_path(modulo_sistema), action: :view %>
+                  <%= table_action_link "Editar", edit_modulos_sistema_path(modulo_sistema), action: :edit %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-pagination">
+        <div class="pagination-controls">
+          <%= form_with url: modulos_sistema_index_path, method: :get, class: "pagination-size-form" do %>
+            <%= hidden_field_tag :query, @filters[:query] if @filters[:query].present? %>
+            <%= hidden_field_tag :status, @filters[:status] if @filters[:status].present? %>
+            <label for="modulos_sistema_per_page">Resultados</label>
+            <%= select_tag :per_page,
+                           options_for_select([[10, 10], [20, 20], [50, 50], [100, 100]], @modulos_sistema_per_page),
+                           id: "modulos_sistema_per_page",
+                           class: "filter-select pagination-size-select",
+                           onchange: "this.form.submit()" %>
           <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
+
+          <nav class="pagination-nav" aria-label="Paginación de módulos del sistema">
+            <% pagination_params = request.query_parameters.except("page").merge(per_page: @modulos_sistema_per_page) %>
+            <%= link_to "Anterior",
+                        modulos_sistema_index_path(pagination_params.merge(page: @modulos_sistema_page - 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @modulos_sistema_page <= 1}",
+                        aria: { disabled: @modulos_sistema_page <= 1 } %>
+
+            <span class="pagination-current">Página <%= @modulos_sistema_page %> de <%= @modulos_sistema_total_pages %></span>
+
+            <%= link_to "Siguiente",
+                        modulos_sistema_index_path(pagination_params.merge(page: @modulos_sistema_page + 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @modulos_sistema_page >= @modulos_sistema_total_pages}",
+                        aria: { disabled: @modulos_sistema_page >= @modulos_sistema_total_pages } %>
+          </nav>
+        </div>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state",
+                 title: @filters.values.any?(&:present?) ? "No se encontraron módulos" : "No hay módulos registrados",
+                 description: @filters.values.any?(&:present?) ? "Ajusta la búsqueda o limpia los filtros para ver más resultados." : "Crea el primer módulo para organizar navegación y permisos del sistema." %>
+    <% end %>
+  </section>
 </section>

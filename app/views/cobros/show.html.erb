@@ -1,0 +1,38 @@
+<section class="page-section company-show-page">
+  <section class="company-show-hero">
+    <div class="company-show-identity">
+      <div class="company-show-logo">CB</div>
+      <div class="company-show-copy">
+        <div class="company-show-title-row">
+          <strong class="company-show-title"><%= @cobro.referencia %></strong>
+          <div class="company-show-badges">
+            <%= render "shared/badge", text: @cobro.activo? ? @cobro.estado.humanize : "Inactivo", tone: @cobro.activo? ? "success" : "warning" %>
+          </div>
+        </div>
+        <p><%= @cobro.cliente_nombre %> · <%= @cobro.monto_formateado %></p>
+      </div>
+    </div>
+    <div class="company-show-actions" aria-label="Acciones de cobro">
+      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, cobros_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
+      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_cobro_path(@cobro), class: "company-show-action-button company-show-action-primary", title: "Editar cobro", aria: { label: "Editar cobro" } %>
+    </div>
+  </section>
+
+  <section class="panel detail-section">
+    <div class="panel-header"><div><h2>Información del cobro</h2></div></div>
+    <div class="detail-grid">
+      <div class="detail-item"><span>Cliente</span><strong><%= @cobro.cliente_nombre %></strong></div>
+      <div class="detail-item"><span>Gestor</span><strong><%= @cobro.gestor.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Vencimiento</span><strong><%= @cobro.fecha_vencimiento || "-" %></strong></div>
+      <div class="detail-item"><span>Pago</span><strong><%= @cobro.fecha_pago || "-" %></strong></div>
+      <div class="detail-item"><span>Monto</span><strong><%= @cobro.monto_formateado %></strong></div>
+      <div class="detail-item"><span>Moneda</span><strong><%= @cobro.moneda&.nombre || "-" %></strong></div>
+    </div>
+    <% if @cobro.notas.present? %>
+      <div class="document-paragraph-card">
+        <strong>Notas</strong>
+        <p><%= @cobro.notas %></p>
+      </div>
+    <% end %>
+  </section>
+</section>

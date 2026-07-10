@@ -1,40 +1,43 @@
-<section class="page-section">
-  <div class="page-heading">
-    <div>
-      <h1><%= @cliente.nombre %></h1>
-      <p>Ficha comercial base del cliente para cotizaciones, expediente y proyectos.</p>
-    </div>
-    <div class="page-actions-inline">
-      <%= link_to "Ver expediente", expediente_cliente_path(@cliente), class: "ui-button ui-button-primary" %>
-      <%= link_to "Editar", edit_cliente_path(@cliente), class: "ui-button ui-button-secondary" %>
-    </div>
-  </div>
+<section class="page-section company-show-page">
+  <section class="company-show-hero">
+    <div class="company-show-identity">
+      <div class="company-show-logo">
+        <%= @cliente.nombre.to_s.first(2).upcase %>
+      </div>
 
-  <section class="panel user-profile-strip">
-    <div class="user-profile-strip-main">
-      <div class="user-profile-avatar"><%= @cliente.nombre.to_s.first(2).upcase %></div>
-      <div class="user-profile-copy">
-        <strong><%= @cliente.nombre %></strong>
-        <span><%= @cliente.email.presence || "Sin correo" %></span>
+      <div class="company-show-copy">
+        <div class="company-show-title-row">
+          <strong class="company-show-title"><%= @cliente.nombre %></strong>
+
+          <div class="company-show-badges">
+            <%= render "shared/badge", text: @cliente.activo? ? "Activo" : "Inactivo", tone: @cliente.activo? ? "success" : "warning" %>
+            <%= render "shared/badge", text: client_type_label(@cliente), tone: @cliente.is_copenet_client? ? "primary" : "info" %>
+            <%= render "shared/badge", text: @cliente.expediente_cliente.present? ? "Expediente listo" : "Expediente pendiente", tone: @cliente.expediente_cliente.present? ? "success" : "warning" %>
+          </div>
+        </div>
+
+        <p><%= @cliente.email.presence || "Sin correo registrado" %></p>
       </div>
     </div>
-    <div class="user-profile-metrics">
-      <article class="mini-metric-card"><span>Tipo</span><strong><%= client_type_label(@cliente) %></strong></article>
-      <article class="mini-metric-card"><span>CopeNET</span><strong><%= @cliente.is_copenet_client? ? "Sí" : "No" %></strong></article>
-      <article class="mini-metric-card"><span>Cotizaciones</span><strong><%= @cliente.cotizaciones.count %></strong></article>
+
+    <div class="company-show-actions" aria-label="Acciones de cliente">
+      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, clientes_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
+      <%= link_to "#{icon("folder")}<span>Expediente</span>".html_safe, expediente_cliente_path(@cliente), class: "company-show-action-button company-show-action-primary", title: "Ver expediente", aria: { label: "Ver expediente" } %>
+      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_cliente_path(@cliente), class: "company-show-action-button company-show-action-primary", title: "Editar cliente", aria: { label: "Editar cliente" } %>
     </div>
   </section>
 
-  <section class="panel">
+  <section class="panel cliente-show-details-panel">
     <div class="panel-header">
       <div>
         <h2>Información general</h2>
-        <p>Datos principales para operación comercial.</p>
       </div>
     </div>
-    <div class="document-meta-grid">
+    <div class="document-meta-grid cliente-show-meta-grid">
       <div class="document-meta-item"><span>Contacto principal</span><strong><%= @cliente.contacto_principal.presence || "-" %></strong></div>
       <div class="document-meta-item"><span>Teléfono</span><strong><%= @cliente.telefono.presence || "-" %></strong></div>
+      <div class="document-meta-item"><span>CopeNET</span><strong><%= @cliente.is_copenet_client? ? "Sí" : "No" %></strong></div>
+      <div class="document-meta-item"><span>Cotizaciones</span><strong><%= @cliente.cotizaciones.count %></strong></div>
       <div class="document-meta-item"><span>Estado</span><strong><%= @cliente.activo? ? "Activo" : "Inactivo" %></strong></div>
       <div class="document-meta-item"><span>Expediente</span><strong><%= @cliente.expediente_cliente.present? ? "Creado" : "Pendiente" %></strong></div>
     </div>

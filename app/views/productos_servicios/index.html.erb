@@ -1,14 +1,5 @@
-<section class="page-section catalog-index-page">
-  <div class="page-heading">
-    <div class="page-heading-copy catalog-title-block">
-      <p class="eyebrow">Cobros</p>
-      <h1>Productos y Servicios</h1>
-      <p>Catálogo maestro de conceptos cobrables para contratos, cobros, facturación y reportes.</p>
-    </div>
-    <%= link_to "Nuevo producto o servicio", new_productos_servicio_path, class: "ui-button ui-button-primary" %>
-  </div>
-
-  <div class="panel filters-panel catalog-filters-panel">
+<section class="page-section user-module-page user-index-page productos-servicios-index-page">
+  <section class="panel filters-panel user-index-panel user-index-filters-panel">
     <%= form_with url: productos_servicios_path, method: :get, class: "filters-form" do %>
       <div class="filters-bar">
         <label class="search-shell inline-search-shell">
@@ -27,20 +18,19 @@
         </div>
       </div>
     <% end %>
-  </div>
+  </section>
 
-  <div class="panel catalog-table-panel">
+  <section class="panel user-index-panel user-index-table-panel">
     <div class="panel-header">
-      <div>
-        <h2>Listado del catálogo</h2>
-        <p>Portafolio central para productos, servicios, licencias, cargos y conceptos transaccionales.</p>
+      <h2>Listado del catálogo</h2>
+      <div class="page-actions-inline">
+        <%= link_to "Nuevo producto o servicio", new_productos_servicio_path, class: "ui-button ui-button-primary" %>
       </div>
-      <%= render "shared/badge", text: "#{@producto_servicios.size} registros", tone: "info" %>
     </div>
 
     <% if @producto_servicios.any? %>
-      <div class="table-shell catalog-table-shell">
-        <table class="data-table">
+      <div class="table-shell user-index-table-shell">
+        <table class="data-table productos-servicios-table">
           <thead>
             <tr>
               <th>Código</th>
@@ -57,28 +47,23 @@
           <tbody>
             <% @producto_servicios.each do |producto_servicio| %>
               <tr>
-                <td><strong><%= producto_servicio.codigo %></strong></td>
-                <td>
+                <td class="roles-users-count"><%= producto_servicio.codigo %></td>
+                <td class="user-index-name">
                   <div><%= producto_servicio.nombre %></div>
                   <% if producto_servicio.nombre_corto.present? %>
                     <small><%= producto_servicio.nombre_corto %></small>
                   <% end %>
                 </td>
-                <td><%= producto_servicio.tipo_producto %></td>
-                <td><%= producto_servicio.modelo_cobro %></td>
+                <td><span class="user-index-chip user-index-chip-primary"><%= producto_servicio.tipo_producto %></span></td>
+                <td><span class="user-index-chip user-index-chip-level"><%= producto_servicio.modelo_cobro %></span></td>
                 <td><%= producto_servicio.company&.commercial_name || producto_servicio.company&.legal_name || "-" %></td>
                 <td><%= producto_servicio.moneda&.simbolo || producto_servicio.moneda&.nombre || "-" %></td>
                 <td><%= monto_producto(producto_servicio, producto_servicio.precio_base) %></td>
-                <td>
-                  <%= render "shared/badge",
-                             text: producto_servicio.estado_catalogo,
-                             tone: producto_servicio.activo? ? "success" : "warning" %>
-                </td>
+                <td><span class="user-index-chip <%= producto_servicio.activo? ? "user-index-chip-success" : "user-index-chip-warning" %>"><%= producto_servicio.estado_catalogo %></span></td>
                 <td class="table-actions">
                   <%= table_action_link "Ver", productos_servicio_path(producto_servicio), action: :view %>
-                  <%= link_to "Cotizar", cotizacion_productos_servicio_path(producto_servicio), class: "table-link" %>
+                  <%= link_to icon("receipt"), cotizacion_productos_servicio_path(producto_servicio), class: "table-link table-action-icon table-action-configure", title: "Cotizar", aria: { label: "Cotizar" } %>
                   <%= table_action_link "Editar", edit_productos_servicio_path(producto_servicio), action: :edit %>
-                  <%= table_action_button "Eliminar", productos_servicio_path(producto_servicio), method: :delete, action: :delete, confirm: "¿Deseas eliminar este producto o servicio?" %>
                 </td>
               </tr>
             <% end %>
@@ -90,5 +75,5 @@
                  title: "No hay productos ni servicios registrados",
                  description: "Crea el primer concepto cobrable para comenzar a construir contratos, cobros y facturación." %>
     <% end %>
-  </div>
+  </section>
 </section>

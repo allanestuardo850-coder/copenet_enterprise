@@ -2,11 +2,6 @@
               url: producto_servicio.persisted? ? productos_servicio_path(producto_servicio) : productos_servicios_path,
               class: "company-form productos-servicios-form",
               data: { controller: "tabs", tabs_default_value: "general" } do |form| %>
-  <div class="form-actions form-actions-top">
-    <%= form.submit producto_servicio.persisted? ? "Actualizar Producto o Servicio" : "Guardar Producto o Servicio", class: "ui-button ui-button-primary submit-button" %>
-    <%= link_to "Cancelar", producto_servicio.persisted? ? productos_servicio_path(producto_servicio) : productos_servicios_path, class: "ui-button ui-button-secondary" %>
-  </div>
-
   <% if producto_servicio.errors.any? %>
     <section class="panel form-errors">
       <ul class="error-list">
@@ -21,9 +16,11 @@
     <div class="panel-header">
       <div>
         <h2>Configuración del catálogo</h2>
-        <p>Completa la información por pestañas para evitar un formulario largo y mejorar la edición.</p>
       </div>
-      <%= render "shared/badge", text: producto_servicio.persisted? ? "Edición" : "Nuevo registro", tone: "info" %>
+      <div class="form-actions company-form-header-actions">
+        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+        <%= link_to "Cancelar", productos_servicios_path, class: "ui-button ui-button-secondary" %>
+      </div>
     </div>
 
     <div class="product-tabs" role="tablist" aria-label="Secciones del producto o servicio">
@@ -641,9 +638,4 @@
       </div>
     </div>
   </section>
-
-  <div class="form-actions">
-    <%= form.submit producto_servicio.persisted? ? "Actualizar Producto o Servicio" : "Guardar Producto o Servicio", class: "ui-button ui-button-primary submit-button" %>
-    <%= link_to "Cancelar", producto_servicio.persisted? ? productos_servicio_path(producto_servicio) : productos_servicios_path, class: "ui-button ui-button-secondary" %>
-  </div>
 <% end %>

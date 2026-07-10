@@ -1,31 +1,17 @@
 <section class="page-section expediente-page" data-controller="tabs" data-tabs-default-value="<%= @tab_activa.presence || "resumen" %>">
-  <div class="page-heading">
-    <div class="page-heading-copy">
-      <h1><%= @expediente_cliente.titulo %></h1>
-      <p>Consola previa a facturación para entender el estado comercial, documental y operativo del cliente.</p>
-    </div>
-
-    <div class="page-heading-side">
-      <div class="user-heading-meta">
-        <%= render "shared/badge", text: @cliente.activo? ? "Cliente activo" : "Cliente inactivo", tone: @cliente.activo? ? "success" : "warning" %>
-        <%= render "shared/badge", text: client_type_label(@cliente), tone: @cliente.is_copenet_client? ? "primary" : "info" %>
-        <%= render "shared/badge", text: @expediente_cliente.estado_operativo, tone: tono_estado_expediente(@expediente_cliente) %>
-      </div>
-
-      <div class="page-actions-inline">
-        <%= link_to "Volver al cliente", cliente_path(@cliente), class: "ui-button ui-button-secondary" %>
-        <%= link_to "Editar cliente", edit_cliente_path(@cliente), class: "ui-button ui-button-secondary" %>
-        <%= link_to "Documentos", expediente_cliente_path(@cliente, tab: "documentos"), class: "ui-button ui-button-primary" %>
-      </div>
-    </div>
-  </div>
-
-  <section class="panel user-profile-strip">
-    <div class="user-profile-strip-main">
-      <div class="user-profile-avatar"><%= @cliente.nombre.to_s.first(2).upcase %></div>
-      <div class="user-profile-copy">
-        <strong><%= @cliente.nombre %></strong>
-        <span><%= @cliente.email.presence || "Correo pendiente" %></span>
+  <section class="company-show-hero expediente-show-hero">
+    <div class="company-show-identity">
+      <div class="company-show-logo"><%= @cliente.nombre.to_s.first(2).upcase %></div>
+      <div class="company-show-copy">
+        <div class="company-show-title-row">
+          <strong class="company-show-title"><%= @cliente.nombre %></strong>
+          <div class="company-show-badges">
+            <%= render "shared/badge", text: @cliente.activo? ? "Cliente activo" : "Cliente inactivo", tone: @cliente.activo? ? "success" : "warning" %>
+            <%= render "shared/badge", text: client_type_label(@cliente), tone: @cliente.is_copenet_client? ? "primary" : "info" %>
+            <%= render "shared/badge", text: @expediente_cliente.estado_operativo, tone: tono_estado_expediente(@expediente_cliente) %>
+          </div>
+        </div>
+        <p><%= @cliente.email.presence || "Correo pendiente" %></p>
       </div>
     </div>
 
@@ -43,15 +29,19 @@
         <strong><%= @proyectos.size %></strong>
       </article>
     </div>
+
+    <div class="company-show-actions" aria-label="Acciones de expediente">
+      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, cliente_path(@cliente), class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al cliente", aria: { label: "Volver al cliente" } %>
+      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_cliente_path(@cliente), class: "company-show-action-button company-show-action-primary", title: "Editar cliente", aria: { label: "Editar cliente" } %>
+      <%= link_to "#{icon("report")}<span>Documentos</span>".html_safe, expediente_cliente_path(@cliente, tab: "documentos"), class: "company-show-action-button company-show-action-primary", title: "Ver documentos", aria: { label: "Ver documentos" } %>
+    </div>
   </section>
 
   <section class="panel product-tabs-panel">
     <div class="panel-header">
       <div>
         <h2>Vista del expediente</h2>
-        <p>Navega por áreas funcionales sin perder el contexto del cliente.</p>
       </div>
-      <%= render "shared/badge", text: "Prefacturación", tone: "info" %>
     </div>
 
     <div class="product-tabs" role="tablist" aria-label="Secciones del expediente del cliente">

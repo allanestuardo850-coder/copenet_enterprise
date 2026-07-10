@@ -99,6 +99,18 @@ body {
   font-optical-sizing: auto;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .public-body {
   min-height: 100vh;
   padding: 0;
@@ -4475,6 +4487,41 @@ html.theme-dark select.text-input option {
   line-height: 1.35;
 }
 
+.cliente-show-details-panel {
+  padding: 20px;
+}
+
+.cliente-show-meta-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.cliente-show-meta-grid .document-meta-item {
+  min-height: 76px;
+  padding: 14px 16px;
+  border-radius: 12px;
+}
+
+.cliente-show-meta-grid .document-meta-item span {
+  font-size: 0.72rem;
+}
+
+.cliente-show-meta-grid .document-meta-item strong {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.cliente-show-details-panel .document-paragraph-card {
+  margin-top: 14px;
+}
+
+@media (max-width: 1180px) {
+  .cliente-show-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .document-paragraph-stack {
   display: flex;
   flex-direction: column;
@@ -4506,8 +4553,44 @@ html.theme-dark select.text-input option {
   margin-bottom: 18px;
 }
 
+.expediente-show-hero {
+  align-items: stretch;
+}
+
 .expediente-hero-metrics {
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 300px;
+  max-width: 420px;
+  flex: 1 1 320px;
+}
+
+.expediente-show-hero .company-show-actions {
+  min-width: 240px;
+}
+
+.producto-servicio-show-hero {
+  align-items: stretch;
+}
+
+.producto-servicio-hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(112px, 1fr));
+  gap: 10px;
+  flex: 1 1 560px;
+  min-width: 420px;
+}
+
+.producto-servicio-show-hero .company-show-actions {
+  min-width: 240px;
+}
+
+.cotizacion-status-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .expediente-status-grid {
@@ -6812,8 +6895,10 @@ html.theme-dark .branding-preview-card {
   }
 
   .expediente-status-grid,
-  .expediente-hero-metrics {
+  .expediente-hero-metrics,
+  .producto-servicio-hero-metrics {
     grid-template-columns: 1fr;
+    min-width: 0;
   }
 
   .cotizacion-history-card-header,

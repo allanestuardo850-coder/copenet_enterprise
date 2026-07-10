@@ -1,16 +1,4 @@
 <section class="page-section">
-  <div class="page-heading">
-    <div class="page-heading-copy">
-      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-        <%= link_to "Dashboard", dashboard_path %>
-        <span><%= icon("chevron") %></span>
-        <strong>Parámetros</strong>
-      </nav>
-      <h1>Branding y Personalización</h1>
-      <p>Configura nombre de la aplicación, mensajes, logos y colores base para personalizar toda la experiencia visual.</p>
-    </div>
-  </div>
-
   <% if @configuracion_sistema.errors.any? %>
     <section class="panel form-errors">
       <ul class="error-list">
@@ -22,16 +10,22 @@
   <% end %>
 
   <%= form_with model: @configuracion_sistema, url: parametros_path, method: :patch, class: "company-form" do |form| %>
-    <div class="form-actions form-actions-top">
-      <%= form.submit "Guardar branding", class: "ui-button ui-button-primary submit-button" %>
-      <%= link_to "Volver", dashboard_path, class: "ui-button ui-button-secondary" %>
-    </div>
+    <section class="panel product-tabs-panel">
+      <div class="panel-header">
+        <div>
+          <h2>Branding y personalización</h2>
+        </div>
+        <div class="form-actions company-form-header-actions">
+          <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+          <%= link_to "Cancelar", dashboard_path, class: "ui-button ui-button-secondary" %>
+        </div>
+      </div>
+    </section>
 
     <section class="panel form-section">
       <div class="panel-header">
         <div>
-          <h2>Identidad Principal</h2>
-          <p>Nombre comercial visible en sidebar, login y título general del sistema.</p>
+          <h2>Identidad principal</h2>
         </div>
       </div>
 
@@ -54,8 +48,7 @@
     <section class="panel form-section">
       <div class="panel-header">
         <div>
-          <h2>Mensajes del Sistema</h2>
-          <p>Controla el mensaje del login, la tarjeta promocional del menú lateral y la marca del footer.</p>
+          <h2>Mensajes del sistema</h2>
         </div>
       </div>
 
@@ -110,8 +103,7 @@
     <section class="panel form-section">
       <div class="panel-header">
         <div>
-          <h2>Plantilla Comercial PDF</h2>
-          <p>Personaliza el documento de cotización con mensajes, encabezado y firma alineados a la marca.</p>
+          <h2>Plantilla comercial PDF</h2>
         </div>
       </div>
 
@@ -146,8 +138,7 @@
     <section class="panel form-section">
       <div class="panel-header">
         <div>
-          <h2>Paleta de Marca</h2>
-          <p>Define colores globales para botones, sidebar, acentos y elementos principales.</p>
+          <h2>Paleta de marca</h2>
         </div>
       </div>
 
@@ -182,8 +173,7 @@
     <section class="panel form-section">
       <div class="panel-header">
         <div>
-          <h2>Logos y Recursos Visuales</h2>
-          <p>Sube los archivos que desees usar en sidebar, login y footer. Si no subes uno, se usa la marca textual por defecto.</p>
+          <h2>Logos y recursos visuales</h2>
         </div>
       </div>
 
@@ -262,8 +252,7 @@
     <section class="panel form-section">
       <div class="panel-header">
         <div>
-          <h2>Vista Previa de Marca</h2>
-          <p>Resumen inmediato de textos y colores aplicados al sistema, al loader y a la cotización PDF.</p>
+          <h2>Vista previa de marca</h2>
         </div>
       </div>
 

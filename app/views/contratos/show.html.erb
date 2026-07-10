@@ -1,0 +1,39 @@
+<section class="page-section company-show-page">
+  <section class="company-show-hero">
+    <div class="company-show-identity">
+      <div class="company-show-logo">CT</div>
+      <div class="company-show-copy">
+        <div class="company-show-title-row">
+          <strong class="company-show-title"><%= @contrato.codigo %></strong>
+          <div class="company-show-badges">
+            <%= render "shared/badge", text: @contrato.activo? ? @contrato.estado.humanize : "Inactivo", tone: @contrato.activo? ? "success" : "warning" %>
+            <%= render "shared/badge", text: @contrato.tipo_contrato.presence || "Sin tipo", tone: "primary" %>
+          </div>
+        </div>
+        <p><%= @contrato.cliente_nombre %> · <%= @contrato.valor_formateado %></p>
+      </div>
+    </div>
+    <div class="company-show-actions" aria-label="Acciones de contrato">
+      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, contratos_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
+      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_contrato_path(@contrato), class: "company-show-action-button company-show-action-primary", title: "Editar contrato", aria: { label: "Editar contrato" } %>
+    </div>
+  </section>
+
+  <section class="panel detail-section">
+    <div class="panel-header"><div><h2>Información del contrato</h2></div></div>
+    <div class="detail-grid">
+      <div class="detail-item"><span>Cliente</span><strong><%= @contrato.cliente_nombre %></strong></div>
+      <div class="detail-item"><span>Tipo</span><strong><%= @contrato.tipo_contrato.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Inicio</span><strong><%= @contrato.fecha_inicio || "-" %></strong></div>
+      <div class="detail-item"><span>Fin</span><strong><%= @contrato.fecha_fin || "-" %></strong></div>
+      <div class="detail-item"><span>Valor</span><strong><%= @contrato.valor_formateado %></strong></div>
+      <div class="detail-item"><span>Responsable</span><strong><%= @contrato.responsable.presence || "-" %></strong></div>
+    </div>
+    <% if @contrato.notas.present? %>
+      <div class="document-paragraph-card">
+        <strong>Notas</strong>
+        <p><%= @contrato.notas %></p>
+      </div>
+    <% end %>
+  </section>
+</section>

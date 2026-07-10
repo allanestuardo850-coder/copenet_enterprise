@@ -1,0 +1,85 @@
+<%= form_with model: costo, class: "company-form" do |form| %>
+  <% if costo.errors.any? %>
+    <section class="panel form-errors">
+      <ul class="error-list">
+        <% costo.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <section class="panel product-tabs-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Configuración del costo</h2>
+      </div>
+      <div class="form-actions company-form-header-actions">
+        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+        <%= link_to "Cancelar", costos_path, class: "ui-button ui-button-secondary" %>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel form-section">
+    <div class="panel-header">
+      <div>
+        <h2>Información general</h2>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="field-group">
+        <%= form.label :concepto, "Concepto" %>
+        <%= form.text_field :concepto, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :centro_costo, "Centro de costo" %>
+        <%= form.text_field :centro_costo, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :clasificacion, "Clasificación" %>
+        <%= form.select :clasificacion, options_for_select(Costo::CLASIFICACIONES, costo.clasificacion), { include_blank: "Seleccionar clasificación" }, class: "text-input filter-select" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :periodo, "Periodo" %>
+        <%= form.text_field :periodo, class: "text-input", placeholder: "Julio 2026" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :fecha, "Fecha" %>
+        <%= form.date_field :fecha, class: "text-input" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :monto, "Monto" %>
+        <%= form.number_field :monto, class: "text-input", min: 0, step: "0.01" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :moneda_id, "Moneda" %>
+        <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, costo.moneda_id), { include_blank: "Seleccionar moneda" }, class: "text-input filter-select" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :estado, "Estado" %>
+        <%= form.select :estado, options_for_select(Costo::ESTADOS.map { |estado| [estado.humanize, estado] }, costo.estado), {}, class: "text-input filter-select" %>
+      </div>
+      <div class="field-group">
+        <%= form.label :proveedor, "Proveedor" %>
+        <%= form.text_field :proveedor, class: "text-input" %>
+      </div>
+      <% if costo.persisted? %>
+        <div class="field-group checkbox-group">
+          <label class="checkbox-label">
+            <%= hidden_field_tag "costo[activo]", "1" %>
+            <%= check_box_tag "costo[activo]", "0", !costo.activo? %>
+            <span>Inactivar</span>
+          </label>
+        </div>
+      <% else %>
+        <%= form.hidden_field :activo, value: true %>
+      <% end %>
+      <div class="field-group field-group-full">
+        <%= form.label :descripcion, "Descripción" %>
+        <%= form.text_area :descripcion, rows: 4, class: "text-input text-area" %>
+      </div>
+    </div>
+  </section>
+<% end %>

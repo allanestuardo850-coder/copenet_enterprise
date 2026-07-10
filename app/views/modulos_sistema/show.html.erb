@@ -1,53 +1,44 @@
-<section class="page-section">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Administración</p>
-      <h1><%= @modulo_sistema.nombre %></h1>
-      <p>Consulta la configuración base del módulo dentro de la plataforma.</p>
+<section class="page-section company-show-page">
+  <section class="company-show-hero">
+    <div class="company-show-identity">
+      <div class="company-show-logo">
+        <%= @modulo_sistema.nombre.to_s.first(2).upcase %>
+      </div>
+
+      <div class="company-show-copy">
+        <div class="company-show-title-row">
+          <strong class="company-show-title"><%= @modulo_sistema.nombre %></strong>
+
+          <div class="company-show-badges">
+            <%= render "shared/badge", text: @modulo_sistema.activo? ? "Activo" : "Inactivo", tone: @modulo_sistema.activo? ? "success" : "warning" %>
+            <%= render "shared/badge", text: @modulo_sistema.grupo.presence || "Sin grupo", tone: "info" %>
+          </div>
+        </div>
+
+        <p><%= @modulo_sistema.ruta.presence || "Sin ruta visible" %></p>
+      </div>
     </div>
-    <div class="page-actions-inline">
-      <%= link_to "Editar", edit_modulos_sistema_path(@modulo_sistema), class: "ui-button ui-button-primary" %>
-      <%= link_to "Volver", modulos_sistema_index_path, class: "ui-button ui-button-secondary" %>
-      <%= button_to "Eliminar", modulos_sistema_path(@modulo_sistema), method: :delete, class: "ui-button ui-button-secondary", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este módulo?" } %>
+
+    <div class="company-show-actions" aria-label="Acciones de módulo">
+      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, modulos_sistema_index_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
+      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_modulos_sistema_path(@modulo_sistema), class: "company-show-action-button company-show-action-primary", title: "Editar módulo", aria: { label: "Editar módulo" } %>
     </div>
-  </div>
+  </section>
 
-  <div class="module-page-grid">
-    <section class="panel detail-section">
-      <div class="panel-header">
-        <div>
-          <h2>Información del módulo</h2>
-          <p>Parámetros técnicos y visuales del registro.</p>
-        </div>
+  <section class="panel detail-section">
+    <div class="panel-header">
+      <div>
+        <h2>Información del módulo</h2>
       </div>
+    </div>
 
-      <div class="detail-grid">
-        <div class="detail-item"><span>Código</span><strong><%= @modulo_sistema.codigo %></strong></div>
-        <div class="detail-item"><span>Nombre</span><strong><%= @modulo_sistema.nombre %></strong></div>
-        <div class="detail-item"><span>Grupo</span><strong><%= @modulo_sistema.grupo.presence || "Sin grupo" %></strong></div>
-        <div class="detail-item"><span>Ruta</span><strong><%= @modulo_sistema.ruta.presence || "Sin ruta" %></strong></div>
-        <div class="detail-item"><span>Estado</span><strong><%= @modulo_sistema.activo? ? "Activo" : "Inactivo" %></strong></div>
-        <div class="detail-item detail-item-full"><span>Descripción</span><strong><%= @modulo_sistema.descripcion.presence || "Sin descripción registrada." %></strong></div>
-      </div>
-    </section>
-
-    <aside class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>Uso administrativo</h2>
-          <p>Contexto de integración del módulo</p>
-        </div>
-      </div>
-      <div class="summary-stack">
-        <div class="summary-card">
-          <span>Navegación</span>
-          <strong><%= @modulo_sistema.ruta.present? ? "Enlazado a #{@modulo_sistema.ruta}" : "Pendiente de ruta visible" %></strong>
-        </div>
-        <div class="summary-card">
-          <span>Permisos</span>
-          <strong>Preparado para control por roles y permisos efectivos.</strong>
-        </div>
-      </div>
-    </aside>
-  </div>
+    <div class="detail-grid">
+      <div class="detail-item"><span>Código</span><strong><%= @modulo_sistema.codigo %></strong></div>
+      <div class="detail-item"><span>Nombre</span><strong><%= @modulo_sistema.nombre %></strong></div>
+      <div class="detail-item"><span>Grupo</span><strong><%= @modulo_sistema.grupo.presence || "Sin grupo" %></strong></div>
+      <div class="detail-item"><span>Ruta</span><strong><%= @modulo_sistema.ruta.presence || "Sin ruta" %></strong></div>
+      <div class="detail-item"><span>Estado</span><strong><%= @modulo_sistema.activo? ? "Activo" : "Inactivo" %></strong></div>
+      <div class="detail-item detail-item-full"><span>Descripción</span><strong><%= @modulo_sistema.descripcion.presence || "Sin descripción registrada." %></strong></div>
+    </div>
+  </section>
 </section>

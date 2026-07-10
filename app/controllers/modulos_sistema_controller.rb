@@ -4,6 +4,16 @@ class ModulosSistemaController < ApplicationController
   def index
     @current_page = :modulos_sistema
     @modulos_sistema = ModuloSistema.orden_admin
+    @filters = {
+      query: params[:query].to_s.strip,
+      status: params[:status].to_s.strip
+    }
+    @modulos_sistema = apply_filters(@modulos_sistema)
+    @modulos_sistema_total_count = @modulos_sistema.count
+    @modulos_sistema_per_page = modulos_sistema_per_page
+    @modulos_sistema_total_pages = [(@modulos_sistema_total_count.to_f / @modulos_sistema_per_page).ceil, 1].max
+    @modulos_sistema_page = [[params[:page].to_i, 1].max, @modulos_sistema_total_pages].min
+    @modulos_sistema = @modulos_sistema.offset((@modulos_sistema_page - 1) * @modulos_sistema_per_page).limit(@modulos_sistema_per_page)
   end
 
   def show
@@ -58,5 +68,21 @@ class ModulosSistemaController < ApplicationController
 
   def modulo_sistema_params
     params.require(:modulo_sistema).permit(:codigo, :nombre, :descripcion, :ruta, :grupo, :activo)
+  end
+
+  def apply_filters(scope)
+    if @filters[:query].present?
+      term = "%#{@filters[:query]}%"
+      scope = scope.where("codigo ILIKE :term OR nombre ILIKE :term OR descripcion ILIKE :term OR ruta ILIKE :term OR grupo ILIKE :term", term: term)
+    end
+
+    scope = scope.where(activo: @filters[:status] == "activo") if @filters[:status].in?(%w[activo inactivo])
+    scope
+  end
+
+  def modulos_sistema_per_page
+    allowed = [10, 20, 50, 100]
+    value = params[:per_page].to_i
+    allowed.include?(value) ? value : 10
   end
 end

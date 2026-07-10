@@ -1,59 +1,68 @@
-<section class="page-section">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Módulo Empresarial</p>
-      <h1><%= @page_title %></h1>
-      <p><%= @page_description %></p>
-    </div>
-    <%= render "shared/button", label: @page_action[:label], href: @page_action[:href], variant: "primary" %>
-  </div>
-
-  <div class="panel filters-panel">
+<section class="page-section user-module-page user-index-page enterprise-module-index-page">
+  <section class="panel filters-panel user-index-panel user-index-filters-panel">
     <div class="filters-bar">
-      <div class="search-placeholder">
+      <label class="search-shell inline-search-shell">
         <span class="search-icon"><%= icon("search") %></span>
-        <span>Buscar en <%= @page_title.downcase %></span>
-      </div>
-      <div class="filter-chip-list">
+        <input type="search" placeholder="Buscar en <%= @page_title.downcase %>" aria-label="Buscar en <%= @page_title.downcase %>">
+      </label>
+      <div class="filter-chip-list filter-select-list">
         <% @page_filters.each do |filter| %>
-          <button class="filter-chip" type="button"><%= filter %></button>
+          <select class="filter-select" aria-label="<%= filter %>">
+            <option><%= filter %></option>
+          </select>
         <% end %>
+        <button type="button" class="ui-button ui-button-primary submit-button">Aplicar filtros</button>
+        <button type="button" class="ui-button ui-button-secondary">Limpiar</button>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="module-page-grid">
-    <div class="panel">
-      <div class="panel-header">
-        <div>
-          <h2>Vista general</h2>
-          <p>Datos de demostración para la base visual del módulo</p>
-        </div>
-        <%= render "shared/badge", text: "Demo data", tone: "info" %>
-      </div>
-      <%= render "shared/table_placeholder", columns: @table_columns, rows: @table_rows %>
-    </div>
-
-    <div class="module-page-side">
-      <div class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Estado del módulo</h2>
-            <p>Preparado para integración futura</p>
-          </div>
-        </div>
-        <%= render "shared/empty_state", title: @empty_state[:title], description: @empty_state[:description] %>
-      </div>
-
-      <div class="panel chart-panel">
-        <div class="panel-header">
-          <div>
-            <h2>Tendencia visual</h2>
-            <p>Placeholder adaptable por módulo</p>
-          </div>
-        </div>
-        <%= render "shared/chart_placeholder", title: "Visual preview", subtitle: @page_title, type: "line" %>
+  <section class="panel user-index-panel user-index-table-panel">
+    <div class="panel-header">
+      <h2>Listado de <%= @page_title.downcase %></h2>
+      <div class="page-actions-inline">
+        <%= render "shared/button", label: @page_action[:label], href: @page_action[:href], variant: "primary" %>
       </div>
     </div>
-  </div>
+
+    <% if @table_rows.any? %>
+      <div class="table-shell user-index-table-shell">
+        <table class="data-table enterprise-module-table">
+          <thead>
+            <tr>
+              <% @table_columns.each do |column| %>
+                <th><%= column %></th>
+              <% end %>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @table_rows.each do |row| %>
+              <tr>
+                <% row.each_with_index do |cell, index| %>
+                  <% if index.zero? %>
+                    <td class="user-index-name"><%= cell %></td>
+                  <% elsif index == row.length - 2 %>
+                    <td><span class="user-index-chip <%= status_badge_tone(cell) == "success" ? "user-index-chip-success" : "user-index-chip-level" %>"><%= cell %></span></td>
+                  <% elsif index == row.length - 1 %>
+                    <td class="roles-users-count"><%= cell %></td>
+                  <% else %>
+                    <td><%= cell %></td>
+                  <% end %>
+                <% end %>
+                <td class="table-actions">
+                  <%= link_to icon("eye"), "#", class: "table-link table-action-icon table-action-view", title: "Ver", aria: { label: "Ver" } %>
+                  <%= link_to icon("pencil"), "#", class: "table-link table-action-icon table-action-edit", title: "Editar", aria: { label: "Editar" } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state",
+                 title: @empty_state[:title],
+                 description: @empty_state[:description] %>
+    <% end %>
+  </section>
 </section>

@@ -83,7 +83,11 @@ UsuarioRol.find_or_create_by!(usuario: usuario_root, rol: rol_administrador)
   { codigo: "EXPEDIENTES_CLIENTES", nombre: "Expedientes de Cliente", descripcion: "Expediente operativo y comercial del cliente.", ruta: "/clientes/:id/expediente", grupo: "Administración" },
   { codigo: "MODULOS_SISTEMA", nombre: "Módulos del Sistema", descripcion: "Registro técnico de módulos para navegación y permisos.", ruta: "/modulos_sistema", grupo: "Administración" },
   { codigo: "PRODUCTOS_SERVICIOS", nombre: "Productos y Servicios", descripcion: "Catálogo de productos, servicios, licencias y cargos para cobros y facturación.", ruta: "/productos_servicios", grupo: "Cobros" },
-  { codigo: "COTIZACIONES", nombre: "Cotizaciones", descripcion: "Listado central de cotizaciones generadas desde productos y servicios.", ruta: "/cotizaciones", grupo: "Cobros" }
+  { codigo: "COTIZACIONES", nombre: "Cotizaciones", descripcion: "Listado central de cotizaciones generadas desde productos y servicios.", ruta: "/cotizaciones", grupo: "Cobros" },
+  { codigo: "COSTOS", nombre: "Costos", descripcion: "Registro de costos operativos, centros de costo y proveedores.", ruta: "/costos", grupo: "Cobros" },
+  { codigo: "COBROS", nombre: "Cobros", descripcion: "Seguimiento operativo de cobros, vencimientos y pagos recibidos.", ruta: "/cobros", grupo: "Cobros" },
+  { codigo: "FACTURAS", nombre: "Facturación", descripcion: "Control de facturas emitidas, vencimientos y estados de pago.", ruta: "/facturas", grupo: "Cobros" },
+  { codigo: "CONTRATOS", nombre: "Contratos", descripcion: "Gestión de contratos, vigencias, renovaciones y responsables.", ruta: "/contratos", grupo: "Cobros" }
 ].each do |attrs|
   modulo = if attrs[:codigo] == "PRODUCTOS_SERVICIOS"
              ModuloSistema.where(codigo: ["PRODUCTOS_SERVICIOS", "SERVICES", "PRODUCTOS", "SERVICIOS"]).or(

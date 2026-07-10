@@ -1,57 +1,49 @@
 <section class="page-section">
-  <div class="page-heading">
-    <div class="page-heading-copy">
-      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-        <%= link_to "Dashboard", dashboard_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to "Productos y Servicios", productos_servicios_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to @producto_servicio.nombre, productos_servicio_path(@producto_servicio) %>
-        <span><%= icon("chevron") %></span>
-        <strong>
+  <section class="panel product-tabs-panel">
+    <div class="panel-header">
+      <div>
+        <h2>
           <%= if @mostrar_formulario_cotizacion
                 @cotizacion.persisted? ? "Editar cotización" : "Generar cotización"
               else
                 "Ver cotización"
               end %>
-        </strong>
-      </nav>
-      <h1>
+        </h2>
+      </div>
+
+      <div class="form-actions company-form-header-actions">
+        <% if @cotizacion_seleccionada&.persisted? %>
+          <%= link_to "PDF", cotizacion_pdf_productos_servicio_path(@producto_servicio, cotizacion_id: @cotizacion_seleccionada.id), class: "ui-button ui-button-primary" %>
+          <% unless @cotizacion_seleccionada.firmada? %>
+            <%= link_to "Editar", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: @cotizacion_seleccionada.id, modo: "editar"), class: "ui-button ui-button-secondary" %>
+          <% end %>
+          <% if @cotizacion_seleccionada.cliente_registro.present? %>
+            <%= link_to "Expediente", expediente_cliente_path(@cotizacion_seleccionada.cliente_registro), class: "ui-button ui-button-secondary" %>
+          <% end %>
+        <% end %>
+        <%= link_to "Nueva", cotizacion_productos_servicio_path(@producto_servicio, modo: "nueva"), class: "ui-button ui-button-secondary" %>
+        <%= link_to "Producto", productos_servicio_path(@producto_servicio), class: "ui-button ui-button-secondary" %>
+        <%= link_to "Volver", productos_servicios_path, class: "ui-button ui-button-secondary" %>
+      </div>
+    </div>
+  </section>
+
+  <div class="cotizacion-status-actions">
+    <% if @cotizacion_seleccionada&.persisted? && !@cotizacion_seleccionada.firmada? %>
+      <%= button_to "Marcar enviada", actualizar_estado_cotizacion_path(@cotizacion_seleccionada, cotizacion: { estado: "enviada" }), method: :patch, class: "ui-button ui-button-secondary", form_class: "inline-form" %>
+      <%= button_to "Aprobar", actualizar_estado_cotizacion_path(@cotizacion_seleccionada, cotizacion: { estado: "aprobada" }), method: :patch, class: "ui-button ui-button-secondary", form_class: "inline-form" %>
+      <%= button_to "Firmar", actualizar_estado_cotizacion_path(@cotizacion_seleccionada, cotizacion: { estado: "firmada", signed_by: current_usuario&.nombre_completo }), method: :patch, class: "ui-button ui-button-primary", form_class: "inline-form" %>
+    <% end %>
+  </div>
+
+  <%# titulo conservado solo como contexto accesible para lectores de pantalla %>
+  <span class="visually-hidden">
         <%= if @mostrar_formulario_cotizacion
               @cotizacion.persisted? ? "Editar Cotización" : "Generar Cotización"
             else
               "Ver Cotización"
             end %>
-      </h1>
-      <p>
-        <%= if @mostrar_formulario_cotizacion
-              @cotizacion.persisted? ? "Ajusta la cotización seleccionada sin crear una nueva propuesta." : "Prepara una propuesta comercial base a partir de la información, documentación y parámetros del producto o servicio."
-            else
-              "Consulta la cotización seleccionada, cambia su estado y firma cuando corresponda."
-            end %>
-      </p>
-    </div>
-    <div class="page-actions-inline">
-      <% if @cotizacion_seleccionada&.persisted? %>
-        <%= link_to "Descargar PDF", cotizacion_pdf_productos_servicio_path(@producto_servicio, cotizacion_id: @cotizacion_seleccionada.id), class: "ui-button ui-button-primary" %>
-        <% unless @cotizacion_seleccionada.firmada? %>
-          <%= link_to "Editar cotización", cotizacion_productos_servicio_path(@producto_servicio, cotizacion_id: @cotizacion_seleccionada.id, modo: "editar"), class: "ui-button ui-button-secondary" %>
-        <% end %>
-        <% unless @cotizacion_seleccionada.firmada? %>
-          <%= button_to "Marcar enviada", actualizar_estado_cotizacion_path(@cotizacion_seleccionada, cotizacion: { estado: "enviada" }), method: :patch, class: "ui-button ui-button-secondary", form_class: "inline-form" %>
-          <%= button_to "Aprobar", actualizar_estado_cotizacion_path(@cotizacion_seleccionada, cotizacion: { estado: "aprobada" }), method: :patch, class: "ui-button ui-button-secondary", form_class: "inline-form" %>
-          <%= button_to "Firmar", actualizar_estado_cotizacion_path(@cotizacion_seleccionada, cotizacion: { estado: "firmada", signed_by: current_usuario&.nombre_completo }), method: :patch, class: "ui-button ui-button-primary", form_class: "inline-form" %>
-        <% end %>
-        <% if @cotizacion_seleccionada.cliente_registro.present? %>
-          <%= link_to "Expediente", expediente_cliente_path(@cotizacion_seleccionada.cliente_registro), class: "ui-button ui-button-secondary" %>
-        <% end %>
-      <% end %>
-      <%= link_to "Nueva cotización", cotizacion_productos_servicio_path(@producto_servicio, modo: "nueva"), class: "ui-button ui-button-secondary" %>
-      <%= link_to "Ver producto", productos_servicio_path(@producto_servicio), class: "ui-button ui-button-secondary" %>
-      <%= link_to "Editar producto", edit_productos_servicio_path(@producto_servicio), class: "ui-button ui-button-secondary" %>
-      <%= link_to "Volver", productos_servicios_path, class: "ui-button ui-button-secondary" %>
-    </div>
-  </div>
+  </span>
 
   <div class="quote-builder-grid">
     <% if @mostrar_formulario_cotizacion %>
@@ -59,7 +51,6 @@
         <div class="panel-header">
           <div>
             <h2><%= @cotizacion.persisted? ? "Editar cotización #{ @cotizacion.codigo }" : "Generar Nueva Cotización" %></h2>
-            <p><%= @cotizacion.persisted? ? "Modifica datos, ítems y estado de la cotización seleccionada." : "Completa los datos del cliente y ajusta el detalle por renglón. Puedes mezclar monedas, cargos iniciales, mensuales y recurrentes dentro de la misma propuesta." %></p>
           </div>
         </div>
 

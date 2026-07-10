@@ -1,33 +1,20 @@
 <section class="page-section producto-servicio-show" data-controller="tabs" data-tabs-default-value="<%= @tab_activa.presence || "general" %>">
-  <div class="page-heading">
-    <div class="page-heading-copy">
-      <h1><%= @producto_servicio.nombre %></h1>
-      <p>Detalle funcional del concepto cobrable con su configuración comercial, operativa y fiscal.</p>
-    </div>
-    <div class="page-heading-side">
-      <div class="user-heading-meta">
-        <%= render "shared/badge", text: @producto_servicio.activo? ? "Activo" : "Inactivo", tone: @producto_servicio.activo? ? "success" : "warning" %>
-        <%= render "shared/badge", text: @producto_servicio.estado_catalogo, tone: "info" %>
-      </div>
-      <div class="page-actions-inline">
-        <%= link_to "Generar cotización", cotizacion_productos_servicio_path(@producto_servicio), class: "ui-button ui-button-primary" %>
-        <%= link_to "Editar", edit_productos_servicio_path(@producto_servicio), class: "ui-button ui-button-primary" %>
-        <%= link_to "Nuevo", new_productos_servicio_path, class: "ui-button ui-button-secondary" %>
-        <%= link_to "Volver", productos_servicios_path, class: "ui-button ui-button-secondary" %>
-        <%= button_to "Eliminar", productos_servicio_path(@producto_servicio), method: :delete, class: "ui-button ui-button-secondary", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este producto o servicio?" } %>
+  <section class="company-show-hero producto-servicio-show-hero">
+    <div class="company-show-identity">
+      <div class="company-show-logo"><%= @producto_servicio.codigo.to_s.first(2).presence || "PS" %></div>
+      <div class="company-show-copy">
+        <div class="company-show-title-row">
+          <strong class="company-show-title"><%= @producto_servicio.nombre %></strong>
+          <div class="company-show-badges">
+            <%= render "shared/badge", text: @producto_servicio.activo? ? "Activo" : "Inactivo", tone: @producto_servicio.activo? ? "success" : "warning" %>
+            <%= render "shared/badge", text: @producto_servicio.estado_catalogo, tone: "info" %>
+          </div>
+        </div>
+        <p><%= @producto_servicio.company&.commercial_name || @producto_servicio.company&.legal_name || "Empresa facturadora pendiente" %></p>
       </div>
     </div>
-  </div>
 
-  <section class="panel user-profile-strip">
-    <div class="user-profile-strip-main">
-      <div class="user-profile-avatar"><%= @producto_servicio.codigo.to_s.first(2).presence || "PS" %></div>
-      <div class="user-profile-copy">
-        <strong><%= @producto_servicio.nombre %></strong>
-        <span><%= @producto_servicio.company&.commercial_name || @producto_servicio.company&.legal_name || "Empresa facturadora pendiente" %></span>
-      </div>
-    </div>
-    <div class="user-profile-metrics">
+    <div class="user-profile-metrics producto-servicio-hero-metrics">
       <article class="mini-metric-card">
         <span>Tipo funcional</span>
         <strong><%= product_type_label(@producto_servicio) %></strong>
@@ -49,15 +36,19 @@
         <strong><%= @producto_servicio.no_charge_for_copenet? ? "Sin cobro" : "Cobro normal" %></strong>
       </article>
     </div>
+
+    <div class="company-show-actions" aria-label="Acciones de producto o servicio">
+      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, productos_servicios_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
+      <%= link_to "#{icon("receipt")}<span>Cotizar</span>".html_safe, cotizacion_productos_servicio_path(@producto_servicio), class: "company-show-action-button company-show-action-primary", title: "Generar cotización", aria: { label: "Generar cotización" } %>
+      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_productos_servicio_path(@producto_servicio), class: "company-show-action-button company-show-action-primary", title: "Editar producto o servicio", aria: { label: "Editar producto o servicio" } %>
+    </div>
   </section>
 
   <section class="panel product-tabs-panel">
     <div class="panel-header">
       <div>
         <h2>Vista del catálogo</h2>
-        <p>Explora la configuración por dominios sin recorrer una ficha extensa.</p>
       </div>
-      <%= render "shared/badge", text: "Cobros", tone: "primary" %>
     </div>
 
     <div class="product-tabs" role="tablist" aria-label="Detalle del producto o servicio">

@@ -1,0 +1,89 @@
+<section class="page-section user-module-page user-index-page cobros-index-page">
+  <section class="panel filters-panel user-index-panel user-index-filters-panel">
+    <%= form_with url: cobros_path, method: :get, class: "filters-form" do %>
+      <div class="filters-bar">
+        <label class="search-shell inline-search-shell">
+          <span class="search-icon"><%= icon("search") %></span>
+          <%= text_field_tag :query, @filters[:query], placeholder: "Buscar por referencia, cliente o gestor" %>
+        </label>
+        <div class="filter-chip-list filter-select-list">
+          <%= hidden_field_tag :per_page, @cobros_per_page %>
+          <%= select_tag :status,
+                         options_for_select([["Todos los estados", ""]] + Cobro::ESTADOS.map { |estado| [estado.humanize, estado] }, @filters[:status]),
+                         class: "filter-select" %>
+          <%= submit_tag "Aplicar filtros", class: "ui-button ui-button-primary submit-button" %>
+          <%= link_to "Limpiar", cobros_path, class: "ui-button ui-button-secondary" %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="panel user-index-panel user-index-table-panel">
+    <div class="panel-header">
+      <h2>Listado de cobros</h2>
+      <div class="page-actions-inline">
+        <%= link_to "Nuevo cobro", new_cobro_path, class: "ui-button ui-button-primary" %>
+      </div>
+    </div>
+
+    <% if @cobros.any? %>
+      <div class="table-shell user-index-table-shell">
+        <table class="data-table cobros-table">
+          <thead>
+            <tr>
+              <th>Referencia</th>
+              <th>Cliente</th>
+              <th>Gestor</th>
+              <th>Vencimiento</th>
+              <th>Monto</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @cobros.each do |cobro| %>
+              <tr>
+                <td class="user-index-name"><%= cobro.referencia %></td>
+                <td class="user-index-email"><%= cobro.cliente_nombre %></td>
+                <td><%= cobro.gestor.presence || "-" %></td>
+                <td><%= cobro.fecha_vencimiento || "-" %></td>
+                <td class="roles-users-count"><%= cobro.monto_formateado %></td>
+                <td><span class="user-index-chip <%= cobro.activo? ? "user-index-chip-success" : "user-index-chip-warning" %>"><%= cobro.activo? ? cobro.estado.humanize : "Inactivo" %></span></td>
+                <td class="table-actions">
+                  <%= table_action_link "Ver", cobro_path(cobro), action: :view %>
+                  <%= table_action_link "Editar", edit_cobro_path(cobro), action: :edit %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-pagination">
+        <div class="pagination-controls">
+          <%= form_with url: cobros_path, method: :get, class: "pagination-size-form" do %>
+            <%= hidden_field_tag :query, @filters[:query] if @filters[:query].present? %>
+            <%= hidden_field_tag :status, @filters[:status] if @filters[:status].present? %>
+            <label for="cobros_per_page">Resultados</label>
+            <%= select_tag :per_page,
+                           options_for_select([[10, 10], [20, 20], [50, 50], [100, 100]], @cobros_per_page),
+                           id: "cobros_per_page",
+                           class: "filter-select pagination-size-select",
+                           onchange: "this.form.submit()" %>
+          <% end %>
+
+          <nav class="pagination-nav" aria-label="Paginación de cobros">
+            <% pagination_params = request.query_parameters.except("page").merge(per_page: @cobros_per_page) %>
+            <%= link_to "Anterior", cobros_path(pagination_params.merge(page: @cobros_page - 1)), class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @cobros_page <= 1}", aria: { disabled: @cobros_page <= 1 } %>
+            <span class="pagination-current">Página <%= @cobros_page %> de <%= @cobros_total_pages %></span>
+            <%= link_to "Siguiente", cobros_path(pagination_params.merge(page: @cobros_page + 1)), class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @cobros_page >= @cobros_total_pages}", aria: { disabled: @cobros_page >= @cobros_total_pages } %>
+          </nav>
+        </div>
+      </div>
+    <% else %>
+      <%= render "shared/empty_state",
+                 title: @filters.values.any?(&:present?) ? "No se encontraron cobros" : "No hay cobros registrados",
+                 description: @filters.values.any?(&:present?) ? "Ajusta la búsqueda o limpia los filtros para ver más resultados." : "Registra cobros para controlar vencimientos y pagos recibidos." %>
+    <% end %>
+  </section>
+</section>

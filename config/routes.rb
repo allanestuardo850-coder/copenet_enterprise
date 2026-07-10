@@ -33,6 +33,10 @@ Rails.application.routes.draw do
       patch :expediente_documentos, to: "expediente_clientes#actualizar_documentos"
     end
   end
+  resources :costos, except: [:destroy]
+  resources :cobros, except: [:destroy]
+  resources :facturas, except: [:destroy]
+  resources :contratos, except: [:destroy]
   resources :productos_servicios do
     member do
       match :cotizacion, via: %i[get post]
@@ -55,10 +59,10 @@ Rails.application.routes.draw do
   end
   resources :modulos_sistema
   get "accounts", to: "enterprise#accounts"
-  get "costs", to: "enterprise#costs"
-  get "collections", to: "enterprise#collections"
-  get "invoices", to: "enterprise#invoices"
-  get "contracts", to: "enterprise#contracts"
+  get "costs", to: redirect("/costos")
+  get "collections", to: redirect("/cobros")
+  get "invoices", to: redirect("/facturas")
+  get "contracts", to: redirect("/contratos")
   get "reports", to: "enterprise#reports"
   get "settings", to: "enterprise#settings"
 end

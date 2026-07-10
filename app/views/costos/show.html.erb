@@ -1,0 +1,40 @@
+<section class="page-section company-show-page">
+  <section class="company-show-hero">
+    <div class="company-show-identity">
+      <div class="company-show-logo">CO</div>
+      <div class="company-show-copy">
+        <div class="company-show-title-row">
+          <strong class="company-show-title"><%= @costo.concepto %></strong>
+          <div class="company-show-badges">
+            <%= render "shared/badge", text: @costo.activo? ? @costo.estado.humanize : "Inactivo", tone: @costo.activo? ? "success" : "warning" %>
+            <%= render "shared/badge", text: @costo.clasificacion.presence || "Sin clasificar", tone: "primary" %>
+          </div>
+        </div>
+        <p><%= @costo.monto_formateado %> · <%= @costo.periodo.presence || "Sin periodo" %></p>
+      </div>
+    </div>
+
+    <div class="company-show-actions" aria-label="Acciones de costo">
+      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, costos_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
+      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_costo_path(@costo), class: "company-show-action-button company-show-action-primary", title: "Editar costo", aria: { label: "Editar costo" } %>
+    </div>
+  </section>
+
+  <section class="panel detail-section">
+    <div class="panel-header"><div><h2>Información del costo</h2></div></div>
+    <div class="detail-grid">
+      <div class="detail-item"><span>Centro de costo</span><strong><%= @costo.centro_costo.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Clasificación</span><strong><%= @costo.clasificacion.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Proveedor</span><strong><%= @costo.proveedor.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Fecha</span><strong><%= @costo.fecha || "-" %></strong></div>
+      <div class="detail-item"><span>Monto</span><strong><%= @costo.monto_formateado %></strong></div>
+      <div class="detail-item"><span>Moneda</span><strong><%= @costo.moneda&.nombre || "-" %></strong></div>
+    </div>
+    <% if @costo.descripcion.present? %>
+      <div class="document-paragraph-card">
+        <strong>Descripción</strong>
+        <p><%= @costo.descripcion %></p>
+      </div>
+    <% end %>
+  </section>
+</section>

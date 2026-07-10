@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_06_017000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_06_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -95,6 +95,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_017000) do
     t.index ["nombre"], name: "index_clientes_on_nombre"
   end
 
+  create_table "cobros", force: :cascade do |t|
+    t.boolean "activo", default: true, null: false
+    t.bigint "cliente_id"
+    t.string "cliente_nombre", null: false
+    t.datetime "created_at", null: false
+    t.string "estado", default: "en_gestion", null: false
+    t.date "fecha_pago"
+    t.date "fecha_vencimiento"
+    t.string "gestor"
+    t.bigint "moneda_id"
+    t.decimal "monto", precision: 14, scale: 2, default: "0.0", null: false
+    t.text "notas"
+    t.string "referencia", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cliente_id"], name: "index_cobros_on_cliente_id"
+    t.index ["cliente_nombre"], name: "index_cobros_on_cliente_nombre"
+    t.index ["estado"], name: "index_cobros_on_estado"
+    t.index ["fecha_vencimiento"], name: "index_cobros_on_fecha_vencimiento"
+    t.index ["moneda_id"], name: "index_cobros_on_moneda_id"
+    t.index ["referencia"], name: "index_cobros_on_referencia", unique: true
+  end
+
   create_table "companies", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.text "address"
@@ -172,6 +194,49 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_017000) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "contratos", force: :cascade do |t|
+    t.boolean "activo", default: true, null: false
+    t.bigint "cliente_id"
+    t.string "cliente_nombre", null: false
+    t.string "codigo", null: false
+    t.datetime "created_at", null: false
+    t.string "estado", default: "borrador", null: false
+    t.date "fecha_fin"
+    t.date "fecha_inicio"
+    t.bigint "moneda_id"
+    t.text "notas"
+    t.string "responsable"
+    t.string "tipo_contrato"
+    t.datetime "updated_at", null: false
+    t.decimal "valor", precision: 14, scale: 2, default: "0.0", null: false
+    t.index ["cliente_id"], name: "index_contratos_on_cliente_id"
+    t.index ["cliente_nombre"], name: "index_contratos_on_cliente_nombre"
+    t.index ["codigo"], name: "index_contratos_on_codigo", unique: true
+    t.index ["estado"], name: "index_contratos_on_estado"
+    t.index ["fecha_fin"], name: "index_contratos_on_fecha_fin"
+    t.index ["moneda_id"], name: "index_contratos_on_moneda_id"
+  end
+
+  create_table "costos", force: :cascade do |t|
+    t.boolean "activo", default: true, null: false
+    t.string "centro_costo"
+    t.string "clasificacion"
+    t.string "concepto", null: false
+    t.datetime "created_at", null: false
+    t.text "descripcion"
+    t.string "estado", default: "registrado", null: false
+    t.date "fecha"
+    t.bigint "moneda_id"
+    t.decimal "monto", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "periodo"
+    t.string "proveedor"
+    t.datetime "updated_at", null: false
+    t.index ["concepto"], name: "index_costos_on_concepto"
+    t.index ["estado"], name: "index_costos_on_estado"
+    t.index ["moneda_id"], name: "index_costos_on_moneda_id"
+    t.index ["periodo"], name: "index_costos_on_periodo"
+  end
+
   create_table "cotizacion_detalles", force: :cascade do |t|
     t.decimal "applied_price", precision: 14, scale: 2
     t.boolean "billing_authorized", default: false, null: false
@@ -239,6 +304,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_017000) do
     t.string "titulo", null: false
     t.datetime "updated_at", null: false
     t.index ["cliente_id"], name: "index_expediente_clientes_on_cliente_id"
+  end
+
+  create_table "facturas", force: :cascade do |t|
+    t.boolean "activo", default: true, null: false
+    t.bigint "cliente_id"
+    t.string "cliente_nombre", null: false
+    t.datetime "created_at", null: false
+    t.string "estado", default: "borrador", null: false
+    t.date "fecha_emision"
+    t.date "fecha_vencimiento"
+    t.bigint "moneda_id"
+    t.text "notas"
+    t.string "numero", null: false
+    t.string "serie"
+    t.decimal "total", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cliente_id"], name: "index_facturas_on_cliente_id"
+    t.index ["cliente_nombre"], name: "index_facturas_on_cliente_nombre"
+    t.index ["estado"], name: "index_facturas_on_estado"
+    t.index ["fecha_emision"], name: "index_facturas_on_fecha_emision"
+    t.index ["moneda_id"], name: "index_facturas_on_moneda_id"
+    t.index ["numero"], name: "index_facturas_on_numero", unique: true
   end
 
   create_table "modulo_sistemas", force: :cascade do |t|
@@ -480,12 +567,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_017000) do
   add_foreign_key "bitacora_eventos", "cotizaciones"
   add_foreign_key "bitacora_eventos", "proyectos"
   add_foreign_key "bitacora_eventos", "usuarios"
+  add_foreign_key "cobros", "clientes"
+  add_foreign_key "cobros", "monedas"
+  add_foreign_key "contratos", "clientes"
+  add_foreign_key "contratos", "monedas"
+  add_foreign_key "costos", "monedas"
   add_foreign_key "cotizacion_detalles", "cotizaciones"
   add_foreign_key "cotizacion_detalles", "monedas"
   add_foreign_key "cotizacion_detalles", "producto_servicio_precios"
   add_foreign_key "cotizaciones", "clientes"
   add_foreign_key "cotizaciones", "producto_servicios"
   add_foreign_key "expediente_clientes", "clientes"
+  add_foreign_key "facturas", "clientes"
+  add_foreign_key "facturas", "monedas"
   add_foreign_key "permisos", "modulo_sistemas"
   add_foreign_key "permisos", "roles"
   add_foreign_key "producto_servicio_costos", "monedas"
