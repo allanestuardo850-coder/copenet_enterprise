@@ -32,17 +32,6 @@ class EnterpriseController < ApplicationController
         { label: "Utilidad", total: "Q234,870", tone: "info", values: [60, 62, 66, 82, 78, 82] }
       ]
     }
-    @modules = [
-      { title: "Empresas", description: "Administra clientes corporativos, sucursales y estados operativos.", href: companies_path, icon: "building" },
-      { title: "Cuentas", description: "Centraliza cuentas comerciales, financieras y de control interno.", href: accounts_path, icon: "wallet" },
-      { title: "Productos y Servicios", description: "Organiza el catálogo comercial de cobros, licencias y cargos recurrentes.", href: productos_servicios_path, icon: "box" },
-      { title: "Costos", description: "Supervisa egresos, centros de costo y márgenes proyectados.", href: costs_path, icon: "coins" },
-      { title: "Cobros", description: "Da seguimiento a cartera, vencimientos y recuperaciones.", href: collections_path, icon: "receipt" },
-      { title: "Facturación", description: "Monitorea emisión, estados y cumplimiento de facturas.", href: invoices_path, icon: "invoice" },
-      { title: "Contratos", description: "Controla acuerdos, renovaciones y hitos de servicio.", href: contracts_path, icon: "contract" },
-      { title: "Reportes", description: "Accede a paneles ejecutivos y cortes operativos.", href: reports_path, icon: "report" },
-      { title: "Configuración", description: "Ajusta parámetros generales y catálogos visuales.", href: settings_path, icon: "settings" }
-    ]
   end
 
   def dashboard_finance

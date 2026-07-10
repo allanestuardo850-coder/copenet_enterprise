@@ -11,7 +11,7 @@
 
       <div class="company-show-copy">
         <div class="company-show-title-row">
-          <h1><%= @company.commercial_name.presence || @company.legal_name %></h1>
+          <strong class="company-show-title"><%= @company.commercial_name.presence || @company.legal_name %></strong>
 
           <div class="company-show-badges">
             <%= render "shared/badge", text: @company.active? ? "Activa" : "Inactiva", tone: @company.active? ? "success" : "warning" %>

@@ -1,26 +1,14 @@
 <section class="page-section user-admin-page" data-controller="tabs" data-tabs-default-value="resumen">
-  <div class="page-heading">
-    <div class="page-heading-copy">
-      <h1><%= @usuario.nombre_completo %></h1>
-    </div>
-    <div class="page-heading-side">
-      <div class="user-heading-meta">
-        <%= render "shared/badge", text: @usuario.activo? ? "Activo" : "Inactivo", tone: @usuario.activo? ? "success" : "warning" %>
-        <%= render "shared/badge", text: @usuario.root? ? "Root" : "Estándar", tone: @usuario.root? ? "primary" : "info" %>
-      </div>
-      <div class="page-actions-inline">
-        <%= link_to "Listado de Registros", usuarios_path, class: "ui-button ui-button-secondary" %>
-        <%= link_to "Modificar", edit_usuario_path(@usuario), class: "ui-button ui-button-primary" %>
-      </div>
-    </div>
-  </div>
-
   <section class="panel user-profile-strip">
     <div class="user-profile-strip-main">
       <div class="user-profile-avatar"><%= @usuario.nombre_completo.to_s.first(2).upcase %></div>
       <div class="user-profile-copy">
         <strong><%= @usuario.nombre_completo %></strong>
         <span><%= @usuario.email %></span>
+        <div class="user-profile-badges">
+          <%= render "shared/badge", text: @usuario.activo? ? "Activo" : "Inactivo", tone: @usuario.activo? ? "success" : "warning" %>
+          <%= render "shared/badge", text: @usuario.root? ? "Root" : "Estándar", tone: @usuario.root? ? "primary" : "info" %>
+        </div>
       </div>
     </div>
     <div class="user-profile-metrics">
@@ -36,6 +24,10 @@
         <span>Último acceso</span>
         <strong><%= usuario_fecha(@usuario.ultimo_acceso_en) %></strong>
       </article>
+    </div>
+    <div class="user-profile-actions">
+      <%= link_to "Volver", usuarios_path, class: "ui-button ui-button-secondary" %>
+      <%= link_to "Editar", edit_usuario_path(@usuario), class: "ui-button ui-button-primary" %>
     </div>
   </section>
 

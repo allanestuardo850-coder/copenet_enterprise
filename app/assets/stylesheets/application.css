@@ -3373,10 +3373,12 @@ html.theme-dark select.text-input option {
   margin-bottom: 10px;
 }
 
-.company-show-copy h1 {
+.company-show-title {
+  display: block;
   margin: 0;
   color: #071d55;
-  font-size: 1.62rem;
+  font-size: 1.28rem;
+  font-weight: 700;
   line-height: 1.1;
 }
 
@@ -3907,7 +3909,8 @@ html.theme-dark select.text-input option {
 
 .user-profile-strip {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(260px, 0.9fr) minmax(340px, 1fr) auto;
+  align-items: center;
   gap: 14px;
   padding: 16px 18px;
   border-radius: 22px;
@@ -3962,6 +3965,25 @@ html.theme-dark select.text-input option {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+}
+
+.user-profile-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.user-profile-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.company-config-strip {
+  grid-template-columns: minmax(260px, 1fr) auto;
 }
 
 .my-profile-page {
@@ -4913,6 +4935,17 @@ html.theme-dark .expediente-page .table-shell {
 .user-index-chip-success {
   background: #e9f8ef;
   color: #149452;
+}
+
+.user-index-chip-warning {
+  background: #fff4e8;
+  color: #f97316;
+}
+
+.roles-description,
+.roles-users-count {
+  color: #344669;
+  font-weight: 400;
 }
 
 .table-pagination {
@@ -6756,6 +6789,11 @@ html.theme-dark .branding-preview-card {
 
   .user-profile-copy span {
     white-space: normal;
+  }
+
+  .user-profile-actions,
+  .user-profile-actions .ui-button {
+    width: 100%;
   }
 
   .product-tabs {

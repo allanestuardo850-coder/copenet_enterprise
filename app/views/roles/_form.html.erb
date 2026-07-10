@@ -1,9 +1,4 @@
 <%= form_with model: rol, class: "company-form" do |form| %>
-  <div class="form-actions form-actions-top">
-    <%= form.submit rol.persisted? ? "Actualizar Rol" : "Guardar Rol", class: "ui-button ui-button-primary submit-button" %>
-    <%= link_to "Cancelar", rol.persisted? ? rol_path(rol) : roles_path, class: "ui-button ui-button-secondary" %>
-  </div>
-
   <% if rol.errors.any? %>
     <section class="panel form-errors">
       <ul class="error-list">
@@ -14,7 +9,25 @@
     </section>
   <% end %>
 
+  <section class="panel product-tabs-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Configuración del rol</h2>
+      </div>
+      <div class="form-actions company-form-header-actions">
+        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+        <%= link_to "Cancelar", roles_path, class: "ui-button ui-button-secondary" %>
+      </div>
+    </div>
+  </section>
+
   <section class="panel form-section">
+    <div class="panel-header">
+      <div>
+        <h2>Información general</h2>
+      </div>
+    </div>
+
     <div class="form-grid">
       <div class="field-group">
         <%= form.label :nombre, "Nombre" %>
@@ -33,8 +46,96 @@
     </div>
   </section>
 
-  <div class="form-actions">
-    <%= form.submit rol.persisted? ? "Actualizar Rol" : "Guardar Rol", class: "ui-button ui-button-primary submit-button" %>
-    <%= link_to "Cancelar", rol.persisted? ? rol_path(rol) : roles_path, class: "ui-button ui-button-secondary" %>
-  </div>
+  <section class="panel form-section module-tab-panel user-permissions-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Permisos del rol</h2>
+      </div>
+    </div>
+
+    <% first_permission_tab = @modulo_sistemas_por_grupo.keys.first.to_s.parameterize.presence || "permisos" %>
+    <div data-controller="tabs usuario-permisos" data-tabs-default-value="<%= first_permission_tab %>">
+      <div class="permission-tabs" role="tablist" aria-label="Grupos de permisos del rol">
+        <% @modulo_sistemas_por_grupo.each_with_index do |(grupo, _modulos), index| %>
+          <% tab_id = grupo.to_s.parameterize.presence || "grupo-#{index + 1}" %>
+          <button type="button"
+                  class="permission-tab <%= 'is-active' if index.zero? %>"
+                  data-tabs-target="tab"
+                  data-tab-id="<%= tab_id %>"
+                  data-action="tabs#switch"
+                  role="tab"
+                  aria-selected="<%= index.zero? ? 'true' : 'false' %>">
+            <span><%= grupo %></span>
+          </button>
+        <% end %>
+      </div>
+
+      <% @modulo_sistemas_por_grupo.each_with_index do |(grupo, modulos), index| %>
+        <% tab_id = grupo.to_s.parameterize.presence || "grupo-#{index + 1}" %>
+        <section class="permission-tab-panel <%= 'is-active' if index.zero? %>"
+                 data-tabs-target="panel"
+                 data-tab-id="<%= tab_id %>"
+                 <%= "hidden" unless index.zero? %>>
+          <div class="permission-tab-header">
+            <h3><%= grupo %></h3>
+            <label class="permission-all-toggle">
+              <%= check_box_tag nil,
+                                "1",
+                                false,
+                                data: { action: "change->usuario-permisos#toggleAll" } %>
+              <span>Todos</span>
+            </label>
+          </div>
+
+          <div class="table-shell">
+            <table class="data-table permisos-table permisos-usuario-table">
+              <thead>
+                <tr>
+                  <th>Módulo / Función</th>
+                  <th>Código</th>
+                  <th>Estado</th>
+                  <th>Ver</th>
+                  <th>Crear</th>
+                  <th>Editar</th>
+                  <th>Eliminar</th>
+                  <th>Exportar</th>
+                  <th>Configurar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% modulos.each do |modulo| %>
+                  <% permiso = @permisos_por_modulo[modulo.id] %>
+                  <tr data-modulo-id="<%= modulo.id %>">
+                    <td>
+                      <div class="permission-module-cell">
+                        <strong><%= modulo.nombre %></strong>
+                        <span><%= modulo.descripcion.presence || "Módulo listo para administración y control de accesos." %></span>
+                      </div>
+                    </td>
+                    <td><%= modulo.codigo %></td>
+                    <td>
+                      <span class="permission-save-state" data-permission-status data-state="idle">Listo</span>
+                    </td>
+                    <% UsuariosHelper::ACCIONES_PERMISO.each do |accion| %>
+                      <% submitted_permissions = params[:permisos].present? %>
+                      <% checked = submitted_permissions ? params.dig(:permisos, modulo.id.to_s, "puede_#{accion}") == "1" : permiso&.public_send("puede_#{accion}?") || false %>
+                      <td>
+                        <%= check_box_tag "permisos[#{modulo.id}][puede_#{accion}]",
+                                          "1",
+                                          checked,
+                                          data: {
+                                            action: "change->usuario-permisos#toggle",
+                                            permission_action: "puede_#{accion}"
+                                          } %>
+                      </td>
+                    <% end %>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      <% end %>
+    </div>
+  </section>
 <% end %>

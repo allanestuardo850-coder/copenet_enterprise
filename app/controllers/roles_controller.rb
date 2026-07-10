@@ -3,40 +3,49 @@ class RolesController < ApplicationController
 
   def index
     @current_page = :roles
+    @filters = {
+      query: params[:query].to_s.strip,
+      status: params[:status].to_s.strip
+    }
     @roles = Rol.includes(:usuarios).order(:nombre)
+    @roles = aplicar_filtros_roles(@roles)
   end
 
   def show
     @current_page = :roles
+    cargar_permisos
   end
 
   def new
     @current_page = :roles
     @rol = Rol.new(activo: true)
+    cargar_permisos
   end
 
   def create
     @current_page = :roles
     @rol = Rol.new(rol_params)
 
-    if @rol.save
-      crear_permisos_faltantes
+    if guardar_rol_con_permisos
       redirect_to @rol, notice: "Rol creado correctamente."
     else
+      cargar_permisos
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
     @current_page = :roles
+    cargar_permisos
   end
 
   def update
     @current_page = :roles
 
-    if @rol.update(rol_params)
+    if guardar_rol_con_permisos
       redirect_to @rol, notice: "Rol actualizado correctamente."
     else
+      cargar_permisos
       render :edit, status: :unprocessable_entity
     end
   end
@@ -54,24 +63,11 @@ class RolesController < ApplicationController
   def permisos
     @current_page = :roles
     crear_permisos_faltantes
-    @modulo_sistemas = ModuloSistema.order(:codigo)
-    @permisos_por_modulo = @rol.permisos.includes(:modulo_sistema).index_by(&:modulo_sistema_id)
+    cargar_permisos
 
     return unless request.patch?
 
-    ModuloSistema.find_each do |modulo|
-      permiso = @rol.permisos.find_or_initialize_by(modulo_sistema: modulo)
-      values = permiso_params_for(modulo.id)
-      permiso.assign_attributes(
-        puede_ver: values["puede_ver"] == "1",
-        puede_crear: values["puede_crear"] == "1",
-        puede_editar: values["puede_editar"] == "1",
-        puede_eliminar: values["puede_eliminar"] == "1",
-        puede_exportar: values["puede_exportar"] == "1",
-        puede_configurar: values["puede_configurar"] == "1"
-      )
-      permiso.save!
-    end
+    sync_permisos_rol
 
     redirect_to permisos_rol_path(@rol), notice: "Permisos actualizados correctamente."
   end
@@ -84,6 +80,22 @@ class RolesController < ApplicationController
 
   def rol_params
     params.require(:rol).permit(:nombre, :descripcion, :activo)
+  end
+
+  def aplicar_filtros_roles(scope)
+    if @filters[:query].present?
+      termino = "%#{@filters[:query]}%"
+      scope = scope.where("nombre ILIKE :term OR descripcion ILIKE :term", term: termino)
+    end
+
+    scope = scope.where(activo: @filters[:status] == "activo") if @filters[:status].in?(%w[activo inactivo])
+    scope
+  end
+
+  def cargar_permisos
+    @modulo_sistemas = ModuloSistema.activos.orden_admin
+    @modulo_sistemas_por_grupo = @modulo_sistemas.group_by { |modulo| modulo.grupo.presence || "Sin grupo" }
+    @permisos_por_modulo = @rol.permisos.includes(:modulo_sistema).index_by(&:modulo_sistema_id)
   end
 
   def permiso_params_for(modulo_id)
@@ -103,6 +115,35 @@ class RolesController < ApplicationController
   def crear_permisos_faltantes
     ModuloSistema.find_each do |modulo|
       @rol.permisos.find_or_create_by!(modulo_sistema: modulo)
+    end
+  end
+
+  def guardar_rol_con_permisos
+    saved = false
+    Rol.transaction do
+      saved = @rol.update(rol_params)
+      raise ActiveRecord::Rollback unless saved
+
+      sync_permisos_rol
+    end
+    saved
+  rescue ActiveRecord::RecordInvalid
+    false
+  end
+
+  def sync_permisos_rol
+    ModuloSistema.activos.find_each do |modulo|
+      permiso = @rol.permisos.find_or_initialize_by(modulo_sistema: modulo)
+      values = permiso_params_for(modulo.id)
+      permiso.assign_attributes(
+        puede_ver: values["puede_ver"] == "1",
+        puede_crear: values["puede_crear"] == "1",
+        puede_editar: values["puede_editar"] == "1",
+        puede_eliminar: values["puede_eliminar"] == "1",
+        puede_exportar: values["puede_exportar"] == "1",
+        puede_configurar: values["puede_configurar"] == "1"
+      )
+      permiso.save!
     end
   end
 end

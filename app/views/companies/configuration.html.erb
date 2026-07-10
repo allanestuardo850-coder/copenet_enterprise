@@ -1,31 +1,22 @@
 <section class="page-section user-admin-page">
-  <div class="page-heading">
-    <div class="page-heading-copy">
-      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-        <%= link_to "Dashboard", dashboard_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to "Empresas", companies_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to(@company.commercial_name.presence || @company.legal_name, company_path(@company)) %>
-        <span><%= icon("chevron") %></span>
-        <strong>Configuración</strong>
-      </nav>
-      <p class="eyebrow">Administración</p>
-      <h1>Configuración de Empresa</h1>
-      <p>Administra la configuración operativa, fiscal y comercial de la empresa por módulos visibles.</p>
-    </div>
-    <div class="page-heading-side">
-      <div class="user-heading-meta">
-        <%= render "shared/badge", text: @company.active? ? "Activa" : "Inactiva", tone: @company.active? ? "success" : "warning" %>
-        <%= render "shared/badge", text: "Configuración", tone: "info" %>
-      </div>
-      <div class="page-actions-inline">
-        <%= link_to "Editar empresa", edit_company_path(@company), class: "ui-button ui-button-primary" %>
-        <%= link_to "Ver detalle", company_path(@company), class: "ui-button ui-button-secondary" %>
-        <%= link_to "Volver a Empresas", companies_path, class: "ui-button ui-button-secondary" %>
+  <section class="panel user-profile-strip company-config-strip">
+    <div class="user-profile-strip-main">
+      <div class="user-profile-avatar"><%= (@company.commercial_name.presence || @company.legal_name).to_s.first(2).upcase %></div>
+      <div class="user-profile-copy">
+        <strong><%= @company.commercial_name.presence || @company.legal_name %></strong>
+        <span>Configuración operativa, fiscal y comercial</span>
+        <div class="user-profile-badges">
+          <%= render "shared/badge", text: @company.active? ? "Activa" : "Inactiva", tone: @company.active? ? "success" : "warning" %>
+          <%= render "shared/badge", text: "Configuración", tone: "info" %>
+        </div>
       </div>
     </div>
-  </div>
+    <div class="user-profile-actions">
+      <%= link_to "Volver", companies_path, class: "ui-button ui-button-secondary" %>
+      <%= link_to "Detalle", company_path(@company), class: "ui-button ui-button-secondary" %>
+      <%= link_to "Editar", edit_company_path(@company), class: "ui-button ui-button-primary" %>
+    </div>
+  </section>
 
   <%= render "detail_tabs", company: @company, default_tab: "cotizacion" %>
 </section>

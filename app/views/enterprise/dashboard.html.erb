@@ -105,22 +105,4 @@
       </div>
     </div>
   </div>
-
-  <section class="page-subsection">
-    <div class="section-heading quick-heading-panel">
-      <div>
-        <h2>Accesos rápidos</h2>
-      </div>
-    </div>
-
-    <div class="quick-grid">
-      <% quick_tones = %w[primary success info warning primary success info primary success] %>
-      <% @modules.each_with_index do |mod, i| %>
-        <%= link_to mod[:href], class: "quick-card" do %>
-          <span class="kpi-icon kpi-icon-<%= quick_tones[i % quick_tones.size] %>"><%= icon(mod[:icon]) %></span>
-          <span class="quick-label"><%= mod[:title] %></span>
-        <% end %>
-      <% end %>
-    </div>
-  </section>
 </section>
