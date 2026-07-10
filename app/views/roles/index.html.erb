@@ -7,6 +7,7 @@
           <%= text_field_tag :query, @filters[:query], placeholder: "Buscar por nombre o descripción" %>
         </label>
         <div class="filter-chip-list filter-select-list">
+          <%= hidden_field_tag :per_page, @roles_per_page %>
           <%= select_tag :status,
                          options_for_select([["Todos los estados", ""], ["Activos", "activo"], ["Inactivos", "inactivo"]], @filters[:status]),
                          class: "filter-select" %>
@@ -28,32 +29,61 @@
     <% if @roles.any? %>
       <div class="table-shell user-index-table-shell">
         <table class="data-table roles-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Estado</th>
-            <th>Usuarios</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @roles.each do |rol| %>
+          <thead>
             <tr>
-              <td class="user-index-name"><%= rol.nombre %></td>
-              <td class="roles-description"><%= rol.descripcion.presence || "Sin descripción" %></td>
-              <td><span class="user-index-chip <%= rol.activo? ? "user-index-chip-success" : "user-index-chip-warning" %>"><%= rol.activo? ? "Activo" : "Inactivo" %></span></td>
-              <td class="roles-users-count"><%= rol.usuarios.size %></td>
-              <td class="table-actions">
-                <%= table_action_link "Ver", rol_path(rol), action: :view %>
-                <%= table_action_link "Editar", edit_rol_path(rol), action: :edit %>
-              </td>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th>Estado</th>
+              <th>Usuarios</th>
+              <th>Acciones</th>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            <% @roles.each do |rol| %>
+              <tr>
+                <td class="user-index-name"><%= rol.nombre %></td>
+                <td class="roles-description"><%= rol.descripcion.presence || "Sin descripción" %></td>
+                <td><span class="user-index-chip <%= rol.activo? ? "user-index-chip-success" : "user-index-chip-warning" %>"><%= rol.activo? ? "Activo" : "Inactivo" %></span></td>
+                <td class="roles-users-count"><%= rol.usuarios.size %></td>
+                <td class="table-actions">
+                  <%= table_action_link "Ver", rol_path(rol), action: :view %>
+                  <%= table_action_link "Editar", edit_rol_path(rol), action: :edit %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
 
+      <div class="table-pagination">
+        <div class="pagination-controls">
+          <%= form_with url: roles_path, method: :get, class: "pagination-size-form" do %>
+            <%= hidden_field_tag :query, @filters[:query] if @filters[:query].present? %>
+            <%= hidden_field_tag :status, @filters[:status] if @filters[:status].present? %>
+            <label for="roles_per_page">Resultados</label>
+            <%= select_tag :per_page,
+                           options_for_select([[10, 10], [20, 20], [50, 50], [100, 100]], @roles_per_page),
+                           id: "roles_per_page",
+                           class: "filter-select pagination-size-select",
+                           onchange: "this.form.submit()" %>
+          <% end %>
+
+          <nav class="pagination-nav" aria-label="Paginación de roles">
+            <% pagination_params = request.query_parameters.except("page").merge(per_page: @roles_per_page) %>
+            <%= link_to "Anterior",
+                        roles_path(pagination_params.merge(page: @roles_page - 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @roles_page <= 1}",
+                        aria: { disabled: @roles_page <= 1 } %>
+
+            <span class="pagination-current">Página <%= @roles_page %> de <%= @roles_total_pages %></span>
+
+            <%= link_to "Siguiente",
+                        roles_path(pagination_params.merge(page: @roles_page + 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @roles_page >= @roles_total_pages}",
+                        aria: { disabled: @roles_page >= @roles_total_pages } %>
+          </nav>
+        </div>
+      </div>
     <% else %>
       <%= render "shared/empty_state",
                  title: @filters.values.any?(&:present?) ? "No se encontraron roles" : "No hay roles registrados",

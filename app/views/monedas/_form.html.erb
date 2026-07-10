@@ -1,9 +1,4 @@
 <%= form_with model: moneda, class: "company-form" do |form| %>
-  <div class="form-actions form-actions-top">
-    <%= form.submit moneda.persisted? ? "Actualizar Moneda" : "Guardar Moneda", class: "ui-button ui-button-primary submit-button" %>
-    <%= link_to "Cancelar", moneda.persisted? ? moneda_path(moneda) : monedas_path, class: "ui-button ui-button-secondary" %>
-  </div>
-
   <% if moneda.errors.any? %>
     <section class="panel form-errors">
       <ul class="error-list">
@@ -14,11 +9,22 @@
     </section>
   <% end %>
 
+  <section class="panel product-tabs-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Configuración de la moneda</h2>
+      </div>
+      <div class="form-actions company-form-header-actions">
+        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+        <%= link_to "Cancelar", monedas_path, class: "ui-button ui-button-secondary" %>
+      </div>
+    </div>
+  </section>
+
   <section class="panel form-section">
     <div class="panel-header">
       <div>
         <h2>Información de la moneda</h2>
-        <p>Configura el código numérico, nombre y símbolo del catálogo.</p>
       </div>
     </div>
 
@@ -38,17 +44,17 @@
         <%= form.text_field :simbolo, class: "text-input", placeholder: "Q" %>
       </div>
 
-      <div class="field-group checkbox-group">
-        <label class="checkbox-label">
-          <%= form.check_box :activo %>
-          <span>Activa</span>
-        </label>
-      </div>
+      <% if moneda.persisted? %>
+        <div class="field-group checkbox-group">
+          <label class="checkbox-label">
+            <%= hidden_field_tag "moneda[activo]", "1" %>
+            <%= check_box_tag "moneda[activo]", "0", !moneda.activo? %>
+            <span>Inactivar</span>
+          </label>
+        </div>
+      <% else %>
+        <%= form.hidden_field :activo, value: true %>
+      <% end %>
     </div>
   </section>
-
-  <div class="form-actions">
-    <%= form.submit moneda.persisted? ? "Actualizar Moneda" : "Guardar Moneda", class: "ui-button ui-button-primary submit-button" %>
-    <%= link_to "Cancelar", moneda.persisted? ? moneda_path(moneda) : monedas_path, class: "ui-button ui-button-secondary" %>
-  </div>
 <% end %>

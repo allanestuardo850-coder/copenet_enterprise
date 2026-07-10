@@ -1,5 +1,5 @@
-<section class="page-section">
-  <div class="panel filters-panel">
+<section class="page-section user-module-page user-index-page companies-index-page">
+  <section class="panel filters-panel user-index-panel user-index-filters-panel">
     <%= form_with url: companies_path, method: :get, class: "filters-form" do %>
       <div class="filters-bar">
         <label class="search-shell inline-search-shell">
@@ -19,41 +19,39 @@
         </div>
       </div>
     <% end %>
-  </div>
+  </section>
 
-  <div class="panel">
+  <section class="panel user-index-panel user-index-table-panel">
     <div class="panel-header">
-      <div>
-        <h2>Listado de empresas</h2>
-      </div>
+      <h2>Listado de empresas</h2>
       <div class="page-actions-inline">
         <%= link_to "Nueva empresa", new_company_path, class: "ui-button ui-button-primary" %>
       </div>
     </div>
 
     <% if @companies.any? %>
-      <div class="table-shell">
-        <table class="data-table">
+      <div class="table-shell user-index-table-shell">
+        <table class="data-table companies-table">
           <thead>
             <tr>
-              <th>Nombre Comercial</th>
-              <th>Razón Social</th>
+              <th>Nombre comercial</th>
+              <th>Razón social</th>
               <th>NIT</th>
               <th>Estado</th>
-              <th>Correo Notificaciones</th>
-              <th>Código Escenario</th>
+              <th>Correo notificaciones</th>
+              <th>Código escenario</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             <% @companies.each do |company| %>
               <tr>
-                <td><%= company.commercial_name %></td>
-                <td><%= company.legal_name %></td>
-                <td><%= company.tax_id %></td>
-                <td><%= render "shared/badge", text: company.status.presence || (company.active? ? "Activa" : "Inactiva"), tone: company.active? ? "success" : "warning" %></td>
-                <td><%= company.notification_email.presence || "Sin configurar" %></td>
-                <td><%= company.fel_scenario_code.presence || "Sin definir" %></td>
+                <td class="user-index-name"><%= company.commercial_name %></td>
+                <td class="roles-description"><%= company.legal_name %></td>
+                <td class="roles-users-count"><%= company.tax_id %></td>
+                <td><span class="user-index-chip <%= company.active? ? "user-index-chip-success" : "user-index-chip-warning" %>"><%= company.status.presence || (company.active? ? "Activa" : "Inactiva") %></span></td>
+                <td class="user-index-email"><%= company.notification_email.presence || "Sin configurar" %></td>
+                <td class="roles-users-count"><%= company.fel_scenario_code.presence || "Sin definir" %></td>
                 <td class="table-actions">
                   <%= table_action_link "Ver", company_path(company), action: :view %>
                   <%= table_action_link "Editar", edit_company_path(company), action: :edit %>
@@ -96,8 +94,8 @@
       </div>
     <% else %>
       <%= render "shared/empty_state",
-                 title: "No hay empresas registradas",
-                 description: "Crea la primera empresa para comenzar a cargar su configuración general y FEL / INFILE." %>
+                 title: @filters.values.any?(&:present?) ? "No se encontraron empresas" : "No hay empresas registradas",
+                 description: @filters.values.any?(&:present?) ? "Ajusta la búsqueda o limpia los filtros para ver más resultados." : "Crea la primera empresa para comenzar a cargar su configuración general y FEL / INFILE." %>
     <% end %>
-  </div>
+  </section>
 </section>

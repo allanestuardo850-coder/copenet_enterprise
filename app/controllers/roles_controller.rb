@@ -9,6 +9,11 @@ class RolesController < ApplicationController
     }
     @roles = Rol.includes(:usuarios).order(:nombre)
     @roles = aplicar_filtros_roles(@roles)
+    @roles_total_count = @roles.count
+    @roles_per_page = roles_per_page
+    @roles_total_pages = [(@roles_total_count.to_f / @roles_per_page).ceil, 1].max
+    @roles_page = [[params[:page].to_i, 1].max, @roles_total_pages].min
+    @roles = @roles.offset((@roles_page - 1) * @roles_per_page).limit(@roles_per_page)
   end
 
   def show
@@ -90,6 +95,12 @@ class RolesController < ApplicationController
 
     scope = scope.where(activo: @filters[:status] == "activo") if @filters[:status].in?(%w[activo inactivo])
     scope
+  end
+
+  def roles_per_page
+    allowed = [10, 20, 50, 100]
+    value = params[:per_page].to_i
+    allowed.include?(value) ? value : 10
   end
 
   def cargar_permisos

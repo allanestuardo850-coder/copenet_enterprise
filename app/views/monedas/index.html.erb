@@ -1,25 +1,34 @@
-<section class="page-section">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Administración</p>
-      <h1>Monedas</h1>
-      <p>Administra el catálogo de monedas y su disponibilidad operativa dentro de la plataforma.</p>
-    </div>
-    <%= link_to "Nueva moneda", new_moneda_path, class: "ui-button ui-button-primary" %>
-  </div>
-
-  <div class="panel">
-    <div class="panel-header">
-      <div>
-        <h2>Listado de monedas</h2>
-        <p>Catálogo interno con código numérico, símbolo y estado operativo.</p>
+<section class="page-section user-module-page user-index-page monedas-index-page">
+  <section class="panel filters-panel user-index-panel user-index-filters-panel">
+    <%= form_with url: monedas_path, method: :get, class: "filters-form" do %>
+      <div class="filters-bar">
+        <label class="search-shell inline-search-shell">
+          <span class="search-icon"><%= icon("search") %></span>
+          <%= text_field_tag :query, @filters[:query], placeholder: "Buscar por código, nombre o símbolo" %>
+        </label>
+        <div class="filter-chip-list filter-select-list">
+          <%= hidden_field_tag :per_page, @monedas_per_page %>
+          <%= select_tag :status,
+                         options_for_select([["Todos los estados", ""], ["Activas", "activo"], ["Inactivas", "inactivo"]], @filters[:status]),
+                         class: "filter-select" %>
+          <%= submit_tag "Aplicar filtros", class: "ui-button ui-button-primary submit-button" %>
+          <%= link_to "Limpiar", monedas_path, class: "ui-button ui-button-secondary" %>
+        </div>
       </div>
-      <%= render "shared/badge", text: "#{@monedas.size} registros", tone: "info" %>
+    <% end %>
+  </section>
+
+  <section class="panel user-index-panel user-index-table-panel">
+    <div class="panel-header">
+      <h2>Listado de monedas</h2>
+      <div class="page-actions-inline">
+        <%= link_to "Nueva moneda", new_moneda_path, class: "ui-button ui-button-primary" %>
+      </div>
     </div>
 
     <% if @monedas.any? %>
-      <div class="table-shell">
-        <table class="data-table">
+      <div class="table-shell user-index-table-shell">
+        <table class="data-table monedas-table">
           <thead>
             <tr>
               <th>Código</th>
@@ -32,24 +41,53 @@
           <tbody>
             <% @monedas.each do |moneda| %>
               <tr>
-                <td><strong><%= moneda.codigo %></strong></td>
-                <td><%= moneda.nombre %></td>
-                <td><%= moneda.simbolo %></td>
-                <td><%= render "shared/badge", text: moneda.activo? ? "Activa" : "Inactiva", tone: moneda.activo? ? "success" : "warning" %></td>
+                <td class="roles-users-count"><%= moneda.codigo %></td>
+                <td class="user-index-name"><%= moneda.nombre %></td>
+                <td class="roles-description"><%= moneda.simbolo %></td>
+                <td><span class="user-index-chip <%= moneda.activo? ? "user-index-chip-success" : "user-index-chip-warning" %>"><%= moneda.activo? ? "Activa" : "Inactiva" %></span></td>
                 <td class="table-actions">
                   <%= table_action_link "Ver", moneda_path(moneda), action: :view %>
                   <%= table_action_link "Editar", edit_moneda_path(moneda), action: :edit %>
-                  <%= table_action_button "Eliminar", moneda_path(moneda), method: :delete, action: :delete, confirm: "¿Deseas eliminar esta moneda?" %>
                 </td>
               </tr>
             <% end %>
           </tbody>
         </table>
       </div>
+
+      <div class="table-pagination">
+        <div class="pagination-controls">
+          <%= form_with url: monedas_path, method: :get, class: "pagination-size-form" do %>
+            <%= hidden_field_tag :query, @filters[:query] if @filters[:query].present? %>
+            <%= hidden_field_tag :status, @filters[:status] if @filters[:status].present? %>
+            <label for="monedas_per_page">Resultados</label>
+            <%= select_tag :per_page,
+                           options_for_select([[10, 10], [20, 20], [50, 50], [100, 100]], @monedas_per_page),
+                           id: "monedas_per_page",
+                           class: "filter-select pagination-size-select",
+                           onchange: "this.form.submit()" %>
+          <% end %>
+
+          <nav class="pagination-nav" aria-label="Paginación de monedas">
+            <% pagination_params = request.query_parameters.except("page").merge(per_page: @monedas_per_page) %>
+            <%= link_to "Anterior",
+                        monedas_path(pagination_params.merge(page: @monedas_page - 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @monedas_page <= 1}",
+                        aria: { disabled: @monedas_page <= 1 } %>
+
+            <span class="pagination-current">Página <%= @monedas_page %> de <%= @monedas_total_pages %></span>
+
+            <%= link_to "Siguiente",
+                        monedas_path(pagination_params.merge(page: @monedas_page + 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @monedas_page >= @monedas_total_pages}",
+                        aria: { disabled: @monedas_page >= @monedas_total_pages } %>
+          </nav>
+        </div>
+      </div>
     <% else %>
       <%= render "shared/empty_state",
-                 title: "No hay monedas registradas",
-                 description: "Crea la primera moneda para comenzar a construir el catálogo financiero base." %>
+                 title: @filters.values.any?(&:present?) ? "No se encontraron monedas" : "No hay monedas registradas",
+                 description: @filters.values.any?(&:present?) ? "Ajusta la búsqueda o limpia los filtros para ver más resultados." : "Crea la primera moneda para comenzar a construir el catálogo financiero base." %>
     <% end %>
-  </div>
+  </section>
 </section>

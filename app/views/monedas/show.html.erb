@@ -1,54 +1,41 @@
-<section class="page-section">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Administración</p>
-      <h1><%= @moneda.nombre %></h1>
-      <p>Detalle interno de la moneda registrada en el catálogo del sistema.</p>
-    </div>
-    <div class="page-actions-inline">
-      <%= link_to "Editar", edit_moneda_path(@moneda), class: "ui-button ui-button-primary" %>
-      <%= link_to "Volver", monedas_path, class: "ui-button ui-button-secondary" %>
-      <%= button_to "Eliminar", moneda_path(@moneda), method: :delete, class: "ui-button ui-button-secondary", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar esta moneda?" } %>
-    </div>
-  </div>
-
-  <div class="module-page-grid">
-    <section class="panel detail-section">
-      <div class="panel-header">
-        <div>
-          <h2>Información de la moneda</h2>
-          <p>Datos base del catálogo financiero.</p>
-        </div>
+<section class="page-section company-show-page">
+  <section class="company-show-hero">
+    <div class="company-show-identity">
+      <div class="company-show-logo">
+        <%= @moneda.simbolo.presence || @moneda.nombre.to_s.first(2).upcase %>
       </div>
 
-      <div class="detail-grid">
-        <div class="detail-item"><span>Código</span><strong><%= @moneda.codigo %></strong></div>
-        <div class="detail-item"><span>Nombre</span><strong><%= @moneda.nombre %></strong></div>
-        <div class="detail-item"><span>Símbolo</span><strong><%= @moneda.simbolo %></strong></div>
-        <div class="detail-item"><span>Estado</span><strong><%= @moneda.activo? ? "Activa" : "Inactiva" %></strong></div>
+      <div class="company-show-copy">
+        <div class="company-show-title-row">
+          <strong class="company-show-title"><%= @moneda.nombre %></strong>
+
+          <div class="company-show-badges">
+            <%= render "shared/badge", text: @moneda.activo? ? "Activa" : "Inactiva", tone: @moneda.activo? ? "success" : "warning" %>
+          </div>
+        </div>
+
+        <p><%= @moneda.simbolo %> · Código <%= @moneda.codigo %></p>
       </div>
-    </section>
+    </div>
 
-    <aside class="module-page-side">
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Resumen operativo</h2>
-            <p>Estado actual del registro</p>
-          </div>
-        </div>
+    <div class="company-show-actions" aria-label="Acciones de moneda">
+      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, monedas_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
+      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_moneda_path(@moneda), class: "company-show-action-button company-show-action-primary", title: "Editar moneda", aria: { label: "Editar moneda" } %>
+    </div>
+  </section>
 
-        <div class="summary-stack">
-          <div class="summary-card">
-            <span>Código numérico</span>
-            <strong><%= @moneda.codigo %></strong>
-          </div>
-          <div class="summary-card">
-            <span>Disponibilidad</span>
-            <strong><%= @moneda.activo? ? "Lista para usar" : "Registro inactivo" %></strong>
-          </div>
-        </div>
-      </section>
-    </aside>
-  </div>
+  <section class="panel detail-section">
+    <div class="panel-header">
+      <div>
+        <h2>Información de la moneda</h2>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-item"><span>Código</span><strong><%= @moneda.codigo %></strong></div>
+      <div class="detail-item"><span>Nombre</span><strong><%= @moneda.nombre %></strong></div>
+      <div class="detail-item"><span>Símbolo</span><strong><%= @moneda.simbolo %></strong></div>
+      <div class="detail-item"><span>Estado</span><strong><%= @moneda.activo? ? "Activa" : "Inactiva" %></strong></div>
+    </div>
+  </section>
 </section>
