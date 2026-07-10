@@ -1,28 +1,6 @@
 <% content_for :body_class, "dashboard-reference-shell" %>
 
 <section class="page-section dashboard-page">
-  <div class="page-heading dash-heading">
-    <div class="page-heading-copy">
-      <h1><%= @page_title %></h1>
-      <% if @page_description.present? %>
-        <p><%= @page_description %></p>
-      <% end %>
-    </div>
-    <div class="dash-header-actions">
-      <button type="button" class="dash-btn">
-        <span class="dash-btn-icon"><%= icon("calendar") %></span>
-        <%= @page_period %>
-        <span class="dash-btn-caret"><%= icon("chevron_down") %></span>
-      </button>
-      <%= link_to @page_action[:href], class: "dash-btn dash-btn-accent" do %>
-        <span class="dash-btn-icon"><%= icon("refresh") %></span>
-        <%= @page_action[:label] %>
-      <% end %>
-    </div>
-  </div>
-
-
-<section class="page-section dashboard-page">
   <div class="kpi-grid dash-kpi-grid">
     <% @kpis.each do |kpi| %>
       <%= render "shared/kpi_card", kpi: kpi %>
