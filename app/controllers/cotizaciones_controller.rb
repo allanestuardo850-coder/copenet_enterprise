@@ -8,7 +8,7 @@ class CotizacionesController < ApplicationController
       estado: params[:estado].to_s.strip
     }
 
-    @cotizaciones = Cotizacion.includes(:producto_servicio, :cliente_registro, cotizacion_detalles: :moneda).recientes
+    @cotizaciones = Cotizacion.includes(:cliente_registro, producto_servicio: :moneda, cotizacion_detalles: :moneda).recientes
     @cotizaciones = aplicar_filtros(@cotizaciones)
   end
 

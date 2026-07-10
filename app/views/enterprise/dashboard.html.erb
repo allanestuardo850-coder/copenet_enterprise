@@ -21,6 +21,8 @@
     </div>
   </div>
 
+
+<section class="page-section dashboard-page">
   <div class="kpi-grid dash-kpi-grid">
     <% @kpis.each do |kpi| %>
       <%= render "shared/kpi_card", kpi: kpi %>
@@ -28,15 +30,18 @@
   </div>
 
   <div class="dashboard-grid">
-    <div class="panel chart-panel chart-panel-wide">
+    <div class="panel chart-panel chart-panel-wide"
+         data-controller="dashboard-finance"
+         data-dashboard-finance-url-value="<%= dashboard_finance_path %>"
+         data-dashboard-finance-active-class="is-active">
       <div class="panel-header">
         <div>
-          <h2>Resumen financiero mensual</h2>
+          <h2>Resumen financiero</h2>
         </div>
         <div class="seg-toggle" role="group" aria-label="Rango de tiempo">
-          <button type="button" class="seg-item is-active">Mes actual</button>
-          <button type="button" class="seg-item">6 meses</button>
-          <button type="button" class="seg-item">12 meses</button>
+          <button type="button" class="seg-item is-active" data-dashboard-finance-target="button" data-range="current" data-action="dashboard-finance#load">Mes actual</button>
+          <button type="button" class="seg-item" data-dashboard-finance-target="button" data-range="6" data-action="dashboard-finance#load">6 meses</button>
+          <button type="button" class="seg-item" data-dashboard-finance-target="button" data-range="12" data-action="dashboard-finance#load">12 meses</button>
         </div>
       </div>
       <div class="chart-legend">
@@ -44,7 +49,7 @@
         <span class="legend-item"><i class="legend-swatch" style="background: var(--primary); opacity: 0.3"></i>Costos</span>
         <span class="legend-item"><i class="legend-line" style="background: var(--success)"></i>Utilidad</span>
       </div>
-      <div class="chart-body">
+      <div class="chart-body" data-dashboard-finance-target="chart">
         <%= dashboard_barline_chart(**@finance) %>
       </div>
     </div>
@@ -122,22 +127,4 @@
       </div>
     </div>
   </div>
-
-  <section class="page-subsection">
-    <div class="section-heading quick-heading-panel">
-      <div>
-        <h2>Accesos rápidos</h2>
-      </div>
-    </div>
-
-    <div class="quick-grid">
-      <% quick_tones = %w[primary success info warning primary success info primary success] %>
-      <% @modules.each_with_index do |mod, i| %>
-        <%= link_to mod[:href], class: "quick-card" do %>
-          <span class="kpi-icon kpi-icon-<%= quick_tones[i % quick_tones.size] %>"><%= icon(mod[:icon]) %></span>
-          <span class="quick-label"><%= mod[:title] %></span>
-        <% end %>
-      <% end %>
-    </div>
-  </section>
 </section>

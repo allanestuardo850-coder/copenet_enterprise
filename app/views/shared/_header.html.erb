@@ -3,10 +3,18 @@
     <button class="icon-button sidebar-toggle-button" type="button" data-action="shell#toggleSidebar" aria-label="Mostrar u ocultar menú lateral">
       <%= icon("menu") %>
     </button>
-    <div class="search-shell">
+    <div class="search-shell topbar-search"
+         data-controller="global-search"
+         data-global-search-items-value='<%= json_escape(global_search_items.to_json) %>'>
       <span class="search-icon"><%= icon("search") %></span>
-      <input type="search" placeholder="<%= branding_texto(:placeholder_busqueda, 'Buscar empresas, cuentas o reportes') %>" aria-label="Buscar en la plataforma">
+      <input type="search"
+             placeholder="<%= branding_texto(:placeholder_busqueda, 'Buscar empresas, cuentas o reportes') %>"
+             aria-label="Buscar en la plataforma"
+             autocomplete="off"
+             data-global-search-target="input"
+             data-action="input->global-search#search keydown->global-search#keydown focus->global-search#search">
       <span class="search-shortcut">⌘K</span>
+      <div class="global-search-results" data-global-search-target="results" hidden></div>
     </div>
   </div>
 
@@ -17,9 +25,6 @@
     </button>
     <button class="icon-button" type="button" aria-label="Mensajes">
       <%= icon("message") %>
-    </button>
-    <button class="icon-button" type="button" aria-label="Aplicaciones">
-      <%= icon("grid") %>
     </button>
     <button class="icon-button theme-toggle-button" type="button" data-action="shell#toggleTheme" aria-label="Cambiar tema">
       <span class="theme-icons">

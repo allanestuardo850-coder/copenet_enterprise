@@ -1,9 +1,11 @@
-<%= form_with model: company, class: "company-form", data: { controller: "tabs", tabs_default_value: "general" } do |form| %>
-  <div class="form-actions form-actions-top">
-    <%= form.submit company.persisted? ? "Actualizar empresa" : "Guardar empresa", class: "ui-button ui-button-primary submit-button" %>
-    <%= link_to "Cancelar", company.persisted? ? company_path(company) : companies_path, class: "ui-button ui-button-secondary" %>
-  </div>
-
+<%= form_with(model: company,
+              class: "company-form",
+              html: { multipart: true },
+              data: {
+                controller: "tabs company-inactivation",
+                tabs_default_value: "general",
+                company_inactivation_original_inactive_value: company.inactive
+              }) do |form| %>
   <% if company.errors.any? %>
     <section class="panel form-errors">
       <div class="panel-header">
@@ -22,8 +24,19 @@
 
   <%= render "form_tabs", form: form, company: company %>
 
-  <div class="form-actions">
-    <%= form.submit company.persisted? ? "Actualizar empresa" : "Guardar empresa", class: "ui-button ui-button-primary submit-button" %>
-    <%= link_to "Cancelar", company.persisted? ? company_path(company) : companies_path, class: "ui-button ui-button-secondary" %>
-  </div>
+  <% if company.persisted? %>
+    <div class="confirm-modal-backdrop" data-company-inactivation-target="modal" hidden>
+      <div class="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="company-inactivation-title">
+        <div class="confirm-modal-icon"><%= icon("alert") %></div>
+        <div class="confirm-modal-copy">
+          <h2 id="company-inactivation-title">Confirmar inhabilitación</h2>
+          <p>Al inhabilitar esta compañía, sus productos y servicios asociados quedarán inactivos y la compañía ya no tendrá acceso operativo.</p>
+        </div>
+        <div class="confirm-modal-actions">
+          <button type="button" class="ui-button ui-button-secondary" data-action="company-inactivation#cancel">Cancelar</button>
+          <button type="button" class="ui-button ui-button-primary" data-action="company-inactivation#confirm">Confirmar y guardar</button>
+        </div>
+      </div>
+    </div>
+  <% end %>
 <% end %>

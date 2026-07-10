@@ -1,0 +1,105 @@
+<section class="page-section my-profile-page">
+  <%= form_with model: @usuario, url: perfil_path, method: :patch, class: "my-profile-form", multipart: true do |form| %>
+    <section class="panel my-profile-hero">
+      <div class="my-profile-identity">
+        <div class="my-profile-avatar" data-controller="company-logo">
+          <div class="my-profile-avatar-preview" data-company-logo-target="preview">
+            <% if @usuario.fotografia.attached? %>
+              <%= image_tag @usuario.fotografia, alt: "Fotografía de perfil", class: "my-profile-avatar-image" %>
+            <% else %>
+              <span><%= @usuario.nombre.to_s.first&.upcase %><%= @usuario.apellido.to_s.first&.upcase %></span>
+            <% end %>
+          </div>
+
+          <label class="my-profile-photo-button">
+            <%= icon("upload") %>
+            <span>Subir fotografía</span>
+            <%= form.file_field :fotografia, class: "company-logo-input", accept: "image/png,image/jpeg", data: { company_logo_target: "input", action: "change->company-logo#preview" } %>
+          </label>
+        </div>
+
+        <div class="my-profile-heading">
+          <span class="section-kicker">Mi perfil</span>
+          <h1><%= @usuario.nombre_completo.presence || "Usuario" %></h1>
+          <p><%= @usuario.email %></p>
+
+          <div class="my-profile-badges">
+            <%= render "shared/badge", text: @usuario.activo? ? "Activo" : "Inactivo", tone: @usuario.activo? ? "success" : "warning" %>
+            <%= render "shared/badge", text: @usuario.root? ? "Root" : @usuario.roles.map(&:nombre).join(", ").presence || "Sin rol", tone: @usuario.root? ? "primary" : "info" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="my-profile-actions">
+        <%= form.submit "Guardar cambios", class: "ui-button ui-button-primary" %>
+      </div>
+    </section>
+
+    <% if @usuario.errors.any? %>
+      <section class="panel form-errors-panel">
+        <strong>Revisa la información ingresada.</strong>
+        <ul>
+          <% @usuario.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </section>
+    <% end %>
+
+    <section class="my-profile-grid">
+      <article class="panel my-profile-card">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("user") %></span>
+          <div>
+            <h2>Información del usuario</h2>
+            <p>Datos definidos por administración.</p>
+          </div>
+        </div>
+
+        <div class="my-profile-readonly-grid">
+          <div class="field-group">
+            <label>Nombre</label>
+            <input class="text-input" type="text" value="<%= @usuario.nombre %>" readonly>
+          </div>
+
+          <div class="field-group">
+            <label>Apellido</label>
+            <input class="text-input" type="text" value="<%= @usuario.apellido %>" readonly>
+          </div>
+
+          <div class="field-group">
+            <label>Correo electrónico</label>
+            <input class="text-input" type="email" value="<%= @usuario.email %>" readonly>
+          </div>
+
+          <div class="field-group">
+            <label>Rol asignado</label>
+            <input class="text-input" type="text" value="<%= @usuario.root? ? "Root" : @usuario.roles.map(&:nombre).join(", ").presence || "Sin rol" %>" readonly>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel my-profile-card">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("shield-outline") %></span>
+          <div>
+            <h2>Cambiar contraseña</h2>
+            <p>Déjalo vacío si deseas conservar la contraseña actual.</p>
+          </div>
+        </div>
+
+        <div class="my-profile-password-grid">
+          <div class="field-group">
+            <%= form.label :password, "Nueva contraseña" %>
+            <%= form.password_field :password, class: "text-input", autocomplete: "new-password", placeholder: "Escribe la nueva contraseña" %>
+          </div>
+
+          <div class="field-group">
+            <%= form.label :password_confirmation, "Confirmar contraseña" %>
+            <%= form.password_field :password_confirmation, class: "text-input", autocomplete: "new-password", placeholder: "Repite la nueva contraseña" %>
+          </div>
+        </div>
+      </article>
+    </section>
+  <% end %>
+</section>

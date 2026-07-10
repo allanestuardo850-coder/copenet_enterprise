@@ -1,10 +1,6 @@
 class EnterpriseController < ApplicationController
   def dashboard
     @current_page = :dashboard
-    @page_title = "Dashboard"
-    @page_description = nil
-    @page_period = "Mayo 2024"
-    @page_action = { label: "Actualizar datos", href: dashboard_path }
     @kpis = [
       { title: "Ingresos del mes", value: "Q254,900", change: "12.8%", compare: "vs abril 2024", trend: "up", tone: "success", icon: "trending-up" },
       { title: "Cobros aplicados", value: "Q91,240", change: "7.8%", compare: "vs abril 2024", trend: "up", tone: "primary", icon: "dollar" },
@@ -12,13 +8,7 @@ class EnterpriseController < ApplicationController
       { title: "Cobros vencidos", value: "Q28,630", change: "4.9%", compare: "vs abril 2024", trend: "down", tone: "warning", icon: "alert" },
       { title: "Utilidad estimada", value: "Q58,430", change: "3.4%", compare: "vs abril 2024", trend: "up", tone: "success", icon: "credit-card" }
     ]
-    @finance = {
-      months: %w[Ene Feb Mar Abr May],
-      ingresos: [258, 255, 210, 246, 256],
-      costos: [110, 122, 96, 106, 112],
-      utilidad: [104, 122, 95, 118, 112],
-      max: 300
-    }
+    @finance = dashboard_finance_payload("current")
     @pendientes = [
       { icon: "coins-stack", title: "28 cobros vencidos", detail: "Total por cobrar Q28,630", status: "Alerta", tone: "danger" },
       { icon: "calendar", title: "6 contratos por vencer", detail: "Próximos 30 días", status: "Atención", tone: "warning" },
@@ -42,17 +32,10 @@ class EnterpriseController < ApplicationController
         { label: "Utilidad", total: "Q234,870", tone: "info", values: [60, 62, 66, 82, 78, 82] }
       ]
     }
-    @modules = [
-      { title: "Empresas", description: "Administra clientes corporativos, sucursales y estados operativos.", href: companies_path, icon: "building" },
-      { title: "Cuentas", description: "Centraliza cuentas comerciales, financieras y de control interno.", href: accounts_path, icon: "wallet" },
-      { title: "Productos y Servicios", description: "Organiza el catálogo comercial de cobros, licencias y cargos recurrentes.", href: productos_servicios_path, icon: "box" },
-      { title: "Costos", description: "Supervisa egresos, centros de costo y márgenes proyectados.", href: costs_path, icon: "coins" },
-      { title: "Cobros", description: "Da seguimiento a cartera, vencimientos y recuperaciones.", href: collections_path, icon: "receipt" },
-      { title: "Facturación", description: "Monitorea emisión, estados y cumplimiento de facturas.", href: invoices_path, icon: "invoice" },
-      { title: "Contratos", description: "Controla acuerdos, renovaciones y hitos de servicio.", href: contracts_path, icon: "contract" },
-      { title: "Reportes", description: "Accede a paneles ejecutivos y cortes operativos.", href: reports_path, icon: "report" },
-      { title: "Configuración", description: "Ajusta parámetros generales y catálogos visuales.", href: settings_path, icon: "settings" }
-    ]
+  end
+
+  def dashboard_finance
+    render json: dashboard_finance_payload(params[:range])
   end
 
   def companies
@@ -235,6 +218,100 @@ class EnterpriseController < ApplicationController
   end
 
   private
+
+  DASHBOARD_FINANCE_RANGES = {
+    "current" => 1,
+    "6" => 6,
+    "12" => 12
+  }.freeze
+
+  DASHBOARD_MONTH_LABELS = %w[Ene Feb Mar Abr May Jun Jul Ago Sep Oct Nov Dic].freeze
+  DASHBOARD_FINANCE_FALLBACKS = {
+    "current" => {
+      ingresos: [254.9],
+      costos: [91.24],
+      utilidad: [58.43],
+      max: 300
+    },
+    "6" => {
+      months: %w[Dic Ene Feb Mar Abr May],
+      ingresos: [180, 205, 220, 295, 240, 260],
+      costos: [78, 92, 98, 125, 112, 120],
+      utilidad: [72, 86, 92, 126, 104, 112],
+      max: 300
+    },
+    "12" => {
+      months: %w[Jun Jul Ago Sep Oct Nov Dic Ene Feb Mar Abr May],
+      ingresos: [145, 162, 175, 188, 210, 230, 250, 268, 242, 286, 262, 278],
+      costos: [70, 76, 82, 88, 96, 104, 112, 118, 110, 128, 116, 124],
+      utilidad: [52, 58, 64, 72, 82, 92, 102, 116, 98, 132, 112, 124],
+      max: 300
+    }
+  }.freeze
+
+  def dashboard_finance_payload(range)
+    range_key = DASHBOARD_FINANCE_RANGES.key?(range.to_s) ? range.to_s : "current"
+    month_count = DASHBOARD_FINANCE_RANGES.fetch(range_key)
+    current_month = Time.zone.today.beginning_of_month
+    months = month_count.times.map { |index| current_month << (month_count - index - 1) }
+    buckets = months.index_with { { ingresos: 0.to_d, costos: 0.to_d } }
+
+    cotizaciones = Cotizacion.includes(:cotizacion_detalles)
+                             .where(created_at: months.first.beginning_of_day..Time.zone.today.end_of_day)
+                             .where.not(estado: %w[rechazada cancelada])
+
+    cotizaciones.each do |cotizacion|
+      month_key = cotizacion.created_at.to_date.beginning_of_month
+      bucket = buckets[month_key]
+      next unless bucket
+
+      cotizacion.cotizacion_detalles.each do |detalle|
+        bucket[:ingresos] += dashboard_detalle_ingreso(detalle)
+        bucket[:costos] += detalle.internal_cost.to_d
+      end
+    end
+
+    ingresos = months.map { |month| dashboard_to_thousands(buckets[month][:ingresos]) }
+    costos = months.map { |month| dashboard_to_thousands(buckets[month][:costos]) }
+    utilidad = ingresos.zip(costos).map { |ingreso, costo| (ingreso - costo).round(2) }
+    return dashboard_finance_fallback(range_key) if (ingresos + costos + utilidad).all?(&:zero?)
+
+    {
+      range: range_key,
+      months: months.map { |month| DASHBOARD_MONTH_LABELS[month.month - 1] },
+      ingresos: ingresos,
+      costos: costos,
+      utilidad: utilidad,
+      max: dashboard_axis_max(ingresos + costos + utilidad)
+    }
+  end
+
+  def dashboard_finance_fallback(range_key)
+    fallback = DASHBOARD_FINANCE_FALLBACKS.fetch(range_key)
+    fallback = fallback.merge(months: [DASHBOARD_MONTH_LABELS[Time.zone.today.month - 1]]) if range_key == "current"
+    fallback.merge(range: range_key)
+  end
+
+  def dashboard_detalle_ingreso(detalle)
+    return 0.to_d unless detalle.facturable?
+    return 0.to_d if detalle.applied_price.to_d.zero? && !detalle.billing_authorized?
+
+    detalle.applied_price.to_d
+  end
+
+  def dashboard_to_thousands(value)
+    (value.to_d / 1000).round(2)
+  end
+
+  def dashboard_axis_max(values)
+    max_value = values.map(&:to_f).max.to_f
+    return 10 if max_value <= 0
+    return 10 if max_value <= 10
+    return (max_value / 10.0).ceil * 10 if max_value <= 50
+    return (max_value / 50.0).ceil * 50 if max_value <= 300
+
+    (max_value / 100.0).ceil * 100
+  end
 
   def configuracion_sistema_params
     params.require(:configuracion_sistema).permit(

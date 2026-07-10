@@ -46,9 +46,13 @@ export default class extends Controller {
     if (!this.hasSidebarTarget) return
 
     this.sidebarTarget.querySelectorAll(".sidebar-section.is-open").forEach((section) => {
-      section.classList.remove("is-open")
-      section.querySelector(".sidebar-section-trigger")?.setAttribute("aria-expanded", "false")
+      this.setSectionOpen(section, false)
     })
+  }
+
+  setSectionOpen(section, open) {
+    section.classList.toggle("is-open", open)
+    section.querySelector(".sidebar-section-trigger")?.setAttribute("aria-expanded", open ? "true" : "false")
   }
 
   expandSidebar() {
@@ -96,13 +100,13 @@ export default class extends Controller {
     if (this.element.classList.contains(this.sidebarCollapsedClass)) {
       this.expandSidebar()
       this.closeSidebarSections()
-      section.classList.add("is-open")
-      event.currentTarget.setAttribute("aria-expanded", "true")
+      this.setSectionOpen(section, true)
       return
     }
 
-    const isOpen = section.classList.toggle("is-open")
-    event.currentTarget.setAttribute("aria-expanded", isOpen ? "true" : "false")
+    const shouldOpen = !section.classList.contains("is-open")
+    this.closeSidebarSections()
+    this.setSectionOpen(section, shouldOpen)
   }
 
   toggleTheme() {

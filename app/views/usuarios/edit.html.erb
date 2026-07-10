@@ -1,14 +1,3 @@
 <section class="page-section">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Administración</p>
-      <h1>Editar Usuario</h1>
-      <p>Actualiza información general, seguridad y roles operativos del usuario.</p>
-    </div>
-    <div class="page-actions-inline">
-      <%= link_to "Ver detalle", usuario_path(@usuario), class: "ui-button ui-button-secondary" %>
-      <%= link_to "Volver", usuarios_path, class: "ui-button ui-button-secondary" %>
-    </div>
-  </div>
   <%= render "form", usuario: @usuario %>
 </section>

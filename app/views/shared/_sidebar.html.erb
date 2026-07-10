@@ -1,11 +1,11 @@
 <aside class="sidebar" data-shell-target="sidebar">
   <div class="sidebar-brand sidebar-brand-full">
-    <%= link_to dashboard_path, class: "sidebar-brand-logo", aria: { label: "Copenet" } do %>
-      <%= image_tag "copenet-logo.png", class: "sidebar-brand-image sidebar-brand-image-full", alt: "Copenet" %>
-      <%= image_tag "copenet-icon.png", class: "sidebar-brand-image sidebar-brand-image-compact", alt: "Copenet" %>
+    <%= link_to dashboard_path, class: "sidebar-brand-logo", aria: { label: "Ir al dashboard" } do %>
+      <%= image_tag "/copenet-logo.png", class: "sidebar-brand-image sidebar-brand-image-full", alt: "Copenet" %>
+      <%= image_tag "/copenet-icon.png", class: "sidebar-brand-image sidebar-brand-image-compact", alt: "Copenet" %>
     <% end %>
     <button class="icon-button mobile-only" type="button" data-action="shell#closeSidebar">
-      <%= icon("chevron") %>
+      <%= icon("close") %>
     </button>
   </div>
 
@@ -17,7 +17,6 @@
           <button class="sidebar-section-trigger" type="button" data-action="shell#toggleSection" aria-expanded="<%= open %>">
             <span class="sidebar-item-icon"><%= sidebar_icon(item[:icon]) %></span>
             <span class="sidebar-item-label"><%= item[:label] %></span>
-            <span class="sidebar-section-chevron"><%= icon("chevron") %></span>
           </button>
           <div class="sidebar-subnav">
             <% item[:children].each do |child| %>

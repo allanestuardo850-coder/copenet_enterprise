@@ -1,4 +1,4 @@
-<section class="panel user-tabs-panel" data-controller="tabs" data-tabs-default-value="<%= default_tab %>">
+<section class="panel user-tabs-panel company-detail-tabs" data-controller="tabs" data-tabs-default-value="<%= default_tab %>">
   <div class="module-tabs" role="tablist" aria-label="Secciones de la empresa">
     <button type="button" class="module-tab is-active" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch" role="tab" aria-selected="true">
       <span class="module-tab-icon"><%= icon("users") %></span>
@@ -30,73 +30,131 @@
     </button>
   </div>
 
-  <section class="panel module-tab-panel is-active" data-tabs-target="panel" data-tab-id="general">
+  <section class="panel module-tab-panel company-detail-panel is-active" data-tabs-target="panel" data-tab-id="general">
     <div class="panel-header">
       <div>
-        <h2>Información General</h2>
-        <p>Datos base para la administración operativa y comercial de la empresa.</p>
+        <h2>Información general</h2>
       </div>
     </div>
 
-    <div class="detail-grid">
-      <div class="detail-item"><span>Nombre Comercial</span><strong><%= company.commercial_name.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Razón Social</span><strong><%= company.legal_name.presence || "-" %></strong></div>
-      <div class="detail-item"><span>NIT</span><strong><%= company.tax_id.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Tipo de Empresa</span><strong><%= company.company_type.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Correo Electrónico</span><strong><%= company.email.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Correo Comercial</span><strong><%= company.correo_comercial.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Teléfono</span><strong><%= company.phone.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Web Corporativa</span><strong><%= company.web.presence || "-" %></strong></div>
-      <div class="detail-item">
-        <span>Color Primario</span>
-        <strong style="color:<%= company.branding_primary_color_display %>;"><%= company.branding_primary_color_display %></strong>
-      </div>
-      <div class="detail-item">
-        <span>Color Secundario</span>
-        <strong style="color:<%= company.branding_secondary_color_display %>;"><%= company.branding_secondary_color_display %></strong>
-      </div>
-      <div class="detail-item">
-        <span>Color de Acento</span>
-        <strong style="color:<%= company.branding_accent_color_display %>;"><%= company.branding_accent_color_display %></strong>
-      </div>
-      <div class="detail-item detail-item-full"><span>Dirección</span><strong><%= company.address.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Estado</span><strong><%= company.status.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Activa</span><strong><%= company.active? ? "Sí" : "No" %></strong></div>
-    </div>
+    <div class="company-detail-general-grid">
+      <section class="company-detail-card">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("users") %></span>
+          <div>
+            <h3>Datos generales</h3>
+            <p>Información base de la empresa.</p>
+          </div>
+        </div>
+        <div class="company-detail-field-grid">
+          <div class="company-detail-field"><span>Nombre comercial</span><strong><%= company.commercial_name.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Razón social</span><strong><%= company.legal_name.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>NIT</span><strong><%= company.tax_id.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Tipo de empresa</span><strong><%= company.company_type.presence || "-" %></strong></div>
+        </div>
+      </section>
 
-    <% if company.logo.attached? %>
-      <div class="branding-preview-card">
-        <%= image_tag company.logo, class: "branding-preview-image", alt: "Logo corporativo" %>
-      </div>
-    <% end %>
+      <section class="company-detail-card">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("message") %></span>
+          <div>
+            <h3>Contacto</h3>
+            <p>Canales principales de comunicación.</p>
+          </div>
+        </div>
+        <div class="company-detail-field-grid">
+          <div class="company-detail-field"><span>Correo electrónico</span><strong><%= company.email.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Correo comercial</span><strong><%= company.correo_comercial.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Teléfono</span><strong><%= company.phone.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Web corporativa</span><strong><%= company.web.presence || "-" %></strong></div>
+        </div>
+      </section>
+
+      <section class="company-detail-card company-detail-card-full">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("pencil") %></span>
+          <div>
+            <h3>Identidad visual</h3>
+            <p>Colores y logotipo corporativo.</p>
+          </div>
+        </div>
+        <div class="company-detail-visual-grid">
+          <div class="company-detail-color" style="--company-detail-color:<%= company.branding_primary_color_display %>;">
+            <span>Color primario</span>
+            <strong><i></i><%= company.branding_primary_color_display %></strong>
+          </div>
+          <div class="company-detail-color" style="--company-detail-color:<%= company.branding_secondary_color_display %>;">
+            <span>Color secundario</span>
+            <strong><i></i><%= company.branding_secondary_color_display %></strong>
+          </div>
+          <div class="company-detail-color" style="--company-detail-color:<%= company.branding_accent_color_display %>;">
+            <span>Color de acento</span>
+            <strong><i></i><%= company.branding_accent_color_display %></strong>
+          </div>
+          <div class="company-detail-logo-preview">
+            <% if company.logo.attached? %>
+              <%= image_tag company.logo, class: "branding-preview-image", alt: "Logo corporativo" %>
+            <% else %>
+              <span><%= icon("building") %></span>
+            <% end %>
+          </div>
+        </div>
+      </section>
+
+      <section class="company-detail-card company-detail-card-address">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("map-pin") %></span>
+          <div>
+            <h3>Dirección</h3>
+            <p>Ubicación fiscal y comercial.</p>
+          </div>
+        </div>
+        <div class="company-detail-field company-detail-field-wide">
+          <span>Dirección fiscal y comercial</span>
+          <strong><%= company.address.presence || "-" %></strong>
+        </div>
+      </section>
+
+      <section class="company-detail-card company-detail-card-status">
+        <div class="company-card-heading">
+          <span class="company-card-icon"><%= icon("bar-chart") %></span>
+          <div>
+            <h3>Estado</h3>
+            <p>Operación actual de la empresa.</p>
+          </div>
+        </div>
+        <div class="company-detail-field-grid">
+          <div class="company-detail-field"><span>Estado</span><strong><%= company.status.presence || "-" %></strong></div>
+          <div class="company-detail-field"><span>Activa</span><strong><%= company.active? ? "Sí" : "No" %></strong></div>
+        </div>
+      </section>
+    </div>
   </section>
 
-  <section class="panel module-tab-panel" data-tabs-target="panel" data-tab-id="fel" hidden>
+  <section class="panel module-tab-panel company-detail-panel" data-tabs-target="panel" data-tab-id="fel" hidden>
     <div class="panel-header">
       <div>
-        <h2>Configuración FEL / INFILE</h2>
-        <p>Parámetros internos de certificación y datos fiscales de la empresa.</p>
+        <h2>Configuración Fel / Infile</h2>
       </div>
       <%= render "shared/badge", text: "Interno", tone: "warning" %>
     </div>
 
-    <div class="detail-grid">
-      <div class="detail-item"><span>Prefijo INFILE</span><strong><%= company.infile_prefix.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Llave INFILE</span><strong><%= company.infile_key.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Prefijo Firma</span><strong><%= company.infile_signature_prefix.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Llave Firma</span><strong><%= company.infile_signature_key.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Afiliación IVA</span><strong><%= company.vat_affiliation.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Token FEL</span><strong><%= company.fel_token.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Código Escenario</span><strong><%= company.fel_scenario_code.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Correo de Notificaciones</span><strong><%= company.notification_email.presence || "-" %></strong></div>
+    <div class="detail-grid detail-grid-soft">
+      <div class="detail-item"><span>Prefijo Infile</span><strong><%= company.infile_prefix.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Llave Infile</span><strong><%= company.infile_key.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Prefijo firma</span><strong><%= company.infile_signature_prefix.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Llave firma</span><strong><%= company.infile_signature_key.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Afiliación Iva</span><strong><%= company.vat_affiliation.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Token Fel</span><strong><%= company.fel_token.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Código escenario</span><strong><%= company.fel_scenario_code.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Correo de notificaciones</span><strong><%= company.notification_email.presence || "-" %></strong></div>
     </div>
   </section>
 
-  <section class="panel module-tab-panel" data-tabs-target="panel" data-tab-id="cotizacion" hidden>
+  <section class="panel module-tab-panel company-detail-panel" data-tabs-target="panel" data-tab-id="cotizacion" hidden>
     <div class="panel-header">
       <div>
-        <h2>Branding y Contacto Comercial</h2>
-        <p>Datos de identidad comercial que se imprimen en la cotización emitida por esta empresa.</p>
+        <h2>Branding y contacto comercial</h2>
       </div>
       <%= render "shared/badge", text: "Cotización", tone: "info" %>
     </div>
@@ -107,44 +165,40 @@
       </div>
     <% end %>
 
-    <div class="detail-grid">
-      <div class="detail-item"><span>Formato de Cotización</span><strong><%= company.quote_format_name.presence || "-" %></strong></div>
-      <div class="detail-item"><span>URL de Contacto</span><strong><%= company.quote_website_url.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Nombre de Contacto</span><strong><%= company.quote_contact_name.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Cargo o Área</span><strong><%= company.quote_contact_role.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Correo de Contacto</span><strong><%= company.quote_contact_email.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Teléfono de Contacto</span><strong><%= company.quote_contact_phone.presence || "-" %></strong></div>
-      <div class="detail-item">
-        <span>Color de Encabezados de Tabla</span>
-        <strong>
-          <span style="display:inline-flex;width:18px;height:18px;border-radius:999px;background:<%= company.quote_table_header_color_display %>;border:1px solid rgba(15,23,42,.12);vertical-align:middle;margin-right:8px;"></span>
-          <%= company.quote_table_header_color_display %>
-        </strong>
+    <div class="detail-grid detail-grid-soft">
+      <div class="detail-item"><span>Formato de cotización</span><strong><%= company.quote_format_name.presence || "-" %></strong></div>
+      <div class="detail-item"><span>URL de contacto</span><strong><%= company.quote_website_url.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Nombre de contacto</span><strong><%= company.quote_contact_name.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Cargo o área</span><strong><%= company.quote_contact_role.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Correo de contacto</span><strong><%= company.quote_contact_email.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Teléfono de contacto</span><strong><%= company.quote_contact_phone.presence || "-" %></strong></div>
+      <div class="company-detail-color" style="--company-detail-color:<%= company.quote_table_header_color_display %>;">
+        <span>Color de encabezados de tabla</span>
+        <strong><i></i><%= company.quote_table_header_color_display %></strong>
       </div>
-      <div class="detail-item">
-        <span>Color de Datos de Contacto</span>
-        <strong style="color:<%= company.quote_contact_text_color_display %>;"><%= company.quote_contact_text_color_display %></strong>
+      <div class="company-detail-color" style="--company-detail-color:<%= company.quote_contact_text_color_display %>;">
+        <span>Color de datos de contacto</span>
+        <strong><i></i><%= company.quote_contact_text_color_display %></strong>
       </div>
-      <div class="detail-item detail-item-full"><span>Texto Inferior del PDF</span><strong><%= company.quote_footer_note.presence || "-" %></strong></div>
+      <div class="detail-item detail-item-full"><span>Texto inferior del PDF</span><strong><%= company.quote_footer_note.presence || "-" %></strong></div>
     </div>
   </section>
 
-  <section class="panel module-tab-panel" data-tabs-target="panel" data-tab-id="documento" hidden>
+  <section class="panel module-tab-panel company-detail-panel" data-tabs-target="panel" data-tab-id="documento" hidden>
     <div class="panel-header">
       <div>
-        <h2>Plantilla del Documento Comercial</h2>
-        <p>Textos de portada, carta, términos y firma usados al generar el PDF de la empresa.</p>
+        <h2>Plantilla del documento comercial</h2>
       </div>
     </div>
 
-    <div class="detail-grid">
-      <div class="detail-item"><span>Título Visible del PDF</span><strong><%= company.quote_title.presence || "-" %></strong></div>
+    <div class="detail-grid detail-grid-soft">
+      <div class="detail-item"><span>Título visible del PDF</span><strong><%= company.quote_title.presence || "-" %></strong></div>
       <div class="detail-item"><span>Subtítulo del PDF</span><strong><%= company.quote_subtitle.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Nombre de Firma</span><strong><%= company.quote_signature_name.presence || company.quote_contact_name.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Cargo de Firma</span><strong><%= company.quote_signature_role.presence || company.quote_contact_role.presence || "-" %></strong></div>
-      <div class="detail-item detail-item-full"><span>Texto de Bienvenida</span><strong><%= company.quote_intro_text.presence || "-" %></strong></div>
-      <div class="detail-item detail-item-full"><span>Términos Comerciales</span><strong><%= company.quote_terms_text.presence || "-" %></strong></div>
-      <div class="detail-item detail-item-full"><span>Texto de Cierre</span><strong><%= company.quote_closing_text.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Nombre de firma</span><strong><%= company.quote_signature_name.presence || company.quote_contact_name.presence || "-" %></strong></div>
+      <div class="detail-item"><span>Cargo de firma</span><strong><%= company.quote_signature_role.presence || company.quote_contact_role.presence || "-" %></strong></div>
+      <div class="detail-item detail-item-full"><span>Texto de bienvenida</span><strong><%= company.quote_intro_text.presence || "-" %></strong></div>
+      <div class="detail-item detail-item-full"><span>Términos comerciales</span><strong><%= company.quote_terms_text.presence || "-" %></strong></div>
+      <div class="detail-item detail-item-full"><span>Texto de cierre</span><strong><%= company.quote_closing_text.presence || "-" %></strong></div>
     </div>
   </section>
 </section>

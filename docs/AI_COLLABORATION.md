@@ -661,6 +661,109 @@ Actualizacion:
 - En `http://localhost:3001/clientes`, `.table-action-expediente` renderiza sin texto visible,
   con `aria-label="Expediente"` y `fill: none`.
 
+### 2026-07-06 - Rediseño del primer paso del wizard de empresa
+
+Objetivo: cambiar unicamente el formulario del primer paso del wizard de crear/editar empresa
+para acercarlo a la referencia visual entregada, sin rediseñar el resto de la pantalla ni las
+otras pestañas.
+
+Resguardo previo:
+
+- Antes de editar el wizard se creo el commit `da9b43e` (`Ajusta navegacion lateral e iconos de acciones`).
+  Ese commit funciona como punto de retorno si se necesita deshacer esta intervencion.
+
+Cambios aplicados:
+
+- `app/views/companies/_form_tabs.html.erb`
+  - El panel `general` ahora usa una composicion por tarjetas: Datos Generales, Contacto,
+    Identidad Visual, Direccion, Estado y Logo Corporativo.
+  - Se conservaron los campos existentes del modelo dentro del primer paso.
+- `app/assets/stylesheets/application.css`
+  - Se agregaron estilos acotados a `.company-general-wizard` para cards blancas, bordes suaves,
+    inputs altos, select con flecha, controles visuales de color y dropzone de logo.
+  - Se agregaron reglas responsive para que el formulario no se comprima en anchos menores.
+- `app/helpers/enterprise_helper.rb`
+  - Se agregaron iconos SVG `map-pin`, `bar-chart`, `image` y `upload` para las nuevas tarjetas.
+
+Verificacion:
+
+- `ruby -c app/helpers/enterprise_helper.rb` paso correctamente.
+- `git diff --check` paso correctamente.
+- La sintaxis ERB de `app/views/companies/_form_tabs.html.erb` compilo correctamente.
+- El servidor local responde en `/companies/new` con redireccion `302`; la conexion del navegador
+  interno quedo intermitente y no permitio completar una captura visual automatizada en esta pasada.
+
+Actualizacion:
+
+- El boton `Personalizar` de cada color ahora abre un selector nativo de color.
+- Al elegir un color o escribir un HEX valido, se actualizan en vivo la barra, el swatch y el campo
+  enviado al backend.
+- Si el HEX escrito no es valido, el input queda marcado visualmente sin alterar el ultimo color valido.
+- La tuerca del boton se cambio por un SVG outline mas limpio y consistente con las acciones de tabla.
+- La barra de color se hizo mas delgada y ahora funciona como slider: al arrastrar el circulo
+  interior hacia los extremos se genera una variante mas clara u oscura del color base.
+- El circulo del slider tambien responde con teclado usando flechas; `Shift` acelera el movimiento.
+- Se retiro la tarjeta `Estado` del primer paso: al crear una empresa siempre se fuerza como
+  `Activa`.
+- En edicion, el control de estado se movio al encabezado `Informacion General` como checkbox
+  `Inactiva`, alineado al extremo derecho.
+- Al marcar `Inactiva`, la empresa guarda `active=false`, `status="Inactiva"` y sus productos o
+  servicios asociados pasan a `activo=false`, `estado_catalogo="Inactivo"`.
+- El formulario de productos/servicios ahora solo ofrece empresas activas para nuevas asociaciones.
+- Al crear o actualizar una empresa, el sistema redirige al listado de empresas (`companies_path`)
+  para volver directamente a la tabla de registros.
+- La accion `Ver` del listado de empresas mantiene su destino a `company_path`, pero la pantalla de
+  detalle se rediseño como vista de registro: encabezado ejecutivo, acciones con iconos, resumen de
+  datos clave y pestañas de detalle con estilo consistente.
+- Se retiro el resumen de cards del detalle de empresa porque duplicaba informacion ya disponible en
+  las pestañas del registro.
+- El bloque `Logo Corporativo` se amplio para ocupar el espacio que antes usaba `Estado`.
+- La pantalla de edicion de empresa se limpio para dejar solo el titulo principal `Editar empresa`.
+- Se removieron el texto descriptivo superior, el boton `Ver detalle`, el badge `Edicion` y la
+  descripcion del panel `Configuracion de la empresa`.
+- Los botones `Guardar` y `Cancelar` se movieron al encabezado del panel de configuracion.
+- Se amplio el encabezado de `Configuracion de la empresa` para que los botones no se sobrepongan
+  con la fila de pestañas.
+- La pestaña `Fel / Infile` ahora tiene mayor separacion bajo el encabezado, mas aire entre filas
+  y campos ligeramente mas altos para evitar que el formulario se vea amontonado.
+- El encabezado de `Fel / Infile` se alineo al patron visual de las demas pestañas, usando tarjeta
+  blanca, icono, titulo y descripcion con tipografia consistente.
+- La pestaña `Branding y contacto comercial` se rediseño en bloques: contacto comercial, estilo de
+  cotizacion, texto inferior del PDF y logo para cotizacion.
+- El titulo y descripcion de `Branding y contacto comercial` quedaron dentro del primer bloque blanco
+  para mantener consistencia visual con el resto del wizard.
+- Los colores de cotizacion ahora reutilizan la misma estructura visual del bloque `Identidad
+  visual` en `Informacion general`, con slider, HEX, swatch y boton `Personalizar`.
+- En cotizacion, los dos controles de color se distribuyen de lado a lado con mayor separacion
+  horizontal para ocupar mejor toda la seccion.
+- Se hizo mas especifico el grid de colores de cotizacion para evitar que herede la distribucion
+  de tres columnas del bloque general.
+- El logo para cotizacion ahora usa la misma estructura visual del logo corporativo, con preview,
+  reglas de archivo y boton `Subir logo`.
+- La pestaña `Plantilla del documento comercial` se rediseño en tres bloques: identidad del
+  documento, contenido del documento y firma comercial, eliminando la vista previa de colores que
+  no correspondia al flujo de esta pestaña.
+- El titulo y descripcion de `Plantilla del documento comercial` quedaron dentro del primer bloque
+  blanco para mantener consistencia con las demas pestañas del wizard.
+- El texto visible del wizard de empresa se normalizo a estilo oracion para reducir carga visual.
+- El formulario de empresa ahora fuerza `multipart` para que los logos se adjunten correctamente.
+- Se agrego preview inmediato para `Logo corporativo` y `Logo para cotizacion` al seleccionar imagen.
+- Se retiro el aviso automatico de login `Debes iniciar sesion para continuar` para mantener la
+  pantalla inicial limpia; los errores reales de credenciales invalidas se conservan.
+- Se optimizo la autorizacion global para usuarios no root: los modulos activos se cachean por
+  request, los permisos efectivos se memoizan por usuario/modulo/accion y las asociaciones de
+  permisos se precargan una sola vez cuando hacen falta.
+- Se redujeron consultas extra en listados: `Roles` usa la asociacion precargada para el conteo de
+  usuarios, `Usuarios` evita `limit` por fila sobre roles y `Cotizaciones` precarga la moneda del
+  producto asociado.
+- Prueba local autenticada en desarrollo despues de calentamiento: dashboard, companias, clientes,
+  monedas, productos/servicios, cotizaciones, usuarios y roles respondieron entre 27 ms y 46 ms
+  aproximadamente en `localhost:3001`.
+- La grafica `Resumen financiero mensual` del dashboard ya no depende de datos hardcodeados:
+  consulta `cotizaciones` y `cotizacion_detalles` para ingresos, costos y utilidad. Los botones
+  `Mes actual`, `6 meses` y `12 meses` consumen `/dashboard/finance` bajo demanda y redibujan la
+  grafica en el navegador sin recargar la pantalla.
+
 ## Proximos pasos sugeridos
 
 1. ~~Corregir o actualizar los dos tests fallidos para que reflejen el comportamiento esperado.~~ Hecho (2026-07-06).

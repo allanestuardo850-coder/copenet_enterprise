@@ -1,61 +1,65 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static values = { url: String }
+  connect() {
+    this.updateAllControls()
+  }
 
   toggle(event) {
     const checkbox = event.currentTarget
     const row = checkbox.closest("[data-modulo-id]")
     if (!row) return
 
-    const moduloId = row.dataset.moduloId
-    const status = row.querySelector("[data-permission-status]")
-    const checkboxes = row.querySelectorAll("input[type='checkbox'][data-permission-action]")
-    const token = document.querySelector("meta[name='csrf-token']")?.content
+    this.markPending(row)
+    this.updateAllControls()
+  }
 
-    const permisos = {}
+  toggleAll(event) {
+    const control = event.currentTarget
+    const panel = control.closest("[data-tabs-target='panel'], .permission-tab-panel")
+    if (!panel) return
+
+    const checked = control.checked
+    const rows = Array.from(panel.querySelectorAll("[data-modulo-id]"))
+    const checkboxes = panel.querySelectorAll("input[type='checkbox'][data-permission-action]")
+
     checkboxes.forEach((input) => {
-      permisos[input.dataset.permissionAction] = input.checked ? "1" : "0"
-      input.disabled = true
+      input.checked = checked
     })
+    rows.forEach((row) => this.markPending(row))
+    this.updateAllControls()
+  }
 
-    row.classList.add("is-saving")
-    if (status) {
-      status.textContent = "Guardando..."
-      status.dataset.state = "saving"
-    }
+  markPending(row) {
+    this.markDirty(row)
 
-    fetch(`${this.urlValue}?modulo_id=${moduloId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "X-CSRF-Token": token
-      },
-      body: JSON.stringify({ usuario_permisos: permisos })
+    const status = row.querySelector("[data-permission-status]")
+    if (!status) return
+
+    status.textContent = "Pendiente"
+    status.dataset.state = "saving"
+  }
+
+  markDirty(row) {
+    const moduloId = row.dataset.moduloId
+    if (!moduloId || this.element.querySelector(`input[data-dirty-modulo-id="${moduloId}"]`)) return
+
+    const input = document.createElement("input")
+    input.type = "hidden"
+    input.name = "usuario_permisos_dirty[]"
+    input.value = moduloId
+    input.dataset.dirtyModuloId = moduloId
+    this.element.appendChild(input)
+  }
+
+  updateAllControls() {
+    this.element.querySelectorAll(".permission-tab-panel").forEach((panel) => {
+      const control = panel.querySelector(".permission-all-toggle input[type='checkbox']")
+      if (!control) return
+
+      const checkboxes = Array.from(panel.querySelectorAll("input[type='checkbox'][data-permission-action]"))
+      control.checked = checkboxes.length > 0 && checkboxes.every((input) => input.checked)
+      control.indeterminate = checkboxes.some((input) => input.checked) && !control.checked
     })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("No se pudo actualizar")
-        return response.json()
-      })
-      .then(() => {
-        if (status) {
-          status.textContent = "Actualizado"
-          status.dataset.state = "saved"
-        }
-      })
-      .catch(() => {
-        checkbox.checked = !checkbox.checked
-        if (status) {
-          status.textContent = "Error al guardar"
-          status.dataset.state = "error"
-        }
-      })
-      .finally(() => {
-        checkboxes.forEach((input) => {
-          input.disabled = false
-        })
-        row.classList.remove("is-saving")
-      })
   }
 }

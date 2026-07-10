@@ -1,37 +1,14 @@
 <section class="page-section user-admin-page" data-controller="tabs" data-tabs-default-value="resumen">
-  <div class="page-heading">
-    <div class="page-heading-copy">
-      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-        <%= link_to "Dashboard", dashboard_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to "Usuarios", usuarios_path %>
-        <span><%= icon("chevron") %></span>
-        <strong><%= @usuario.nombre_completo %></strong>
-      </nav>
-      <h1><%= @usuario.nombre_completo %></h1>
-      <p>Perfil administrativo y permisos operativos del usuario seleccionado.</p>
-    </div>
-    <div class="page-heading-side">
-      <div class="user-heading-meta">
-        <%= render "shared/badge", text: @usuario.activo? ? "Activo" : "Inactivo", tone: @usuario.activo? ? "success" : "warning" %>
-        <%= render "shared/badge", text: @usuario.root? ? "Root" : "Estándar", tone: @usuario.root? ? "primary" : "info" %>
-      </div>
-      <div class="page-actions-inline">
-        <%= link_to "Listado de Registros", usuarios_path, class: "ui-button ui-button-secondary" %>
-        <%= link_to "Modificar", edit_usuario_path(@usuario), class: "ui-button ui-button-primary" %>
-        <% unless @usuario.root? && Usuario.where(root: true).count <= 1 %>
-          <%= button_to "Eliminar", usuario_path(@usuario), method: :delete, class: "ui-button ui-button-secondary", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este usuario?" } %>
-        <% end %>
-      </div>
-    </div>
-  </div>
-
   <section class="panel user-profile-strip">
     <div class="user-profile-strip-main">
       <div class="user-profile-avatar"><%= @usuario.nombre_completo.to_s.first(2).upcase %></div>
       <div class="user-profile-copy">
         <strong><%= @usuario.nombre_completo %></strong>
         <span><%= @usuario.email %></span>
+        <div class="user-profile-badges">
+          <%= render "shared/badge", text: @usuario.activo? ? "Activo" : "Inactivo", tone: @usuario.activo? ? "success" : "warning" %>
+          <%= render "shared/badge", text: @usuario.root? ? "Root" : "Estándar", tone: @usuario.root? ? "primary" : "info" %>
+        </div>
       </div>
     </div>
     <div class="user-profile-metrics">
@@ -47,6 +24,10 @@
         <span>Último acceso</span>
         <strong><%= usuario_fecha(@usuario.ultimo_acceso_en) %></strong>
       </article>
+    </div>
+    <div class="user-profile-actions">
+      <%= link_to "Volver", usuarios_path, class: "ui-button ui-button-secondary" %>
+      <%= link_to "Editar", edit_usuario_path(@usuario), class: "ui-button ui-button-primary" %>
     </div>
   </section>
 
@@ -80,13 +61,12 @@
     <div class="panel-header">
       <div>
         <h2>Información del Usuario</h2>
-        <p>Datos del perfil y resumen administrativo del acceso actual.</p>
       </div>
     </div>
 
-    <div class="module-page-grid">
+    <div class="module-page-grid user-summary-grid">
       <section class="panel nested-panel">
-        <div class="detail-grid">
+        <div class="detail-grid detail-grid-soft">
           <div class="detail-item"><span>Correo</span><strong><%= @usuario.email %></strong></div>
           <div class="detail-item"><span>Nombre</span><strong><%= @usuario.nombre_completo %></strong></div>
           <div class="detail-item"><span>Cargo</span><strong><%= usuario_valor(nil) %></strong></div>
@@ -99,24 +79,6 @@
           <div class="detail-item"><span>Cantidad de Inicios de Sesión</span><strong><%= @usuario.ultimo_acceso_en.present? ? 1 : 0 %></strong></div>
         </div>
       </section>
-
-      <aside class="panel nested-panel">
-        <div class="panel-header">
-          <div>
-            <h2>Roles asignados</h2>
-            <p>Referencia administrativa actual del usuario.</p>
-          </div>
-        </div>
-
-        <div class="role-chip-list">
-          <% @usuario.roles.each do |rol| %>
-            <span class="role-chip"><%= rol.nombre %></span>
-          <% end %>
-          <% if @usuario.roles.empty? %>
-            <span class="role-chip role-chip-muted">Sin roles asignados</span>
-          <% end %>
-        </div>
-      </aside>
     </div>
   </section>
 
@@ -124,7 +86,6 @@
     <div class="panel-header">
       <div>
         <h2>Últimas Actividades</h2>
-        <p>Timeline administrativo de referencia del perfil.</p>
       </div>
     </div>
 
@@ -146,73 +107,98 @@
     <div class="panel-header">
       <div>
         <h2>Permisos del Usuario</h2>
-        <p>Cada clic actualiza al instante. Aquí administras directamente el acceso operativo del usuario por módulo, y todo módulo activo nuevo aparece automáticamente para configurarlo.</p>
-      </div>
-      <div class="panel-header-actions">
-        <%= render "shared/badge", text: "#{@modulo_sistemas.size} módulos", tone: "info" %>
-        <span class="autosave-note">Guardado automático activo</span>
       </div>
     </div>
 
-    <div data-controller="usuario-permisos" data-usuario-permisos-url-value="<%= permisos_usuario_path(@usuario) %>">
-      <% @modulo_sistemas_por_grupo.each do |grupo, modulos| %>
-        <section class="permission-group user-permission-group">
-          <div class="permission-group-heading">
-            <div>
-              <h4><%= grupo %></h4>
-              <p>Módulos y funciones disponibles para esta área.</p>
+    <% if @usuario.root? %>
+      <section class="root-permissions-card">
+        <div class="root-permissions-icon"><%= icon("shield") %></div>
+        <div>
+          <h3>Acceso total habilitado</h3>
+          <p>Este usuario es root y tiene permiso completo sobre todos los módulos y acciones del sistema.</p>
+        </div>
+      </section>
+    <% else %>
+      <% first_permission_tab = @modulo_sistemas_por_grupo.keys.first.to_s.parameterize.presence || "permisos" %>
+      <div data-controller="tabs" data-tabs-default-value="<%= first_permission_tab %>">
+        <div class="permission-tabs" role="tablist" aria-label="Grupos de permisos">
+          <% @modulo_sistemas_por_grupo.each_with_index do |(grupo, modulos), index| %>
+            <% tab_id = grupo.to_s.parameterize.presence || "grupo-#{index + 1}" %>
+            <button type="button"
+                    class="permission-tab <%= 'is-active' if index.zero? %>"
+                    data-tabs-target="tab"
+                    data-tab-id="<%= tab_id %>"
+                    data-action="tabs#switch"
+                    role="tab"
+                    aria-selected="<%= index.zero? ? 'true' : 'false' %>">
+              <span><%= grupo %></span>
+            </button>
+          <% end %>
+        </div>
+
+        <% @modulo_sistemas_por_grupo.each_with_index do |(grupo, modulos), index| %>
+          <% tab_id = grupo.to_s.parameterize.presence || "grupo-#{index + 1}" %>
+          <section class="permission-tab-panel <%= 'is-active' if index.zero? %>"
+                   data-tabs-target="panel"
+                   data-tab-id="<%= tab_id %>"
+                   <%= "hidden" unless index.zero? %>>
+            <div class="permission-tab-header">
+              <h3><%= grupo %></h3>
+              <label class="permission-all-toggle">
+                <%= check_box_tag nil,
+                                  "1",
+                                  false,
+                                  disabled: true %>
+                <span>Todos</span>
+              </label>
             </div>
-            <%= render "shared/badge", text: "#{modulos.size} módulos", tone: "info" %>
-          </div>
 
-          <div class="table-shell">
-            <table class="data-table permisos-table permisos-usuario-table">
-              <thead>
-                <tr>
-                  <th>Módulo / Función</th>
-                  <th>Código</th>
-                  <th>Estado</th>
-                  <th>Ver</th>
-                  <th>Crear</th>
-                  <th>Editar</th>
-                  <th>Eliminar</th>
-                  <th>Exportar</th>
-                  <th>Configurar</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% modulos.each do |modulo| %>
-                  <tr data-modulo-id="<%= modulo.id %>">
-                    <td>
-                      <div class="permission-module-cell">
-                        <strong><%= modulo.nombre %></strong>
-                        <span><%= modulo.descripcion.presence || "Módulo listo para administración y control de accesos." %></span>
-                      </div>
-                    </td>
-                    <td><%= modulo.codigo %></td>
-                    <td>
-                      <span class="permission-save-state" data-permission-status data-state="idle">Listo</span>
-                    </td>
-                    <% UsuariosHelper::ACCIONES_PERMISO.each do |accion| %>
-                      <% checked = permiso_personalizado_usuario(@usuario, modulo, accion) %>
-                      <% checked = permiso_base_usuario(@usuario, modulo, accion) if checked.nil? %>
-                      <td>
-                        <%= check_box_tag "usuario_permisos[#{modulo.id}][puede_#{accion}]",
-                                          "1",
-                                          checked,
-                                          data: {
-                                            action: "change->usuario-permisos#toggle",
-                                            permission_action: "puede_#{accion}"
-                                          } %>
-                      </td>
-                    <% end %>
+            <div class="table-shell">
+              <table class="data-table permisos-table permisos-usuario-table">
+                <thead>
+                  <tr>
+                    <th>Módulo / Función</th>
+                    <th>Código</th>
+                    <th>Estado</th>
+                    <th>Ver</th>
+                    <th>Crear</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
+                    <th>Exportar</th>
+                    <th>Configurar</th>
                   </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
-        </section>
-      <% end %>
-    </div>
+                </thead>
+                <tbody>
+                  <% modulos.each do |modulo| %>
+                    <tr data-modulo-id="<%= modulo.id %>">
+                      <td>
+                        <div class="permission-module-cell">
+                          <strong><%= modulo.nombre %></strong>
+                          <span><%= modulo.descripcion.presence || "Módulo listo para administración y control de accesos." %></span>
+                        </div>
+                      </td>
+                      <td><%= modulo.codigo %></td>
+                      <td>
+                        <span class="permission-save-state" data-permission-status data-state="idle">Listo</span>
+                      </td>
+                      <% UsuariosHelper::ACCIONES_PERMISO.each do |accion| %>
+                        <% checked = permiso_personalizado_usuario(@usuario, modulo, accion) %>
+                        <% checked = permiso_base_usuario(@usuario, modulo, accion) if checked.nil? %>
+                        <td>
+                          <%= check_box_tag "usuario_permisos[#{modulo.id}][puede_#{accion}]",
+                                            "1",
+                                            checked,
+                                            disabled: true %>
+                        </td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        <% end %>
+      </div>
+    <% end %>
   </section>
 </section>

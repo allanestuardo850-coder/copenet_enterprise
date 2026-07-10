@@ -1,15 +1,4 @@
 <section class="page-section">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Administración</p>
-      <h1><%= @page_title %></h1>
-      <% if @page_description.present? %>
-        <p><%= @page_description %></p>
-      <% end %>
-    </div>
-    <%= link_to "Nueva empresa", new_company_path, class: "ui-button ui-button-primary" %>
-  </div>
-
   <div class="panel filters-panel">
     <%= form_with url: companies_path, method: :get, class: "filters-form" do %>
       <div class="filters-bar">
@@ -18,6 +7,7 @@
           <%= text_field_tag :query, @filters[:query], placeholder: "Buscar por nombre, NIT o correo" %>
         </label>
         <div class="filter-chip-list filter-select-list">
+          <%= hidden_field_tag :per_page, @companies_per_page %>
           <%= select_tag :status,
                          options_for_select([["Todos los estados", ""], ["Activas", "active"], ["Inactivas", "inactive"], ["Borrador", "draft"]], @filters[:status]),
                          class: "filter-select" %>
@@ -35,9 +25,10 @@
     <div class="panel-header">
       <div>
         <h2>Listado de empresas</h2>
-        <p>Entrada principal para administrar configuraciones generales, fiscales y operativas.</p>
       </div>
-      <%= render "shared/badge", text: "#{@companies.size} registros", tone: "info" %>
+      <div class="page-actions-inline">
+        <%= link_to "Nueva empresa", new_company_path, class: "ui-button ui-button-primary" %>
+      </div>
     </div>
 
     <% if @companies.any? %>
@@ -66,13 +57,42 @@
                 <td class="table-actions">
                   <%= table_action_link "Ver", company_path(company), action: :view %>
                   <%= table_action_link "Editar", edit_company_path(company), action: :edit %>
-                  <%= table_action_link "Configurar", configuration_company_path(company), action: :configure %>
-                  <button type="button" class="table-link table-link-danger table-action-icon table-action-delete button-link" title="Eliminar" aria-label="Eliminar"><%= icon("trash") %></button>
                 </td>
               </tr>
             <% end %>
           </tbody>
         </table>
+      </div>
+
+      <div class="table-pagination">
+        <div class="pagination-controls">
+          <%= form_with url: companies_path, method: :get, class: "pagination-size-form" do %>
+            <%= hidden_field_tag :query, @filters[:query] if @filters[:query].present? %>
+            <%= hidden_field_tag :status, @filters[:status] if @filters[:status].present? %>
+            <%= hidden_field_tag :certification, @filters[:certification] if @filters[:certification].present? %>
+            <label for="companies_per_page">Resultados</label>
+            <%= select_tag :per_page,
+                           options_for_select([[10, 10], [20, 20], [50, 50], [100, 100]], @companies_per_page),
+                           id: "companies_per_page",
+                           class: "filter-select pagination-size-select",
+                           onchange: "this.form.submit()" %>
+          <% end %>
+
+          <nav class="pagination-nav" aria-label="Paginación de empresas">
+            <% pagination_params = request.query_parameters.except("page").merge(per_page: @companies_per_page) %>
+            <%= link_to "Anterior",
+                        companies_path(pagination_params.merge(page: @companies_page - 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @companies_page <= 1}",
+                        aria: { disabled: @companies_page <= 1 } %>
+
+            <span class="pagination-current">Página <%= @companies_page %> de <%= @companies_total_pages %></span>
+
+            <%= link_to "Siguiente",
+                        companies_path(pagination_params.merge(page: @companies_page + 1)),
+                        class: "ui-button ui-button-secondary pagination-button #{'is-disabled' if @companies_page >= @companies_total_pages}",
+                        aria: { disabled: @companies_page >= @companies_total_pages } %>
+          </nav>
+        </div>
       </div>
     <% else %>
       <%= render "shared/empty_state",

@@ -5,7 +5,10 @@ module EnterpriseHelper
       "home" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.4 12 4l9 7.4V21h-6v-6H9v6H3z"/></svg>',
       "building" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 21a1.5 1.5 0 0 1-1.5-1.5v-12A1.5 1.5 0 0 1 4.5 6H9V4.5A1.5 1.5 0 0 1 10.5 3h9A1.5 1.5 0 0 1 21 4.5v15a1.5 1.5 0 0 1-1.5 1.5zM6 9v3h3V9zm0 6v3h3v-3zm6-6v3h3V9zm0 6v3h3v-3zm6-6v3h0V9zm0 6v3h0v-3z"/></svg>',
       "users" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4m-8 1a3 3 0 1 0-3-3 3 3 0 0 0 3 3m8 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4m-8 0c-.34 0-.71.02-1.11.05C4.01 14.25 1 15.48 1 18v2h5v-2c0-1.46.8-2.69 2-3.58A9 9 0 0 0 8 14"/></svg>',
+      "user" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>',
+      "user-role" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="8" r="4"/><path d="M3.5 20a6.5 6.5 0 0 1 10.2-5.3"/><path d="M17.5 13.5v6"/><path d="M14.5 16.5h6"/><rect x="14" y="12" width="7" height="9" rx="1.6"/></svg>',
       "shield" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5.25 3.4 10.74 8 12 4.6-1.26 8-6.75 8-12V5zm-1 6h2v5h-2zm0 7h2v2h-2z"/></svg>',
+      "shield-outline" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 5 6.2v5.6c0 4.5 2.9 8.2 7 9.7 4.1-1.5 7-5.2 7-9.7V6.2Z"/></svg>',
       "layers" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 4.5-9 4.5-9-4.5zm0 8 9 4.5-9 4.5-9-4.5zm0 4 9 4.5-9 4.5-9-4.5z"/></svg>',
       "wallet" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6A2.5 2.5 0 0 0 2 8.5v7A2.5 2.5 0 0 0 4.5 18H19a3 3 0 0 0 3-3v-1.5A3.5 3.5 0 0 0 18.5 10H6.75A.75.75 0 0 1 6 9.25v-.5A.75.75 0 0 1 6.75 8H21V6zm13.75 7.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5"/></svg>',
       "box" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 8 4.5v11L12 22l-8-4.5v-11zm0 2.27L6.36 7 12 9.73 17.64 7zm6 4.05-5 2.5v8.22l5-2.81zM11 19.04v-8.22l-5-2.5v8.41z"/></svg>',
@@ -14,16 +17,17 @@ module EnterpriseHelper
       "invoice" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v11.5A1.5 1.5 0 0 1 17.5 21h-10A1.5 1.5 0 0 1 6 19.5v-15A1.5 1.5 0 0 1 7.5 3m6 1.5V9h4.5zM9 12v1.5h6V12zm0 3v1.5h6V15z"/></svg>',
       "contract" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2m7 1.5V8h4.5zM8 12h8v1.5H8zm0 3h8v1.5H8z"/></svg>',
       "report" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14a2 2 0 0 1 2 2v14l-4-3-4 3-4-3-4 3V5a2 2 0 0 1 2-2m2 4v7h2V7zm4 3v4h2v-4zm4-2v6h2V8z"/></svg>',
-      "settings" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m19.5 12 .89 1.78-1.61 2.79-2.05-.26a7.5 7.5 0 0 1-1.54.9l-.52 2.02h-3.22l-.52-2.02a7.5 7.5 0 0 1-1.54-.9l-2.05.26-1.61-2.79L4.5 12l-.89-1.78 1.61-2.79 2.05.26c.47-.36.99-.66 1.54-.9l.52-2.02h3.22l.52 2.02c.55.24 1.07.54 1.54.9l2.05-.26 1.61 2.79zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6"/></svg>',
+      "settings" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a7.8 7.8 0 0 0 0-3l1.7-1.3-1.8-3.1-2 .8a8.2 8.2 0 0 0-2.6-1.5L14.4 3h-4.8l-.3 2.4a8.2 8.2 0 0 0-2.6 1.5l-2-.8-1.8 3.1 1.7 1.3a7.8 7.8 0 0 0 0 3l-1.7 1.3 1.8 3.1 2-.8a8.2 8.2 0 0 0 2.6 1.5l.3 2.4h4.8l.3-2.4a8.2 8.2 0 0 0 2.6-1.5l2 .8 1.8-3.1Z"/></svg>',
       "search" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4a6.5 6.5 0 0 1 5.16 10.46l4.19 4.19-1.06 1.06-4.19-4.19A6.5 6.5 0 1 1 10.5 4m0 1.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10"/></svg>',
       "bell" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22m6-6V11a6 6 0 1 0-12 0v5l-2 2v1h16v-1z"/></svg>',
       "message" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4H6.5A2.5 2.5 0 0 1 4 13.5zm3.5 2a.75.75 0 0 0 0 1.5h9a.75.75 0 0 0 0-1.5zm0 3.5a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z"/></svg>',
       "grid" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg>',
       "menu" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>',
+      "close" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6.4 5 12.6 12.6-1.4 1.4L5 6.4z"/><path d="M17.6 5 5 17.6 6.4 19 19 6.4z"/></svg>',
       "sun" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5a1 1 0 0 1 1 1v1.2a1 1 0 1 1-2 0V6a1 1 0 0 1 1-1m0 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6m7-4a1 1 0 0 1 0 2h-1.2a1 1 0 1 1 0-2zM7.4 12a1 1 0 0 1-1 1H5.2a1 1 0 1 1 0-2h1.2a1 1 0 0 1 1 1m8.49-4.49a1 1 0 0 1 1.42 0l.85.85a1 1 0 0 1-1.42 1.42l-.85-.85a1 1 0 0 1 0-1.42m-8.78 8.78a1 1 0 0 1 1.42 0l.85.85a1 1 0 0 1-1.42 1.42l-.85-.85a1 1 0 0 1 0-1.42m9.63 1.42a1 1 0 0 1-1.42-1.42l.85-.85a1 1 0 0 1 1.42 1.42zM8.53 8.53A1 1 0 0 1 7.1 7.1l.85-.85a1 1 0 1 1 1.42 1.42z"/></svg>',
       "moon" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3.5a8.5 8.5 0 1 0 6 14.51A9 9 0 1 1 14.5 3.5"/></svg>',
-      "chevron" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6-1.06-1.06L12.88 12 7.94 7.06z"/></svg>',
-      "chevron_down" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6.7 9.7 5.3 5.3 5.3-5.3 1.1 1.1-6.4 6.4-6.4-6.4z"/></svg>',
+      "chevron" => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="currentColor"/><path d="m10 7.8 4.2 4.2-4.2 4.2" fill="none" stroke="#fff" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      "chevron_down" => '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.5" fill="currentColor"/><path d="m7.8 10 4.2 4.2 4.2-4.2" fill="none" stroke="#fff" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"/></svg>',
       "logout" => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17v-3H3v-4h7V7l5 5zm8 2h-6v2h6a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-6v2h6z"/></svg>',
       "trending-up" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>',
       "dollar" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.8 8.5a3 3 0 0 0-2.8-1.5c-1.5 0-2.7.9-2.7 2.2 0 1.1.8 1.7 2.6 2.1 2 .5 3 1.1 3 2.4 0 1.4-1.3 2.3-2.9 2.3a3.1 3.1 0 0 1-2.9-1.6M12 5.5v13"/></svg>',
@@ -31,9 +35,15 @@ module EnterpriseHelper
       "credit-card" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/><path d="M6 14.5h4"/></svg>',
       "calendar" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17"/><path d="M8 3v4"/><path d="M16 3v4"/></svg>',
       "refresh" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 8a7.5 7.5 0 0 0-13.2-1.5M4 12a7.5 7.5 0 0 0 13.2 1.5"/><path d="M20 4v4h-4"/><path d="M4 20v-4h4"/></svg>',
+      "map-pin" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.7 7-12a7 7 0 1 0-14 0c0 6.3 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4"/></svg>',
+      "bar-chart" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V10"/><path d="M12 20V4"/><path d="M19 20v-7"/><path d="M3 20h18"/></svg>',
+      "image" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m6 17 4.4-4.4 3.1 3.1 2-2L20 18"/></svg>',
+      "upload" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"/></svg>',
+      "download" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v10"/><path d="m7 10 5 5 5-5"/><path d="M4 19.5h16"/></svg>',
+      "filter" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6.2 7.1v5.1L10.2 19v-6.9Z"/></svg>',
       "eye" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.4-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.4 6.5-9.5 6.5S2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
       "pencil" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4.2L19.4 8.8a2.4 2.4 0 0 0 0-3.4l-.8-.8a2.4 2.4 0 0 0-3.4 0L4 15.8Z"/><path d="m13.8 6.2 4 4"/></svg>',
-      "gear" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5c.08-.49.08-1.01 0-1.5l1.8-1.4-1.9-3.2-2.2.9a7.5 7.5 0 0 0-1.3-.8L15.5 5h-7l-.3 2.5c-.46.22-.9.49-1.3.8l-2.2-.9-1.9 3.2 1.8 1.4a6 6 0 0 0 0 1.5l-1.8 1.4 1.9 3.2 2.2-.9c.4.31.84.58 1.3.8l.3 2.5h7l.3-2.5c.46-.22.9-.49 1.3-.8l2.2.9 1.9-3.2Z"/></svg>',
+      "gear" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13.5a7.8 7.8 0 0 0 0-3l1.7-1.3-1.8-3.1-2 .8a8.2 8.2 0 0 0-2.6-1.5L14.4 3h-4.8l-.3 2.4a8.2 8.2 0 0 0-2.6 1.5l-2-.8-1.8 3.1 1.7 1.3a7.8 7.8 0 0 0 0 3l-1.7 1.3 1.8 3.1 2-.8a8.2 8.2 0 0 0 2.6 1.5l.3 2.4h4.8l.3-2.4a8.2 8.2 0 0 0 2.6-1.5l2 .8 1.8-3.1Z"/></svg>',
       "folder" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h4.2l2 2.5H18A2.5 2.5 0 0 1 20.5 10v6.5A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M3.5 10h17"/></svg>',
       "trash" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 14h10l1-14"/><path d="M9 7V4h6v3"/></svg>',
       "file-text" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 16.5h6"/></svg>',
@@ -76,6 +86,23 @@ module EnterpriseHelper
     end
   end
 
+  def global_search_items
+    items = []
+    collect_global_search_items(@navigation_items || [], items)
+
+    if current_usuario
+      items << {
+        label: "Mi perfil",
+        path: perfil_path,
+        group: "Cuenta",
+        icon: "user",
+        keywords: ["perfil", "mi perfil", "cuenta", "fotografia", "fotografía", "contraseña"]
+      }
+    end
+
+    items.uniq { |item| item[:path] }
+  end
+
   def sidebar_item_classes(active)
     classes = ["sidebar-item"]
     classes << "is-active" if active
@@ -116,6 +143,54 @@ module EnterpriseHelper
     "badge badge-#{tone}"
   end
 
+  def collect_global_search_items(navigation_items, items, group = nil)
+    navigation_items.each do |item|
+      children = item.fetch(:children, [])
+      next_group = group || item[:label]
+
+      if item[:path].present?
+        items << {
+          label: item[:label],
+          path: item[:path],
+          group: group,
+          icon: item[:icon],
+          keywords: global_search_keywords_for(item, children)
+        }
+      end
+
+      collect_global_search_items(children, items, next_group) if children.any?
+    end
+  end
+
+  def global_search_keywords_for(item, children = [])
+    key = item[:key].to_s
+    aliases = {
+      "dashboard" => ["dashboard", "inicio", "panel"],
+      "administracion" => ["administración", "administracion", "admin"],
+      "companies" => ["empresas", "empresa", "compañías", "compañias", "companias", "compañía", "compania"],
+      "usuarios" => ["usuarios", "usuario", "users"],
+      "roles" => ["roles", "permisos", "roles y permisos"],
+      "monedas" => ["monedas", "divisas"],
+      "modulos_sistema" => ["módulos", "modulos", "sistema"],
+      "cobros" => ["cobros", "comercial"],
+      "clientes" => ["clientes", "cliente", "cuentas"],
+      "productos_servicios" => ["productos", "servicios", "productos y servicios", "catalogo", "catálogo"],
+      "cotizaciones" => ["cotizaciones", "cotizacion", "cotización", "propuestas"],
+      "reportes" => ["reportes", "reporte", "informes"],
+      "configuracion" => ["configuración", "configuracion", "ajustes"],
+      "parametros" => ["parámetros", "parametros", "branding", "marca"],
+      "auditoria" => ["auditoría", "auditoria", "bitacora", "bitácora"],
+      "accounts" => ["cuentas", "accounts"],
+      "costs" => ["costos", "gastos"],
+      "collections" => ["cobros operativos", "cobros"],
+      "invoices" => ["facturación", "facturacion", "facturas"],
+      "contracts" => ["contratos", "contrato"]
+    }
+
+    child_labels = children.map { |child| child[:label] }
+    ([item[:label], key, *aliases.fetch(key, []), *child_labels]).compact.uniq
+  end
+
   def status_badge_tone(value)
     case value
     when "Activa", "Activo", "Disponible", "Completado", "Emitida", "Cobrado", "Aprobado"
@@ -142,7 +217,7 @@ module EnterpriseHelper
   end
 
   # Grafica combinada de barras (dos series) con linea de tendencia superpuesta.
-  def dashboard_barline_chart(months:, ingresos:, costos:, utilidad:, max:)
+  def dashboard_barline_chart(months:, ingresos:, costos:, utilidad:, max:, range: nil)
     left, right, top, bottom = 74, 1088, 16, 238
     plot_h = bottom - top
     n = months.size
@@ -150,7 +225,7 @@ module EnterpriseHelper
     y = ->(v) { (bottom - (v.to_f / max) * plot_h).round(1) }
     steps = (0..3).map { |i| (max * i / 3.0).round }
 
-    svg = +%(<svg viewBox="0 0 1160 284" class="dash-chart dash-chart-bars" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Resumen financiero mensual">)
+    svg = +%(<svg viewBox="0 0 1160 284" class="dash-chart dash-chart-bars" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Resumen financiero">)
     steps.each do |v|
       gy = y.call(v)
       svg << %(<line x1="#{left}" y1="#{gy}" x2="#{right}" y2="#{gy}" class="dash-grid"/>)

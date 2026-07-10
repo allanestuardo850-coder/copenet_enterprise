@@ -171,7 +171,7 @@ class ProductosServiciosController < ApplicationController
 
   def cargar_catalogos
     @monedas = Moneda.activas.order(:codigo, :nombre)
-    @companies = Company.order(:commercial_name, :legal_name)
+    @companies = Company.activas.order(:commercial_name, :legal_name)
     @clientes = Cliente.activos.ordenados
   end
 

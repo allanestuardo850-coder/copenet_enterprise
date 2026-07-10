@@ -1,13 +1,6 @@
 <section class="page-section producto-servicio-show" data-controller="tabs" data-tabs-default-value="<%= @tab_activa.presence || "general" %>">
   <div class="page-heading">
     <div class="page-heading-copy">
-      <nav class="page-breadcrumbs" aria-label="Breadcrumb">
-        <%= link_to "Dashboard", dashboard_path %>
-        <span><%= icon("chevron") %></span>
-        <%= link_to "Productos y Servicios", productos_servicios_path %>
-        <span><%= icon("chevron") %></span>
-        <strong><%= @producto_servicio.nombre %></strong>
-      </nav>
       <h1><%= @producto_servicio.nombre %></h1>
       <p>Detalle funcional del concepto cobrable con su configuración comercial, operativa y fiscal.</p>
     </div>

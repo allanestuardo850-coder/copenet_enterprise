@@ -1,11 +1,25 @@
 class Company < ApplicationRecord
   HEX_COLOR_REGEX = /\A#?(?:[A-F0-9]{3}|[A-F0-9]{6})\z/i
+  DEFAULT_QUOTE_INTRO = [
+    "Agradecemos el interés mostrado en nuestros productos y servicios.",
+    "Presentamos una propuesta comercial estructurada para evaluación y autorización."
+  ].join(" ").freeze
+  DEFAULT_QUOTE_CLOSING = [
+    "Quedamos a su disposición para ampliar cualquier punto de esta propuesta,",
+    "validar alcances finales y preparar la activación comercial correspondiente."
+  ].join(" ").freeze
+  DEFAULT_QUOTE_TERMS = [
+    "Los valores presentados están sujetos a validación comercial,",
+    "vigencia de la oferta y formalización contractual."
+  ].join(" ").freeze
 
   has_one_attached :logo
   has_one_attached :quote_logo
   has_many :producto_servicios, dependent: :nullify
 
-  attr_accessor :remove_logo, :remove_quote_logo
+  attr_accessor :inactive, :remove_logo, :remove_quote_logo
+
+  scope :activas, -> { where(active: true) }
 
   validates :notification_email,
             format: { with: URI::MailTo::EMAIL_REGEXP },
@@ -29,6 +43,7 @@ class Company < ApplicationRecord
             format: { with: HEX_COLOR_REGEX, message: "debe ser un color hexadecimal válido" },
             allow_blank: true
 
+  after_update :inactivar_catalogo_asociado, if: :saved_change_to_active?
   after_commit :purge_quote_logo_if_marked
 
   def quote_title_display
@@ -40,15 +55,15 @@ class Company < ApplicationRecord
   end
 
   def quote_intro_display
-    quote_intro_text.presence || "Agradecemos el interés mostrado en nuestros productos y servicios. Presentamos una propuesta comercial estructurada para evaluación y autorización."
+    quote_intro_text.presence || DEFAULT_QUOTE_INTRO
   end
 
   def quote_closing_display
-    quote_closing_text.presence || "Quedamos a su disposición para ampliar cualquier punto de esta propuesta, validar alcances finales y preparar la activación comercial correspondiente."
+    quote_closing_text.presence || DEFAULT_QUOTE_CLOSING
   end
 
   def quote_terms_display
-    quote_terms_text.presence || "Los valores presentados están sujetos a validación comercial, vigencia de la oferta y formalización contractual."
+    quote_terms_text.presence || DEFAULT_QUOTE_TERMS
   end
 
   def quote_contact_display_name
@@ -103,6 +118,12 @@ class Company < ApplicationRecord
     normalizar_hex(color_acento.presence || "#6EB8FF")
   end
 
+  def inactive
+    return @inactive unless @inactive.nil?
+
+    !active?
+  end
+
   private
 
   def normalizar_hex(valor)
@@ -115,5 +136,11 @@ class Company < ApplicationRecord
     return unless quote_logo.attached?
 
     quote_logo.purge_later
+  end
+
+  def inactivar_catalogo_asociado
+    return if active?
+
+    producto_servicios.update_all(activo: false, estado_catalogo: "Inactivo", updated_at: Time.current)
   end
 end

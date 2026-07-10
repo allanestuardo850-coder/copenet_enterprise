@@ -14,8 +14,10 @@ Rails.application.routes.draw do
   get "login", to: "sesiones#new"
   post "login", to: "sesiones#create"
   delete "logout", to: "sesiones#destroy"
+  resource :perfil, only: %i[show update], controller: "perfil"
 
   get "dashboard", to: "enterprise#dashboard"
+  get "dashboard/finance", to: "enterprise#dashboard_finance"
   get "services", to: redirect("/productos_servicios")
   get "parametros", to: "enterprise#parametros"
   patch "parametros", to: "enterprise#actualizar_parametros"
@@ -45,11 +47,7 @@ Rails.application.routes.draw do
       get :configuration
     end
   end
-  resources :usuarios do
-    member do
-      patch :permisos
-    end
-  end
+  resources :usuarios, except: [:destroy]
   resources :roles do
     member do
       match :permisos, via: %i[get patch]

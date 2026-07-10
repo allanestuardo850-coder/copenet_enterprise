@@ -1,19 +1,34 @@
 <section class="page-section">
-  <div class="page-heading">
-    <div>
-      <p class="eyebrow">Administración</p>
-      <h1><%= @rol.nombre %></h1>
-      <p><%= @rol.descripcion.presence || "Rol sin descripción." %></p>
+  <section class="panel user-profile-strip">
+    <div class="user-profile-strip-main">
+      <div class="user-profile-avatar"><%= @rol.nombre.to_s.first(2).upcase %></div>
+      <div class="user-profile-copy">
+        <strong><%= @rol.nombre %></strong>
+        <span><%= @rol.descripcion.presence || "Rol sin descripción." %></span>
+        <div class="user-profile-badges">
+          <%= render "shared/badge", text: @rol.activo? ? "Activo" : "Inactivo", tone: @rol.activo? ? "success" : "warning" %>
+        </div>
+      </div>
     </div>
-    <div class="page-actions-inline">
-      <%= link_to "Editar", edit_rol_path(@rol), class: "ui-button ui-button-primary" %>
-      <%= link_to "Permisos", permisos_rol_path(@rol), class: "ui-button ui-button-secondary" %>
+    <div class="user-profile-metrics">
+      <article class="mini-metric-card">
+        <span>Usuarios asociados</span>
+        <strong><%= @rol.usuarios.size %></strong>
+      </article>
+      <article class="mini-metric-card">
+        <span>Grupos de permisos</span>
+        <strong><%= @modulo_sistemas_por_grupo.size %></strong>
+      </article>
+      <article class="mini-metric-card">
+        <span>Módulos activos</span>
+        <strong><%= @modulo_sistemas.size %></strong>
+      </article>
+    </div>
+    <div class="user-profile-actions">
       <%= link_to "Volver", roles_path, class: "ui-button ui-button-secondary" %>
-      <% unless @rol.usuarios.exists? %>
-        <%= button_to "Eliminar", rol_path(@rol), method: :delete, class: "ui-button ui-button-secondary", form_class: "inline-form", data: { turbo_confirm: "¿Deseas eliminar este rol?" } %>
-      <% end %>
+      <%= link_to "Editar", edit_rol_path(@rol), class: "ui-button ui-button-primary" %>
     </div>
-  </div>
+  </section>
 
   <div class="module-page-grid">
     <section class="panel">
@@ -41,4 +56,94 @@
       </div>
     </aside>
   </div>
+
+  <section class="panel form-section module-tab-panel user-permissions-panel">
+    <div class="panel-header">
+      <div>
+        <h2>Permisos del rol</h2>
+      </div>
+    </div>
+
+    <% first_permission_tab = @modulo_sistemas_por_grupo.keys.first.to_s.parameterize.presence || "permisos" %>
+    <div data-controller="tabs" data-tabs-default-value="<%= first_permission_tab %>">
+      <div class="permission-tabs" role="tablist" aria-label="Grupos de permisos del rol">
+        <% @modulo_sistemas_por_grupo.each_with_index do |(grupo, _modulos), index| %>
+          <% tab_id = grupo.to_s.parameterize.presence || "grupo-#{index + 1}" %>
+          <button type="button"
+                  class="permission-tab <%= 'is-active' if index.zero? %>"
+                  data-tabs-target="tab"
+                  data-tab-id="<%= tab_id %>"
+                  data-action="tabs#switch"
+                  role="tab"
+                  aria-selected="<%= index.zero? ? 'true' : 'false' %>">
+            <span><%= grupo %></span>
+          </button>
+        <% end %>
+      </div>
+
+      <% @modulo_sistemas_por_grupo.each_with_index do |(grupo, modulos), index| %>
+        <% tab_id = grupo.to_s.parameterize.presence || "grupo-#{index + 1}" %>
+        <% permisos_grupo = modulos.map { |modulo| @permisos_por_modulo[modulo.id] } %>
+        <% grupo_completo = permisos_grupo.any? && permisos_grupo.all? { |permiso| permiso.present? && UsuariosHelper::ACCIONES_PERMISO.all? { |accion| permiso.public_send("puede_#{accion}?") } } %>
+        <section class="permission-tab-panel <%= 'is-active' if index.zero? %>"
+                 data-tabs-target="panel"
+                 data-tab-id="<%= tab_id %>"
+                 <%= "hidden" unless index.zero? %>>
+          <div class="permission-tab-header">
+            <h3><%= grupo %></h3>
+            <label class="permission-all-toggle">
+              <%= check_box_tag nil,
+                                "1",
+                                grupo_completo,
+                                disabled: true %>
+              <span>Todos</span>
+            </label>
+          </div>
+
+          <div class="table-shell">
+            <table class="data-table permisos-table permisos-usuario-table">
+              <thead>
+                <tr>
+                  <th>Módulo / Función</th>
+                  <th>Código</th>
+                  <th>Estado</th>
+                  <th>Ver</th>
+                  <th>Crear</th>
+                  <th>Editar</th>
+                  <th>Eliminar</th>
+                  <th>Exportar</th>
+                  <th>Configurar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% modulos.each do |modulo| %>
+                  <% permiso = @permisos_por_modulo[modulo.id] %>
+                  <tr data-modulo-id="<%= modulo.id %>">
+                    <td>
+                      <div class="permission-module-cell">
+                        <strong><%= modulo.nombre %></strong>
+                        <span><%= modulo.descripcion.presence || "Módulo listo para administración y control de accesos." %></span>
+                      </div>
+                    </td>
+                    <td><%= modulo.codigo %></td>
+                    <td>
+                      <span class="permission-save-state" data-state="<%= modulo.activo? ? "idle" : "saving" %>"><%= modulo.activo? ? "Activo" : "Inactivo" %></span>
+                    </td>
+                    <% UsuariosHelper::ACCIONES_PERMISO.each do |accion| %>
+                      <td>
+                        <%= check_box_tag nil,
+                                          "1",
+                                          permiso&.public_send("puede_#{accion}?") || false,
+                                          disabled: true %>
+                      </td>
+                    <% end %>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      <% end %>
+    </div>
+  </section>
 </section>
