@@ -1,4 +1,9 @@
-<%= form_with model: factura, class: "company-form" do |form| %>
+<%= form_with model: factura,
+              class: "company-form factura-wizard-form",
+              data: {
+                controller: "factura-wizard",
+                factura_wizard_index_value: factura.factura_detalles.size
+              } do |form| %>
   <% if factura.errors.any? %>
     <section class="panel form-errors">
       <ul class="error-list">
@@ -9,77 +14,183 @@
     </section>
   <% end %>
 
-  <section class="panel product-tabs-panel">
+  <section class="panel product-tabs-panel quote-wizard-tabs-panel factura-wizard-tabs">
     <div class="panel-header">
-      <div><h2>Configuración de la factura</h2></div>
+      <div><h2><%= factura.persisted? ? "Editar factura" : "Generar factura" %></h2></div>
       <div class="form-actions company-form-header-actions">
-        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+        <% if factura.persisted? %>
+          <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+        <% end %>
         <%= link_to "Cancelar", facturas_path, class: "ui-button ui-button-secondary" %>
       </div>
     </div>
-  </section>
 
-  <section class="panel form-section">
-    <div class="panel-header"><div><h2>Información general</h2></div></div>
-    <div class="form-grid">
-      <div class="field-group">
-        <%= form.label :numero, "Número" %>
-        <%= form.text_field :numero, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :serie, "Serie" %>
-        <%= form.text_field :serie, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :cliente_id, "Cliente registrado" %>
-        <%= form.select :cliente_id, options_from_collection_for_select(@clientes, :id, :nombre, factura.cliente_id), { include_blank: "Seleccionar cliente" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :cliente_nombre, "Nombre del cliente" %>
-        <%= form.text_field :cliente_nombre, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :company_id, "Empresa emisora" %>
-        <%= form.select :company_id,
-                        options_from_collection_for_select(@companies, :id, :commercial_name, factura.company_id),
-                        { include_blank: "Seleccionar empresa emisora" },
-                        class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :fecha_emision, "Fecha de emisión" %>
-        <%= form.date_field :fecha_emision, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :fecha_vencimiento, "Fecha de vencimiento" %>
-        <%= form.date_field :fecha_vencimiento, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :total, "Total" %>
-        <%= form.number_field :total, class: "text-input", min: 0, step: "0.01" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :moneda_id, "Moneda" %>
-        <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, factura.moneda_id), { include_blank: "Seleccionar moneda" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :estado, "Estado" %>
-        <%= form.select :estado, options_for_select(Factura::ESTADOS.map { |estado| [estado.humanize, estado] }, factura.estado), {}, class: "text-input filter-select" %>
-      </div>
-      <% if factura.persisted? %>
-        <div class="field-group checkbox-group">
-          <label class="checkbox-label">
-            <%= hidden_field_tag "factura[activo]", "1" %>
-            <%= check_box_tag "factura[activo]", "0", !factura.activo? %>
-            <span>Inactivar</span>
-          </label>
-        </div>
-      <% else %>
-        <%= form.hidden_field :activo, value: true %>
-      <% end %>
-      <div class="field-group field-group-full">
-        <%= form.label :notas, "Notas" %>
-        <%= form.text_area :notas, rows: 4, class: "text-input text-area" %>
-      </div>
+    <div class="module-tabs factura-wizard-step-tabs" role="tablist" aria-label="Flujo de facturación">
+      <button type="button" class="module-tab is-active" data-factura-wizard-target="tab" data-step="0" data-action="factura-wizard#goToStep" role="tab" aria-selected="true">
+        <span class="module-tab-icon"><%= icon("users") %></span>
+        <span class="module-tab-copy"><strong>Datos</strong></span>
+      </button>
+      <button type="button" class="module-tab" data-factura-wizard-target="tab" data-step="1" data-action="factura-wizard#goToStep" role="tab" aria-selected="false">
+        <span class="module-tab-icon"><%= icon("box") %></span>
+        <span class="module-tab-copy"><strong>Ítems</strong></span>
+      </button>
+      <button type="button" class="module-tab" data-factura-wizard-target="tab" data-step="2" data-action="factura-wizard#goToStep" role="tab" aria-selected="false">
+        <span class="module-tab-icon"><%= icon("receipt") %></span>
+        <span class="module-tab-copy"><strong>Resumen</strong></span>
+      </button>
     </div>
   </section>
+
+  <div class="company-general-wizard quote-wizard-grid factura-wizard-grid">
+    <section class="panel form-section module-tab-panel company-wizard-card company-wizard-card-full quote-wizard-step is-active" data-factura-wizard-target="panel" data-step="0">
+      <div class="company-quote-card-header">
+        <span class="company-card-icon"><%= icon("invoice") %></span>
+        <div>
+          <h3>Datos de facturación</h3>
+        </div>
+      </div>
+
+      <div class="form-grid quote-wizard-card-grid">
+        <div class="field-group">
+          <%= form.label :cliente_id, "Cliente registrado" %>
+          <%= form.select :cliente_id,
+                          options_for_select(@clientes.map { |cliente|
+                            [
+                              cliente.nombre,
+                              cliente.id,
+                              {
+                                data: {
+                                  name: cliente.billing_display_name,
+                                  nit: cliente.tax_id_display,
+                                  email: cliente.email,
+                                  address: cliente.billing_address
+                                }
+                              }
+                            ]
+                          }, factura.cliente_id),
+                          { include_blank: "Seleccionar cliente" },
+                          class: "text-input filter-select",
+                          data: {
+                            factura_wizard_target: "clientSelect",
+                            action: "change->factura-wizard#syncClient"
+                          } %>
+        </div>
+        <div class="field-group">
+          <%= form.label :company_id, "Empresa emisora" %>
+          <%= form.select :company_id,
+                          options_from_collection_for_select(@companies, :id, :commercial_name, factura.company_id),
+                          { include_blank: "Seleccionar empresa emisora" },
+                          class: "text-input filter-select",
+                          data: { factura_wizard_target: "requiredField" } %>
+        </div>
+        <div class="field-group">
+          <%= form.label :moneda_id, "Moneda" %>
+          <%= form.select :moneda_id,
+                          options_from_collection_for_select(@monedas, :id, :nombre, factura.moneda_id),
+                          { include_blank: "Seleccionar moneda" },
+                          class: "text-input filter-select",
+                          data: { factura_wizard_target: "requiredField" } %>
+        </div>
+        <div class="field-group">
+          <%= form.label :total, "Total" %>
+          <%= form.number_field :total,
+                                class: "text-input factura-total-input",
+                                min: 0,
+                                step: "0.01",
+                                readonly: true,
+                                data: { factura_wizard_target: "totalField" } %>
+        </div>
+        <%= form.hidden_field :cliente_nombre, data: { factura_wizard_target: "clientNameField" } %>
+        <%= form.hidden_field :fecha_emision, value: factura.fecha_emision || Date.current %>
+        <%= form.hidden_field :estado, value: factura.estado.presence || "borrador" %>
+        <%= form.hidden_field :activo, value: true unless factura.persisted? %>
+      </div>
+
+      <div class="factura-customer-preview">
+        <article>
+          <span>Nombre para facturar</span>
+          <strong data-factura-wizard-target="clientNamePreview"><%= factura.cliente&.billing_display_name || factura.cliente_nombre.presence || "Pendiente" %></strong>
+        </article>
+        <article>
+          <span>NIT</span>
+          <strong data-factura-wizard-target="clientNitPreview"><%= factura.cliente&.tax_id_display || "CF" %></strong>
+        </article>
+        <article>
+          <span>Correo</span>
+          <strong data-factura-wizard-target="clientEmailPreview"><%= factura.cliente&.email.presence || "Pendiente" %></strong>
+        </article>
+      </div>
+
+      <div class="factura-wizard-actions">
+        <button type="button" class="ui-button ui-button-primary" data-action="factura-wizard#next">Continuar</button>
+      </div>
+    </section>
+
+    <section class="panel form-section module-tab-panel company-wizard-card company-wizard-card-full quote-wizard-step quote-wizard-items-card" data-factura-wizard-target="panel" data-step="1" hidden>
+      <div class="company-quote-card-header quote-wizard-items-header">
+        <span class="company-card-icon"><%= icon("box") %></span>
+        <div>
+          <h3>Ítems de la factura</h3>
+        </div>
+        <button type="button" class="ui-button ui-button-primary ui-button-compact" data-action="factura-wizard#addItem">Agregar ítem</button>
+      </div>
+
+      <div class="factura-items-list" data-factura-wizard-target="itemsList">
+        <%= form.fields_for :factura_detalles do |detalle_form| %>
+          <%= render "factura_detalle_fields", form: detalle_form, productos_facturables: @productos_facturables %>
+        <% end %>
+      </div>
+
+      <template data-factura-wizard-target="template">
+        <%= form.fields_for :factura_detalles, FacturaDetalle.new, child_index: "NEW_RECORD" do |detalle_form| %>
+          <%= render "factura_detalle_fields", form: detalle_form, productos_facturables: @productos_facturables %>
+        <% end %>
+      </template>
+
+      <div class="cotizacion-items-summary quote-wizard-totals factura-wizard-totals">
+        <article class="mini-metric-card quote-metric-card">
+          <span>Subtotal</span>
+          <strong data-factura-wizard-target="subtotalDisplay"><%= factura.total_formateado %></strong>
+        </article>
+        <article class="mini-metric-card quote-metric-card">
+          <span>Total</span>
+          <strong data-factura-wizard-target="totalDisplay"><%= factura.total_formateado %></strong>
+        </article>
+      </div>
+
+      <div class="factura-wizard-actions">
+        <button type="button" class="ui-button ui-button-secondary" data-action="factura-wizard#previous">Volver</button>
+        <button type="button" class="ui-button ui-button-primary" data-action="factura-wizard#next">Continuar</button>
+      </div>
+    </section>
+
+    <section class="panel form-section module-tab-panel company-wizard-card company-wizard-card-full quote-wizard-step quote-wizard-summary-panel" data-factura-wizard-target="panel" data-step="2" hidden>
+      <div class="company-quote-card-header">
+        <span class="company-card-icon"><%= icon("receipt") %></span>
+        <div>
+          <h3>Resumen y emisión</h3>
+        </div>
+      </div>
+
+      <div class="factura-final-summary">
+        <article>
+          <span>Cliente</span>
+          <strong data-factura-wizard-target="summaryClient"><%= factura.cliente_nombre.presence || "Pendiente" %></strong>
+        </article>
+        <article>
+          <span>Total</span>
+          <strong data-factura-wizard-target="summaryTotal"><%= factura.total_formateado %></strong>
+        </article>
+        <article>
+          <span>Serie y número</span>
+          <strong>Asignados por INFILE al certificar</strong>
+        </article>
+      </div>
+
+      <div class="factura-wizard-actions">
+        <button type="button" class="ui-button ui-button-secondary" data-action="factura-wizard#previous">Volver</button>
+        <%= form.submit factura.persisted? ? "Guardar" : "Procesar factura", class: "ui-button ui-button-primary submit-button" %>
+      </div>
+    </section>
+  </div>
 <% end %>

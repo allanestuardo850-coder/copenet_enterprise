@@ -4,6 +4,7 @@ class Cliente < ApplicationRecord
   has_many :cotizaciones, dependent: :restrict_with_error
   has_many :proyectos, dependent: :restrict_with_error
   has_one :expediente_cliente, dependent: :destroy
+  has_many :facturas, dependent: :restrict_with_error
 
   validates :nombre, :client_type, presence: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
@@ -19,6 +20,14 @@ class Cliente < ApplicationRecord
 
   def display_name
     nombre
+  end
+
+  def billing_display_name
+    billing_name.presence || nombre
+  end
+
+  def tax_id_display
+    tax_id.presence || "CF"
   end
 
   def expediente!

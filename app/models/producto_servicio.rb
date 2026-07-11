@@ -17,6 +17,7 @@ class ProductoServicio < ApplicationRecord
   has_many :cotizaciones, class_name: "Cotizacion", dependent: :destroy, inverse_of: :producto_servicio
   has_many :producto_servicio_costos, -> { ordenados }, dependent: :destroy, inverse_of: :producto_servicio
   has_many :producto_servicio_precios, -> { ordenados }, dependent: :destroy, inverse_of: :producto_servicio
+  has_many :factura_detalles, dependent: :restrict_with_error
 
   accepts_nested_attributes_for :producto_servicio_costos,
                                 allow_destroy: true,
@@ -111,6 +112,7 @@ class ProductoServicio < ApplicationRecord
   validate :validar_dependencias_cobro
 
   scope :orden_admin, -> { order(:orden_visual, :nombre, :codigo) }
+  scope :disponibles_para_facturar, -> { where(activo: true, facturable: true).order(:nombre, :codigo) }
 
   def self.siguiente_codigo_para(year = Date.current.year)
     year = year.to_i

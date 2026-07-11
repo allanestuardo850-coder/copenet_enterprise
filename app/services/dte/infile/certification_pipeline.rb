@@ -31,6 +31,7 @@ class Dte::Infile::CertificationPipeline
       response_payload: body,
       errores_fel: {}
     )
+    sincronizar_factura_certificada!
     { resultado: true, dte: dte }
   end
 
@@ -57,6 +58,14 @@ class Dte::Infile::CertificationPipeline
       response_payload: response[:body] || {}
     )
     { resultado: false, dte: dte, mensaje: message }
+  end
+
+  def sincronizar_factura_certificada!
+    dte.factura.update!(
+      serie: dte.serie,
+      numero: dte.numero,
+      estado: "emitida"
+    )
   end
 
   def failure!(message)

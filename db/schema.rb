@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_10_173000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_11_042000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -84,15 +84,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_10_173000) do
     t.string "client_type", default: "no_socio", null: false
     t.string "contacto_principal"
     t.datetime "created_at", null: false
+    t.text "billing_address"
+    t.string "billing_name"
     t.string "email"
     t.boolean "is_copenet_client", default: false, null: false
     t.string "nombre", null: false
     t.text "notas"
+    t.string "tax_id"
     t.string "telefono"
     t.datetime "updated_at", null: false
     t.index ["client_type"], name: "index_clientes_on_client_type"
     t.index ["is_copenet_client"], name: "index_clientes_on_is_copenet_client"
     t.index ["nombre"], name: "index_clientes_on_nombre"
+    t.index ["tax_id"], name: "index_clientes_on_tax_id"
   end
 
   create_table "cobros", force: :cascade do |t|
@@ -349,7 +353,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_10_173000) do
     t.date "fecha_vencimiento"
     t.bigint "moneda_id"
     t.text "notas"
-    t.string "numero", null: false
+    t.string "numero"
     t.string "serie"
     t.decimal "total", precision: 14, scale: 2, default: "0.0", null: false
     t.datetime "updated_at", null: false
@@ -360,6 +364,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_10_173000) do
     t.index ["fecha_emision"], name: "index_facturas_on_fecha_emision"
     t.index ["moneda_id"], name: "index_facturas_on_moneda_id"
     t.index ["numero"], name: "index_facturas_on_numero", unique: true
+  end
+
+  create_table "factura_detalles", force: :cascade do |t|
+    t.boolean "afecto_iva", default: true, null: false
+    t.decimal "cantidad", precision: 14, scale: 2, default: "1.0", null: false
+    t.datetime "created_at", null: false
+    t.string "descripcion", null: false
+    t.bigint "factura_id", null: false
+    t.decimal "precio_unitario", precision: 14, scale: 2, default: "0.0", null: false
+    t.bigint "producto_servicio_id"
+    t.bigint "producto_servicio_precio_id"
+    t.decimal "subtotal", precision: 14, scale: 2, default: "0.0", null: false
+    t.decimal "total", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["descripcion"], name: "index_factura_detalles_on_descripcion"
+    t.index ["factura_id"], name: "index_factura_detalles_on_factura_id"
+    t.index ["producto_servicio_id"], name: "index_factura_detalles_on_producto_servicio_id"
+    t.index ["producto_servicio_precio_id"], name: "index_factura_detalles_on_producto_servicio_precio_id"
   end
 
   create_table "modulo_sistemas", force: :cascade do |t|
@@ -614,6 +636,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_10_173000) do
   add_foreign_key "dtes", "companies"
   add_foreign_key "dtes", "facturas"
   add_foreign_key "expediente_clientes", "clientes"
+  add_foreign_key "factura_detalles", "facturas"
+  add_foreign_key "factura_detalles", "producto_servicio_precios"
+  add_foreign_key "factura_detalles", "producto_servicios"
   add_foreign_key "facturas", "clientes"
   add_foreign_key "facturas", "companies"
   add_foreign_key "facturas", "monedas"

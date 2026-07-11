@@ -1,0 +1,54 @@
+<div class="factura-item-row" data-factura-wizard-target="itemRow">
+  <div class="field-group factura-product-field">
+    <%= form.label :producto_servicio_id, "Producto disponible" %>
+    <%= form.select :producto_servicio_id,
+                    options_for_select(productos_facturables.flat_map { |producto|
+                      precios = producto.producto_servicio_precios.activos.facturables.to_a
+                      opciones = precios.any? ? precios : [nil]
+                      opciones.map do |precio|
+                        valor = producto.id
+                        nombre = [producto.nombre, precio&.nombre].compact.join(" · ")
+                        descripcion = precio&.descripcion.presence || producto.descripcion.presence || producto.nombre
+                        monto = precio&.precio || producto.precio_base || 0
+                        [
+                          nombre,
+                          valor,
+                          {
+                            data: {
+                              description: descripcion,
+                              price: monto,
+                              price_id: precio&.id,
+                              product_id: producto.id
+                            }
+                          }
+                        ]
+                      end
+                    }, form.object.producto_servicio_id),
+                    { include_blank: "Seleccionar producto" },
+                    class: "text-input filter-select",
+                    data: { action: "change->factura-wizard#syncItem" } %>
+  </div>
+  <div class="field-group factura-description-field">
+    <%= form.label :descripcion, "Detalle" %>
+    <%= form.text_field :descripcion, class: "text-input", data: { factura_wizard_target: "itemDescription" } %>
+  </div>
+  <div class="field-group factura-qty-field">
+    <%= form.label :cantidad, "Cantidad" %>
+    <%= form.number_field :cantidad, class: "text-input", min: 1, step: "1", data: { action: "input->factura-wizard#updateTotals", factura_wizard_target: "itemQuantity" } %>
+  </div>
+  <div class="field-group factura-price-field">
+    <%= form.label :precio_unitario, "Precio" %>
+    <%= form.number_field :precio_unitario, class: "text-input", min: 0, step: "0.01", readonly: true, data: { factura_wizard_target: "itemPrice" } %>
+  </div>
+  <div class="field-group factura-line-total-field">
+    <%= form.label :total, "Total" %>
+    <%= form.number_field :total, class: "text-input", min: 0, step: "0.01", readonly: true, data: { factura_wizard_target: "itemTotal" } %>
+  </div>
+  <%= form.hidden_field :producto_servicio_precio_id, data: { factura_wizard_target: "itemPriceId" } %>
+  <%= form.hidden_field :subtotal, data: { factura_wizard_target: "itemSubtotal" } %>
+  <%= form.hidden_field :afecto_iva, value: true %>
+  <%= form.hidden_field :_destroy, value: "0", data: { factura_wizard_target: "itemDestroy" } %>
+  <button type="button" class="table-link table-action-icon table-action-delete factura-remove-item" data-action="factura-wizard#removeItem" title="Quitar ítem" aria-label="Quitar ítem">
+    <%= icon("trash") %>
+  </button>
+</div>

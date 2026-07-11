@@ -1,5 +1,5 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: %i[show edit update certificar_infile]
+  before_action :set_factura, only: %i[show edit update certificar_infile pdf]
   before_action :load_catalogs, only: %i[new create edit update]
 
   def index
@@ -16,17 +16,34 @@ class FacturasController < ApplicationController
   def new
     @current_page = :facturas
     @factura = Factura.new(fecha_emision: Date.current, estado: "borrador", activo: true, company: Company.activas.first)
+    @factura.factura_detalles.build
   end
 
   def create
     @current_page = :facturas
     @factura = Factura.new(factura_params)
+    @factura.estado = "borrador"
+    @factura.fecha_emision ||= Date.current
+    @factura.activo = true if @factura.activo.nil?
 
     if @factura.save
-      redirect_to facturas_path, notice: "Factura guardada correctamente."
+      resultado = @factura.certificar_infile!
+      if resultado[:resultado]
+        redirect_to factura_path(@factura), notice: "Factura procesada y certificada correctamente."
+      else
+        redirect_to factura_path(@factura), alert: resultado[:mensaje].presence || "La factura se guardó, pero INFILE no completó la certificación."
+      end
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def pdf
+    pdf = Facturas::GeneradorFacturaPdf.new(@factura).render
+    send_data pdf,
+              filename: "factura-#{@factura.serie.presence || 'infile'}-#{@factura.numero.presence || @factura.id}.pdf",
+              type: "application/pdf",
+              disposition: "inline"
   end
 
   def edit
@@ -62,10 +79,34 @@ class FacturasController < ApplicationController
     @clientes = Cliente.ordenados
     @monedas = Moneda.activas.order(:nombre)
     @companies = Company.activas.order(:commercial_name, :legal_name)
+    @productos_facturables = ProductoServicio.disponibles_para_facturar.includes(:moneda, :producto_servicio_precios)
   end
 
   def factura_params
-    params.require(:factura).permit(:numero, :serie, :cliente_id, :cliente_nombre, :fecha_emision, :fecha_vencimiento, :total, :moneda_id, :company_id, :estado, :notas, :activo)
+    params.require(:factura).permit(
+      :cliente_id,
+      :cliente_nombre,
+      :fecha_emision,
+      :fecha_vencimiento,
+      :total,
+      :moneda_id,
+      :company_id,
+      :estado,
+      :notas,
+      :activo,
+      factura_detalles_attributes: [
+        :id,
+        :producto_servicio_id,
+        :producto_servicio_precio_id,
+        :descripcion,
+        :cantidad,
+        :precio_unitario,
+        :subtotal,
+        :total,
+        :afecto_iva,
+        :_destroy
+      ]
+    )
   end
 
   def apply_filters(scope)

@@ -1,4 +1,5 @@
 require "builder"
+require "ostruct"
 
 class Dte::Infile::XmlBuilder
   IVA_RATE = BigDecimal("0.12")
@@ -83,22 +84,24 @@ class Dte::Infile::XmlBuilder
 
   def items(xml)
     xml.Items do
-      xml.Item("BienOServicio" => "S", "NumeroLinea" => "1") do
-        xml.Cantidad "1"
-        xml.UnidadMedida "UND"
-        xml.Descripcion dte.descripcion
-        xml.PrecioUnitario format_decimal(dte.monto)
-        xml.Precio format_decimal(dte.monto)
-        xml.Descuento "0.00000"
-        xml.Impuestos do
-          xml.Impuesto do
-            xml.NombreCorto "IVA"
-            xml.CodigoUnidadGravable "1"
-            xml.MontoGravable format_decimal(monto_gravable)
-            xml.MontoImpuesto format_decimal(monto_iva)
+      detalles.each_with_index do |detalle, index|
+        xml.Item("BienOServicio" => "S", "NumeroLinea" => (index + 1).to_s) do
+          xml.Cantidad format_decimal(detalle.cantidad)
+          xml.UnidadMedida "UND"
+          xml.Descripcion detalle.descripcion
+          xml.PrecioUnitario format_decimal(detalle.precio_unitario)
+          xml.Precio format_decimal(detalle.subtotal)
+          xml.Descuento "0.00000"
+          xml.Impuestos do
+            xml.Impuesto do
+              xml.NombreCorto "IVA"
+              xml.CodigoUnidadGravable detalle.afecto_iva? ? "1" : "2"
+              xml.MontoGravable format_decimal(monto_gravable(detalle.total, detalle.afecto_iva?))
+              xml.MontoImpuesto format_decimal(monto_iva(detalle.total, detalle.afecto_iva?))
+            end
           end
+          xml.Total format_decimal(detalle.total)
         end
-        xml.Total format_decimal(dte.monto)
       end
     end
   end
@@ -106,7 +109,7 @@ class Dte::Infile::XmlBuilder
   def totales(xml)
     xml.Totales do
       xml.TotalImpuestos do
-        xml.TotalImpuesto("NombreCorto" => "IVA", "TotalMontoImpuesto" => format_decimal(monto_iva))
+        xml.TotalImpuesto("NombreCorto" => "IVA", "TotalMontoImpuesto" => format_decimal(total_iva))
       end
       xml.GranTotal format_decimal(dte.monto)
     end
@@ -125,12 +128,34 @@ class Dte::Infile::XmlBuilder
     (dte.factura.fecha_emision&.to_time || Time.current).iso8601
   end
 
-  def monto_gravable
-    dte.monto.to_d / (BigDecimal("1") + IVA_RATE)
+  def detalles
+    @detalles ||= begin
+      factura_detalles = dte.factura.factura_detalles.to_a
+      factura_detalles.presence || [OpenStruct.new(
+        cantidad: 1,
+        descripcion: dte.descripcion,
+        precio_unitario: dte.monto,
+        subtotal: dte.monto,
+        total: dte.monto,
+        afecto_iva?: true
+      )]
+    end
   end
 
-  def monto_iva
-    dte.monto.to_d - monto_gravable
+  def monto_gravable(monto, afecto_iva)
+    return monto.to_d unless afecto_iva
+
+    monto.to_d / (BigDecimal("1") + IVA_RATE)
+  end
+
+  def monto_iva(monto, afecto_iva)
+    return 0.to_d unless afecto_iva
+
+    monto.to_d - monto_gravable(monto, afecto_iva)
+  end
+
+  def total_iva
+    detalles.sum { |detalle| monto_iva(detalle.total, detalle.afecto_iva?) }
   end
 
   def format_decimal(value)

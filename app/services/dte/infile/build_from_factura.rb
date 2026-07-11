@@ -22,7 +22,7 @@ class Dte::Infile::BuildFromFactura
       estado: dte.estado.presence || "pendiente_certificar",
       identificador: dte.identificador.presence || identificador,
       nit_receptor: nit_receptor,
-      nombre_receptor: factura.cliente_nombre.presence || "Consumidor Final",
+      nombre_receptor: factura.receptor_nombre,
       correo_receptor: factura.cliente&.email,
       moneda: factura.moneda&.codigo.presence || "GTQ",
       descripcion: descripcion,
@@ -36,13 +36,11 @@ class Dte::Infile::BuildFromFactura
   end
 
   def nit_receptor
-    # Clientes aún no tiene NIT en el modelo actual; CF mantiene la factura certificable
-    # hasta agregar datos fiscales del receptor.
-    "CF"
+    factura.receptor_nit
   end
 
   def descripcion
-    factura.notas.presence || "Factura #{factura.numero} emitida por Copenet Enterprise"
+    factura.notas.presence || "Factura emitida por Copenet Enterprise"
   end
 
   def identificador

@@ -43,7 +43,7 @@
           <tbody>
             <% @facturas.each do |factura| %>
               <tr>
-                <td class="user-index-name"><%= factura.numero %></td>
+                <td class="user-index-name"><%= factura.numero_visible %></td>
                 <td><%= factura.serie.presence || "-" %></td>
                 <td class="user-index-email"><%= factura.cliente_nombre %></td>
                 <td><%= factura.fecha_emision || "-" %></td>

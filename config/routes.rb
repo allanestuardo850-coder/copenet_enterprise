@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   resources :facturas, except: [:destroy] do
     member do
       post :certificar_infile
+      get :pdf
     end
   end
   resources :contratos, except: [:destroy]

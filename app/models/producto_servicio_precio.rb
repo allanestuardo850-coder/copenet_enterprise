@@ -20,6 +20,7 @@ class ProductoServicioPrecio < ApplicationRecord
 
   belongs_to :producto_servicio, inverse_of: :producto_servicio_precios
   belongs_to :moneda, optional: true
+  has_many :factura_detalles, dependent: :restrict_with_error
 
   after_commit :sincronizar_producto_servicio
 

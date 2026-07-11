@@ -4303,6 +4303,113 @@ html.theme-dark select.text-input option {
   text-align: right;
 }
 
+.factura-wizard-form .factura-wizard-tabs .panel-header {
+  margin-bottom: 18px;
+}
+
+.factura-wizard-step-tabs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.factura-wizard-step-tabs .module-tab {
+  min-height: 64px;
+}
+
+.factura-wizard-step-tabs .module-tab.is-disabled {
+  opacity: 0.52;
+}
+
+.factura-customer-preview,
+.factura-final-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.factura-customer-preview article,
+.factura-final-summary article {
+  min-height: 74px;
+  padding: 14px 16px;
+  border: 1px solid #dbe5f1;
+  border-radius: 10px;
+  background: #f8fbff;
+}
+
+.factura-customer-preview span,
+.factura-final-summary span {
+  display: block;
+  margin-bottom: 8px;
+  color: #526383;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.factura-customer-preview strong,
+.factura-final-summary strong {
+  color: #071d55;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.factura-wizard-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.factura-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.factura-item-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) minmax(220px, 1.4fr) 90px 120px 120px 42px;
+  align-items: end;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #dbe5f1;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 10px 22px rgba(7, 29, 85, 0.035);
+}
+
+.factura-item-row.is-invalid {
+  border-color: rgba(222, 93, 93, 0.55);
+  box-shadow: 0 0 0 4px rgba(222, 93, 93, 0.08);
+}
+
+.factura-remove-item {
+  align-self: end;
+  margin-bottom: 1px;
+}
+
+.factura-total-input,
+.factura-price-field .text-input,
+.factura-line-total-field .text-input {
+  background: #f4f7fb;
+  color: #526383;
+}
+
+.factura-wizard-totals {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.factura-wizard-totals .mini-metric-card {
+  width: 190px;
+}
+
+.text-input.is-invalid,
+.filter-select.is-invalid {
+  border-color: rgba(222, 93, 93, 0.58);
+  box-shadow: 0 0 0 4px rgba(222, 93, 93, 0.08);
+}
+
 .quote-amount {
   font-weight: 800;
   color: var(--primary-dark);
