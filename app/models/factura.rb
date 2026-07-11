@@ -3,6 +3,8 @@ class Factura < ApplicationRecord
 
   belongs_to :cliente, optional: true
   belongs_to :moneda, optional: true
+  belongs_to :company, optional: true
+  has_one :dte, dependent: :destroy
 
   validates :numero, :cliente_nombre, :estado, presence: true
   validates :numero, uniqueness: true
@@ -16,6 +18,18 @@ class Factura < ApplicationRecord
 
   def total_formateado
     "#{moneda&.simbolo || 'Q'} #{format('%.2f', total.to_d)}"
+  end
+
+  def preparar_dte!
+    Dte::Infile::BuildFromFactura.new(self).call
+  end
+
+  def certificar_infile!
+    preparar_dte!.certificar!
+  end
+
+  def dte_certificado?
+    dte&.certificado? || false
   end
 
   private

@@ -1,0 +1,2 @@
+module Dte::Infile
+end

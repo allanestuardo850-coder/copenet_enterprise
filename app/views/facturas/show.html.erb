@@ -7,6 +7,11 @@
           <strong class="company-show-title"><%= @factura.numero %></strong>
           <div class="company-show-badges">
             <%= render "shared/badge", text: @factura.activo? ? @factura.estado.humanize : "Inactiva", tone: @factura.activo? ? "success" : "warning" %>
+            <% if @factura.dte.present? %>
+              <%= render "shared/badge", text: "DTE #{@factura.dte.estado.humanize}", tone: @factura.dte.certificado? ? "success" : (@factura.dte.error? ? "danger" : "warning") %>
+            <% else %>
+              <%= render "shared/badge", text: "DTE pendiente", tone: "warning" %>
+            <% end %>
           </div>
         </div>
         <p><%= @factura.cliente_nombre %> · <%= @factura.total_formateado %></p>
@@ -15,6 +20,16 @@
     <div class="company-show-actions" aria-label="Acciones de factura">
       <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, facturas_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
       <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_factura_path(@factura), class: "company-show-action-button company-show-action-primary", title: "Editar factura", aria: { label: "Editar factura" } %>
+      <% unless @factura.dte_certificado? %>
+        <%= button_to "#{icon("invoice")}<span>Certificar INFILE</span>".html_safe,
+                      certificar_infile_factura_path(@factura),
+                      method: :post,
+                      class: "company-show-action-button company-show-action-primary",
+                      form_class: "inline-form",
+                      data: { turbo_confirm: "Se enviará esta factura a certificación INFILE. ¿Deseas continuar?" },
+                      title: "Certificar INFILE",
+                      aria: { label: "Certificar INFILE" } %>
+      <% end %>
     </div>
   </section>
 
@@ -23,6 +38,7 @@
     <div class="detail-grid">
       <div class="detail-item"><span>Serie</span><strong><%= @factura.serie.presence || "-" %></strong></div>
       <div class="detail-item"><span>Cliente</span><strong><%= @factura.cliente_nombre %></strong></div>
+      <div class="detail-item"><span>Empresa emisora</span><strong><%= @factura.company&.commercial_name || @factura.company&.legal_name || "-" %></strong></div>
       <div class="detail-item"><span>Emisión</span><strong><%= @factura.fecha_emision || "-" %></strong></div>
       <div class="detail-item"><span>Vencimiento</span><strong><%= @factura.fecha_vencimiento || "-" %></strong></div>
       <div class="detail-item"><span>Total</span><strong><%= @factura.total_formateado %></strong></div>
@@ -32,6 +48,31 @@
       <div class="document-paragraph-card">
         <strong>Notas</strong>
         <p><%= @factura.notas %></p>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="panel detail-section">
+    <div class="panel-header"><div><h2>DTE / INFILE</h2></div></div>
+    <% if @factura.dte.present? %>
+      <div class="detail-grid">
+        <div class="detail-item"><span>Estado</span><strong><%= @factura.dte.estado.humanize %></strong></div>
+        <div class="detail-item"><span>UUID</span><strong><%= @factura.dte.uuid.presence || "-" %></strong></div>
+        <div class="detail-item"><span>Serie</span><strong><%= @factura.dte.serie.presence || "-" %></strong></div>
+        <div class="detail-item"><span>Número</span><strong><%= @factura.dte.numero.presence || "-" %></strong></div>
+        <div class="detail-item"><span>Identificador</span><strong><%= @factura.dte.identificador %></strong></div>
+        <div class="detail-item"><span>Fecha certificación</span><strong><%= @factura.dte.fecha_certificacion || "-" %></strong></div>
+      </div>
+      <% if @factura.dte.errores_fel.present? && @factura.dte.errores_fel.any? %>
+        <div class="document-paragraph-card">
+          <strong>Respuesta / errores FEL</strong>
+          <p><%= @factura.dte.errores_fel.to_json %></p>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="empty-inline-state">
+        <strong>DTE pendiente</strong>
+        <span>Al certificar se generará el XML, se firmará y se enviará al certificador INFILE.</span>
       </div>
     <% end %>
   </section>

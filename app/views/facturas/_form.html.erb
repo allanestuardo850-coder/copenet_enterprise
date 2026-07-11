@@ -39,6 +39,13 @@
         <%= form.text_field :cliente_nombre, class: "text-input" %>
       </div>
       <div class="field-group">
+        <%= form.label :company_id, "Empresa emisora" %>
+        <%= form.select :company_id,
+                        options_from_collection_for_select(@companies, :id, :commercial_name, factura.company_id),
+                        { include_blank: "Seleccionar empresa emisora" },
+                        class: "text-input filter-select" %>
+      </div>
+      <div class="field-group">
         <%= form.label :fecha_emision, "Fecha de emisión" %>
         <%= form.date_field :fecha_emision, class: "text-input" %>
       </div>

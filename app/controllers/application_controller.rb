@@ -170,7 +170,7 @@ class ApplicationController < ActionController::Base
       :ver
     when "new", "create"
       :crear
-    when "edit", "update", "agregar_precio", "agregar_costo"
+    when "edit", "update", "agregar_precio", "agregar_costo", "certificar_infile"
       :editar
     when "destroy"
       :inhabilitar
