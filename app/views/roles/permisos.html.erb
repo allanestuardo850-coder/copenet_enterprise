@@ -18,12 +18,9 @@
           <thead>
             <tr>
               <th>Módulo</th>
-              <th>Ver</th>
-              <th>Crear</th>
-              <th>Editar</th>
-              <th>Eliminar</th>
-              <th>Exportar</th>
-              <th>Configurar</th>
+              <% UsuariosHelper::ACCIONES_PERMISO.each do |accion| %>
+                <th><%= permiso_accion_label(accion) %></th>
+              <% end %>
             </tr>
           </thead>
           <tbody>

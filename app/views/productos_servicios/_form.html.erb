@@ -23,69 +23,55 @@
       </div>
     </div>
 
-    <div class="product-tabs" role="tablist" aria-label="Secciones del producto o servicio">
-      <button type="button" class="product-tab is-active" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch" role="tab" aria-selected="true">
-        <span class="product-tab-accent product-tab-accent-blue"></span>
-        <span class="product-tab-icon"><%= icon("box") %></span>
-        <span class="product-tab-copy">
-          <strong>Información General</strong>
-          <small>Identidad, código, vigencia y estado</small>
+    <div class="module-tabs product-wizard-tabs" role="tablist" aria-label="Secciones del producto o servicio">
+      <button type="button" class="module-tab is-active" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch" role="tab" aria-selected="true">
+        <span class="module-tab-icon"><%= icon("box") %></span>
+        <span class="module-tab-copy">
+          <strong>Información general</strong>
+          <small>Identidad y estado</small>
         </span>
-        <span class="product-tab-step">01</span>
       </button>
-      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="comercial" data-action="tabs#switch" role="tab" aria-selected="false">
-        <span class="product-tab-accent product-tab-accent-cyan"></span>
-        <span class="product-tab-icon"><%= icon("coins") %></span>
-        <span class="product-tab-copy">
+      <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="comercial" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="module-tab-icon"><%= icon("coins") %></span>
+        <span class="module-tab-copy">
           <strong>Comercial</strong>
-          <small>Portafolio, empresa, precio y margen</small>
+          <small>Precio y margen</small>
         </span>
-        <span class="product-tab-step">02</span>
       </button>
-      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="costos" data-action="tabs#switch" role="tab" aria-selected="false">
-        <span class="product-tab-accent product-tab-accent-rose"></span>
-        <span class="product-tab-icon"><%= icon("wallet") %></span>
-        <span class="product-tab-copy">
+      <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="costos" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="module-tab-icon"><%= icon("wallet") %></span>
+        <span class="module-tab-copy">
           <strong>Costos</strong>
-          <small>Estructura extendida por componente y recurrencia</small>
+          <small>Componentes</small>
         </span>
-        <span class="product-tab-step">03</span>
       </button>
-      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="facturacion" data-action="tabs#switch" role="tab" aria-selected="false">
-        <span class="product-tab-accent product-tab-accent-violet"></span>
-        <span class="product-tab-icon"><%= icon("receipt") %></span>
-        <span class="product-tab-copy">
-          <strong>Cobro y Facturación</strong>
-          <small>Recurrencia, consumo y reglas de factura</small>
+      <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="facturacion" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="module-tab-icon"><%= icon("receipt") %></span>
+        <span class="module-tab-copy">
+          <strong>Cobro y facturación</strong>
+          <small>Reglas de cobro</small>
         </span>
-        <span class="product-tab-step">04</span>
       </button>
-      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="operacion" data-action="tabs#switch" role="tab" aria-selected="false">
-        <span class="product-tab-accent product-tab-accent-green"></span>
-        <span class="product-tab-icon"><%= icon("contract") %></span>
-        <span class="product-tab-copy">
+      <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="operacion" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="module-tab-icon"><%= icon("contract") %></span>
+        <span class="module-tab-copy">
           <strong>Operación</strong>
-          <small>Soporte, contrato y liquidación</small>
+          <small>Contrato y soporte</small>
         </span>
-        <span class="product-tab-step">05</span>
       </button>
-      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="fiscal" data-action="tabs#switch" role="tab" aria-selected="false">
-        <span class="product-tab-accent product-tab-accent-amber"></span>
-        <span class="product-tab-icon"><%= icon("settings") %></span>
-        <span class="product-tab-copy">
-          <strong>Fiscal y Visibilidad</strong>
-          <small>IVA, FEL, cuentas y exposición del catálogo</small>
+      <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="fiscal" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="module-tab-icon"><%= icon("settings") %></span>
+        <span class="module-tab-copy">
+          <strong>Fiscal y visibilidad</strong>
+          <small>IVA, FEL y cuentas</small>
         </span>
-        <span class="product-tab-step">06</span>
       </button>
-      <button type="button" class="product-tab" data-tabs-target="tab" data-tab-id="documentacion" data-action="tabs#switch" role="tab" aria-selected="false">
-        <span class="product-tab-accent product-tab-accent-slate"></span>
-        <span class="product-tab-icon"><%= icon("report") %></span>
-        <span class="product-tab-copy">
+      <button type="button" class="module-tab" data-tabs-target="tab" data-tab-id="documentacion" data-action="tabs#switch" role="tab" aria-selected="false">
+        <span class="module-tab-icon"><%= icon("report") %></span>
+        <span class="module-tab-copy">
           <strong>Documentación</strong>
-          <small>Archivos de soporte y material para cotización</small>
+          <small>Archivos</small>
         </span>
-        <span class="product-tab-step">07</span>
       </button>
     </div>
   </section>
@@ -94,15 +80,13 @@
     <div class="panel-header">
       <div>
         <h2>Información General</h2>
-        <p>Define la identidad principal, vigencia y estado del concepto cobrable.</p>
       </div>
     </div>
 
     <div class="form-grid">
       <div class="field-group">
         <%= form.label :codigo, "Código" %>
-        <%= form.text_field :codigo, class: "text-input", readonly: true %>
-        <p class="field-help">Se genera automáticamente en formato correlativo `CO-00001-2026`.</p>
+        <%= form.text_field :codigo, class: "text-input auto-generated-input", readonly: true %>
       </div>
       <div class="field-group">
         <%= form.label :nombre, "Nombre" %>
@@ -157,7 +141,6 @@
     <div class="panel-header">
       <div>
         <h2>Clasificación y Comercial</h2>
-        <p>Ubica el producto en el portafolio y define precio, costo y empresa que facturará.</p>
       </div>
     </div>
 
@@ -195,13 +178,11 @@
       </div>
       <div class="field-group">
         <%= form.label :precio_base, "Precio consolidado" %>
-        <%= form.number_field :precio_base, class: "text-input", step: "0.01", min: 0, readonly: true %>
-        <p class="field-help">Este valor se recalcula automáticamente al guardar, usando los ítems comerciales detallados abajo.</p>
+        <%= form.number_field :precio_base, class: "text-input auto-generated-input", step: "0.01", min: 0, readonly: true %>
       </div>
       <div class="field-group">
         <%= form.label :costo_base, "Costo consolidado" %>
-        <%= form.number_field :costo_base, class: "text-input", step: "0.01", min: 0, readonly: true %>
-        <p class="field-help">Este valor se recalcula automáticamente al guardar, usando los costos detallados de la pestaña Costos.</p>
+        <%= form.number_field :costo_base, class: "text-input auto-generated-input", step: "0.01", min: 0, readonly: true %>
       </div>
       <div class="field-group">
         <%= form.label :margen_objetivo, "Margen Objetivo %" %>
@@ -222,7 +203,6 @@
       <div class="field-group">
         <%= form.label :porcentaje_descuento_maximo, "Descuento Máximo %" %>
         <%= form.number_field :porcentaje_descuento_maximo, class: "text-input", step: "0.01", min: 0, max: 100, placeholder: "0.00" %>
-        <p class="field-help">Si desactivas el descuento, este valor se limpia automáticamente al guardar.</p>
       </div>
       <div class="field-group checkbox-group field-group-full">
         <label class="checkbox-label">
@@ -279,7 +259,6 @@
         <div class="panel-header nested-panel-header">
           <div>
             <h2>Detalle de precios comerciales</h2>
-            <p>Agrega varios renglones de precio con su margen comercial para construir la propuesta base del producto o servicio.</p>
           </div>
           <button type="button" class="ui-button ui-button-primary ui-button-compact" data-action="producto-servicio-precios#add">
             Agregar precio
@@ -305,7 +284,6 @@
     <div class="panel-header">
       <div>
         <h2>Costos Extendidos</h2>
-        <p>Agrega varios tipos de costo con nombre, descripción, monto y recurrencia para construir la estructura real del producto.</p>
       </div>
       <%= render "shared/badge", text: "#{producto_servicio.producto_servicio_costos.reject(&:marked_for_destruction?).size} costos", tone: "info" %>
     </div>
@@ -339,7 +317,6 @@
         <div class="panel-header nested-panel-header">
           <div>
             <h2>Detalle de costos</h2>
-            <p>Úsalo para separar licencias, implementación, soporte, infraestructura, comisiones u otros componentes.</p>
           </div>
           <button type="button" class="ui-button ui-button-primary ui-button-compact" data-action="producto-servicio-costos#add">
             Agregar costo
@@ -365,7 +342,6 @@
     <div class="panel-header">
       <div>
         <h2>Cobro y Facturación</h2>
-        <p>Configura recurrencia, consumo, cargos y comportamiento de facturación.</p>
       </div>
     </div>
 
@@ -449,7 +425,6 @@
     <div class="panel-header">
       <div>
         <h2>Operación, Contrato y Liquidación</h2>
-        <p>Define activación, soporte, reglas contractuales y reparto financiero.</p>
       </div>
     </div>
 
@@ -517,7 +492,6 @@
     <div class="panel-header">
       <div>
         <h2>Fiscalidad, Contabilidad y Visibilidad</h2>
-        <p>Controla IVA, cuentas contables, FEL y exposición en módulos consumidores.</p>
       </div>
     </div>
 
@@ -593,16 +567,30 @@
     <div class="panel-header">
       <div>
         <h2>Documentación Comercial y Técnica</h2>
-        <p>Adjunta fichas, PDFs, presentaciones, anexos o respaldo operativo que luego servirán para generar cotizaciones desde este módulo.</p>
       </div>
     </div>
 
     <div class="form-grid">
       <div class="field-group field-group-full">
-        <%= form.label :documentos_comerciales, "Archivos de Documentación" %>
-        <div class="file-upload-panel">
-          <%= form.file_field :documentos_comerciales, multiple: true, class: "text-input", accept: ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg" %>
-          <p class="field-help">Puedes subir documentación comercial, técnica o de soporte para respaldar futuras cotizaciones.</p>
+        <%= form.label :documentos_comerciales, "Archivos de documentación" %>
+        <div class="company-logo-dropzone product-file-dropzone">
+          <div class="company-logo-preview product-file-preview">
+            <%= icon("report") %>
+          </div>
+          <div class="company-logo-copy">
+            <p>Archivos permitidos: PDF, Office e imágenes</p>
+            <span>PDF, DOC, XLS, PPT, PNG o JPG</span>
+            <span>Respaldo comercial y técnico del producto o servicio.</span>
+            <label class="company-upload-button" for="producto_servicio_documentos_comerciales">
+              <%= icon("upload") %>
+              Seleccionar archivos
+            </label>
+            <%= form.file_field :documentos_comerciales,
+                                id: "producto_servicio_documentos_comerciales",
+                                multiple: true,
+                                class: "company-logo-input",
+                                accept: ".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg" %>
+          </div>
         </div>
       </div>
 
@@ -611,7 +599,6 @@
           <div class="panel-header">
             <div>
               <h2>Archivos cargados</h2>
-              <p>Material disponible actualmente en el producto o servicio.</p>
             </div>
             <%= render "shared/badge", text: "#{producto_servicio.documentos_comerciales.attachments.size} archivos", tone: "info" %>
           </div>

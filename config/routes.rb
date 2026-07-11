@@ -35,7 +35,11 @@ Rails.application.routes.draw do
   end
   resources :costos, except: [:destroy]
   resources :cobros, except: [:destroy]
-  resources :facturas, except: [:destroy]
+  resources :facturas, except: [:destroy] do
+    member do
+      post :certificar_infile
+    end
+  end
   resources :contratos, except: [:destroy]
   resources :productos_servicios do
     member do
@@ -51,7 +55,11 @@ Rails.application.routes.draw do
       get :configuration
     end
   end
-  resources :usuarios, except: [:destroy]
+  resources :usuarios, except: [:destroy] do
+    member do
+      patch :permisos
+    end
+  end
   resources :roles do
     member do
       match :permisos, via: %i[get patch]

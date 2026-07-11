@@ -1,5 +1,5 @@
 class FacturasController < ApplicationController
-  before_action :set_factura, only: %i[show edit update]
+  before_action :set_factura, only: %i[show edit update certificar_infile]
   before_action :load_catalogs, only: %i[new create edit update]
 
   def index
@@ -15,7 +15,7 @@ class FacturasController < ApplicationController
 
   def new
     @current_page = :facturas
-    @factura = Factura.new(fecha_emision: Date.current, estado: "borrador", activo: true)
+    @factura = Factura.new(fecha_emision: Date.current, estado: "borrador", activo: true, company: Company.activas.first)
   end
 
   def create
@@ -43,6 +43,15 @@ class FacturasController < ApplicationController
     end
   end
 
+  def certificar_infile
+    resultado = @factura.certificar_infile!
+    if resultado[:resultado]
+      redirect_to factura_path(@factura), notice: "DTE certificado correctamente con INFILE."
+    else
+      redirect_to factura_path(@factura), alert: resultado[:mensaje].presence || "No se pudo certificar el DTE con INFILE."
+    end
+  end
+
   private
 
   def set_factura
@@ -52,10 +61,11 @@ class FacturasController < ApplicationController
   def load_catalogs
     @clientes = Cliente.ordenados
     @monedas = Moneda.activas.order(:nombre)
+    @companies = Company.activas.order(:commercial_name, :legal_name)
   end
 
   def factura_params
-    params.require(:factura).permit(:numero, :serie, :cliente_id, :cliente_nombre, :fecha_emision, :fecha_vencimiento, :total, :moneda_id, :estado, :notas, :activo)
+    params.require(:factura).permit(:numero, :serie, :cliente_id, :cliente_nombre, :fecha_emision, :fecha_vencimiento, :total, :moneda_id, :company_id, :estado, :notas, :activo)
   end
 
   def apply_filters(scope)

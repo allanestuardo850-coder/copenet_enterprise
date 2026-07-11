@@ -11,10 +11,16 @@
               <div class="view-controller__badges">
                 <%= render "shared/badge", text: @factura.activo? ? @factura.estado.humanize : "Inactiva", tone: @factura.activo? ? "success" : "warning" %>
                 <%= render "shared/badge", text: @factura.serie.presence || "Sin serie", tone: "info" %>
+                <% if @factura.dte.present? %>
+                  <%= render "shared/badge", text: "DTE #{@factura.dte.estado.humanize}", tone: @factura.dte.certificado? ? "success" : (@factura.dte.error? ? "danger" : "warning") %>
+                <% else %>
+                  <%= render "shared/badge", text: "DTE pendiente", tone: "warning" %>
+                <% end %>
               </div>
             </div>
             <div class="view-controller__meta">
               <span><strong>Cliente:</strong> <%= @factura.cliente_nombre %></span>
+              <span><strong>Empresa:</strong> <%= @factura.company&.commercial_name || @factura.company&.legal_name || "-" %></span>
               <span><strong>Moneda:</strong> <%= @factura.moneda&.nombre || "-" %></span>
             </div>
           </div>
@@ -23,6 +29,14 @@
         <div class="view-controller__actions" aria-label="Acciones de factura">
           <%= link_to "Volver", facturas_path, class: "ui-button ui-button-secondary" %>
           <%= link_to "Editar", edit_factura_path(@factura), class: "ui-button ui-button-primary" %>
+          <% unless @factura.dte_certificado? %>
+            <%= button_to "Certificar INFILE",
+                          certificar_infile_factura_path(@factura),
+                          method: :post,
+                          class: "ui-button ui-button-primary",
+                          form_class: "inline-form",
+                          data: { turbo_confirm: "Se enviará esta factura a certificación INFILE. ¿Deseas continuar?" } %>
+          <% end %>
         </div>
       </div>
 
@@ -43,9 +57,9 @@
           <span class="view-controller__metric-note">Ayuda al control de cartera y cobro.</span>
         </article>
         <article class="view-controller__metric">
-          <span class="view-controller__metric-label">Estado</span>
-          <strong class="view-controller__metric-value"><%= @factura.activo? ? @factura.estado.humanize : "Inactiva" %></strong>
-          <span class="view-controller__metric-note">Situacion operativa dentro del flujo comercial.</span>
+          <span class="view-controller__metric-label">DTE</span>
+          <strong class="view-controller__metric-value"><%= @factura.dte&.estado&.humanize || "Pendiente" %></strong>
+          <span class="view-controller__metric-note">Estado actual del flujo de certificacion INFILE.</span>
         </article>
       </div>
     </header>
@@ -63,7 +77,14 @@
           <span class="module-tab__icon"><%= icon("calendar") %></span>
           <span class="module-tab__copy">
             <span class="module-tab__label">Control</span>
-            <span class="module-tab__hint">Fechas y estado</span>
+            <span class="module-tab__hint">Fechas, estado y monto</span>
+          </span>
+        </button>
+        <button type="button" class="module-tab" id="tab-factura-detalle-dte" role="tab" aria-selected="false" aria-controls="panel-factura-detalle-dte" data-tabs-target="tab" data-tab-id="dte" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("shield") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">DTE</span>
+            <span class="module-tab__hint">INFILE y respuesta FEL</span>
           </span>
         </button>
         <button type="button" class="module-tab" id="tab-factura-detalle-notas" role="tab" aria-selected="false" aria-controls="panel-factura-detalle-notas" data-tabs-target="tab" data-tab-id="notas" data-action="tabs#switch">
@@ -89,6 +110,7 @@
           <div class="detail-item"><span>Numero</span><strong><%= @factura.numero %></strong></div>
           <div class="detail-item"><span>Serie</span><strong><%= @factura.serie.presence || "-" %></strong></div>
           <div class="detail-item"><span>Cliente</span><strong><%= @factura.cliente_nombre %></strong></div>
+          <div class="detail-item"><span>Empresa emisora</span><strong><%= @factura.company&.commercial_name || @factura.company&.legal_name || "-" %></strong></div>
           <div class="detail-item"><span>Moneda</span><strong><%= @factura.moneda&.nombre || "-" %></strong></div>
         </div>
       </section>
@@ -107,6 +129,34 @@
           <div class="detail-item"><span>Total</span><strong><%= @factura.total_formateado %></strong></div>
           <div class="detail-item"><span>Estado</span><strong><%= @factura.activo? ? @factura.estado.humanize : "Inactiva" %></strong></div>
         </div>
+      </section>
+
+      <section class="panel detail-section module-tab-panel" id="panel-factura-detalle-dte" role="tabpanel" aria-labelledby="tab-factura-detalle-dte" data-tabs-target="panel" data-tab-panel-id="dte" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>DTE / INFILE</h2>
+            <p>Estado de certificacion, identificadores FEL y respuesta devuelta por INFILE.</p>
+          </div>
+        </div>
+
+        <% if @factura.dte.present? %>
+          <div class="detail-grid">
+            <div class="detail-item"><span>Estado</span><strong><%= @factura.dte.estado.humanize %></strong></div>
+            <div class="detail-item"><span>UUID</span><strong><%= @factura.dte.uuid.presence || "-" %></strong></div>
+            <div class="detail-item"><span>Serie</span><strong><%= @factura.dte.serie.presence || "-" %></strong></div>
+            <div class="detail-item"><span>Numero</span><strong><%= @factura.dte.numero.presence || "-" %></strong></div>
+            <div class="detail-item"><span>Identificador</span><strong><%= @factura.dte.identificador %></strong></div>
+            <div class="detail-item"><span>Fecha certificacion</span><strong><%= @factura.dte.fecha_certificacion || "-" %></strong></div>
+          </div>
+          <% if @factura.dte.errores_fel.present? && @factura.dte.errores_fel.any? %>
+            <div class="document-paragraph-card">
+              <strong>Respuesta / errores FEL</strong>
+              <p><%= @factura.dte.errores_fel.to_json %></p>
+            </div>
+          <% end %>
+        <% else %>
+          <%= render "shared/empty_state", title: "DTE pendiente", description: "Al certificar se generará el XML, se firmará y se enviará al certificador INFILE." %>
+        <% end %>
       </section>
 
       <section class="panel detail-section module-tab-panel" id="panel-factura-detalle-notas" role="tabpanel" aria-labelledby="tab-factura-detalle-notas" data-tabs-target="panel" data-tab-panel-id="notas" hidden>

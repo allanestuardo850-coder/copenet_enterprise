@@ -16,6 +16,8 @@ class Company < ApplicationRecord
   has_one_attached :logo
   has_one_attached :quote_logo
   has_many :producto_servicios, dependent: :nullify
+  has_many :facturas, dependent: :nullify
+  has_many :dtes, dependent: :restrict_with_error
 
   attr_accessor :inactive, :remove_logo, :remove_quote_logo
 
@@ -116,6 +118,14 @@ class Company < ApplicationRecord
 
   def branding_accent_color_display
     normalizar_hex(color_acento.presence || "#6EB8FF")
+  end
+
+  def infile_configurada?
+    tax_id.present? &&
+      infile_prefix.present? &&
+      infile_key.present? &&
+      infile_signature_prefix.present? &&
+      infile_signature_key.present?
   end
 
   def inactive

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_06_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_10_173000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -306,10 +306,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_180000) do
     t.index ["cliente_id"], name: "index_expediente_clientes_on_cliente_id"
   end
 
+  create_table "dtes", force: :cascade do |t|
+    t.string "certificador", default: "infile", null: false
+    t.bigint "company_id", null: false
+    t.datetime "created_at", null: false
+    t.text "descripcion", null: false
+    t.jsonb "errores_fel", default: {}, null: false
+    t.string "estado", default: "pendiente_certificar", null: false
+    t.bigint "factura_id", null: false
+    t.datetime "fecha_certificacion"
+    t.string "identificador", null: false
+    t.decimal "monto", precision: 14, scale: 2, default: "0.0", null: false
+    t.string "moneda", default: "GTQ", null: false
+    t.string "nit_receptor", default: "CF", null: false
+    t.string "nombre_receptor", default: "Consumidor Final", null: false
+    t.string "numero"
+    t.string "correo_receptor"
+    t.jsonb "request_payload", default: {}, null: false
+    t.jsonb "response_payload", default: {}, null: false
+    t.string "serie"
+    t.string "tipo_dte", default: "FACT", null: false
+    t.string "tipo_especial"
+    t.datetime "updated_at", null: false
+    t.string "uuid"
+    t.text "xml_firmado"
+    t.text "xml_sin_firmar"
+    t.index ["company_id"], name: "index_dtes_on_company_id"
+    t.index ["estado"], name: "index_dtes_on_estado"
+    t.index ["factura_id"], name: "index_dtes_on_factura_id"
+    t.index ["identificador"], name: "index_dtes_on_identificador", unique: true
+    t.index ["uuid"], name: "index_dtes_on_uuid"
+  end
+
   create_table "facturas", force: :cascade do |t|
     t.boolean "activo", default: true, null: false
     t.bigint "cliente_id"
     t.string "cliente_nombre", null: false
+    t.bigint "company_id"
     t.datetime "created_at", null: false
     t.string "estado", default: "borrador", null: false
     t.date "fecha_emision"
@@ -322,6 +355,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_180000) do
     t.datetime "updated_at", null: false
     t.index ["cliente_id"], name: "index_facturas_on_cliente_id"
     t.index ["cliente_nombre"], name: "index_facturas_on_cliente_nombre"
+    t.index ["company_id"], name: "index_facturas_on_company_id"
     t.index ["estado"], name: "index_facturas_on_estado"
     t.index ["fecha_emision"], name: "index_facturas_on_fecha_emision"
     t.index ["moneda_id"], name: "index_facturas_on_moneda_id"
@@ -577,8 +611,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_180000) do
   add_foreign_key "cotizacion_detalles", "producto_servicio_precios"
   add_foreign_key "cotizaciones", "clientes"
   add_foreign_key "cotizaciones", "producto_servicios"
+  add_foreign_key "dtes", "companies"
+  add_foreign_key "dtes", "facturas"
   add_foreign_key "expediente_clientes", "clientes"
   add_foreign_key "facturas", "clientes"
+  add_foreign_key "facturas", "companies"
   add_foreign_key "facturas", "monedas"
   add_foreign_key "permisos", "modulo_sistemas"
   add_foreign_key "permisos", "roles"

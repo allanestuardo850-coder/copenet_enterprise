@@ -1,5 +1,17 @@
 module UsuariosHelper
   ACCIONES_PERMISO = %i[ver crear editar eliminar exportar configurar].freeze
+  ETIQUETAS_ACCIONES_PERMISO = {
+    ver: "Ver",
+    crear: "Crear",
+    editar: "Editar",
+    eliminar: "Inhabilitar",
+    exportar: "Exportar",
+    configurar: "Configurar"
+  }.freeze
+
+  def permiso_accion_label(accion)
+    ETIQUETAS_ACCIONES_PERMISO.fetch(accion.to_sym, accion.to_s.humanize)
+  end
 
   def usuario_valor(value, fallback = "Pendiente de configurar")
     value.presence || fallback

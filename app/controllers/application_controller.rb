@@ -62,7 +62,7 @@ class ApplicationController < ActionController::Base
       permiso.puede_crear?
     when :editar
       permiso.puede_editar?
-    when :eliminar
+    when :eliminar, :inhabilitar
       permiso.puede_eliminar?
     when :exportar
       permiso.puede_exportar?
@@ -170,10 +170,10 @@ class ApplicationController < ActionController::Base
       :ver
     when "new", "create"
       :crear
-    when "edit", "update", "agregar_precio", "agregar_costo"
+    when "edit", "update", "agregar_precio", "agregar_costo", "certificar_infile"
       :editar
     when "destroy"
-      :eliminar
+      :inhabilitar
     when "configuration", "permisos", "actualizar_permisos", "actualizar_parametros"
       :configurar
     else

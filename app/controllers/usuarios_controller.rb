@@ -1,5 +1,5 @@
 class UsuariosController < ApplicationController
-  before_action :set_usuario, only: %i[show edit update]
+  before_action :set_usuario, only: %i[show edit update permisos]
 
   def index
     @current_page = :usuarios
@@ -21,6 +21,7 @@ class UsuariosController < ApplicationController
   def show
     @current_page = :usuarios
     cargar_permisos
+    cargar_actividad_usuario
   end
 
   def new
@@ -36,6 +37,12 @@ class UsuariosController < ApplicationController
 
     if @usuario.save
       sync_roles
+      registrar_actividad_usuario!(
+        "usuarios.created",
+        "Usuario creado",
+        subject: @usuario,
+        metadata: { target_email: @usuario.email }
+      )
       redirect_to usuarios_path, notice: "Usuario creado correctamente."
     else
       render :new, status: :unprocessable_entity
@@ -45,22 +52,51 @@ class UsuariosController < ApplicationController
   def edit
     @current_page = :usuarios
     cargar_roles
-    cargar_permisos
   end
 
   def update
     @current_page = :usuarios
     cargar_roles
 
+    # En edición solo se actualiza la información propia del usuario y sus roles.
+    # Los permisos por módulo se asignan desde la vista de detalle (ver).
     if @usuario.update(usuario_update_params)
-      Usuario.transaction do
-        role_changed = sync_roles
-        sync_permisos_usuario(role_changed: role_changed)
+      role_changed = sync_roles
+      registrar_actividad_usuario!(
+        "usuarios.updated",
+        "Usuario actualizado",
+        subject: @usuario,
+        metadata: { target_email: @usuario.email }
+      )
+      if role_changed
+        registrar_actividad_usuario!(
+          "usuarios.roles_updated",
+          "Roles del usuario actualizados",
+          subject: @usuario,
+          metadata: { target_email: @usuario.email, roles: @usuario.roles.pluck(:nombre) }
+        )
       end
       redirect_to usuarios_path, notice: "Usuario actualizado correctamente."
     else
-      cargar_permisos
       render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def permisos
+    @current_page = :usuarios
+    changed_count = sync_permisos_usuario
+    if changed_count.positive?
+      registrar_actividad_usuario!(
+        "usuarios.permissions_updated",
+        "Permisos del usuario actualizados",
+        subject: @usuario,
+        metadata: { target_email: @usuario.email, modulos_actualizados: changed_count }
+      )
+    end
+
+    respond_to do |format|
+      format.json { head :ok }
+      format.html { redirect_to usuario_path(@usuario), notice: "Permisos actualizados correctamente." }
     end
   end
 
@@ -77,26 +113,16 @@ class UsuariosController < ApplicationController
   def cargar_permisos
     @modulo_sistemas = ModuloSistema.activos.orden_admin
     @modulo_sistemas_por_grupo = @modulo_sistemas.group_by { |modulo| modulo.grupo.presence || "Sin grupo" }
-    @actividad_reciente = [
-      {
-        titulo: "Usuario actualizado",
-        detalle: "Se sincronizaron roles y datos de acceso del perfil.",
-        fecha: "Hoy, 08:45",
-        tone: "primary"
-      },
-      {
-        titulo: "Permisos personalizados guardados",
-        detalle: "El usuario ya puede tener permisos propios además de los heredados por rol.",
-        fecha: "Ayer, 16:20",
-        tone: "success"
-      },
-      {
-        titulo: "Módulos sincronizados",
-        detalle: "Todo módulo activo aparece aquí automáticamente para que puedas configurarlo desde usuarios.",
-        fecha: "Siempre",
-        tone: "info"
-      }
-    ]
+  end
+
+  def cargar_actividad_usuario
+    eventos = BitacoraEvento
+              .where("usuario_id = :id OR (subject_type = 'Usuario' AND subject_id = :id)", id: @usuario.id)
+              .recientes
+              .limit(80)
+
+    @actividad_items = eventos.map { |evento| item_actividad_usuario(evento) }
+    agregar_actividad_creacion_fallback
   end
 
   def sync_roles
@@ -108,19 +134,17 @@ class UsuariosController < ApplicationController
   end
 
   def sync_permisos_usuario(role_changed: false)
-    if @usuario.root?
-      @usuario.usuario_permisos.destroy_all
-      return
-    end
-
     dirty_ids = params.fetch(:usuario_permisos_dirty, []).map(&:to_s)
     @usuario.usuario_permisos.destroy_all if role_changed
 
+    changed_count = 0
     dirty_ids.each do |submitted_modulo_id|
       modulo = ModuloSistema.activos.find(submitted_modulo_id)
       values = permiso_usuario_params_for(modulo.id)
       actualizar_permiso_usuario_para(@usuario, modulo, values)
+      changed_count += 1
     end
+    changed_count
   end
 
   def permiso_usuario_params_for(modulo_id)
@@ -181,5 +205,82 @@ class UsuariosController < ApplicationController
     allowed = [10, 20, 50, 100]
     value = params[:per_page].to_i
     allowed.include?(value) ? value : 10
+  end
+
+  def registrar_actividad_usuario!(event_type, description, subject:, metadata: {})
+    BitacoraEvento.registrar!(
+      event_type: event_type,
+      description: description,
+      subject: subject,
+      usuario: current_usuario,
+      metadata: {
+        module_code: "USUARIOS",
+        module_name: "Usuarios"
+      }.merge(metadata)
+    )
+  end
+
+  def codigo_modulo_evento(evento)
+    metadata_code = evento.metadata["module_code"].presence
+    return metadata_code if metadata_code.present?
+
+    case evento.event_type.to_s.split(".").first
+    when "acceso", "seguridad", "sesion" then "ACCESO"
+    when "usuarios", "usuario" then "USUARIOS"
+    when "roles", "permisos" then "ROLES"
+    when "cliente", "clientes" then "CLIENTES"
+    when "cotizacion", "cotizaciones" then "COTIZACIONES"
+    when "producto", "productos" then "PRODUCTOS_SERVICIOS"
+    else "ADMINISTRACION"
+    end
+  end
+
+  def item_actividad_usuario(evento)
+    {
+      icon: icono_actividad_usuario(evento),
+      module_name: nombre_modulo_evento(evento),
+      label: evento.description,
+      value: I18n.l(evento.created_at, format: :short),
+      detail: detalle_actividad_usuario(evento)
+    }
+  end
+
+  def nombre_modulo_evento(evento)
+    evento.metadata["module_name"].presence ||
+      ModuloSistema.find_by(codigo: codigo_modulo_evento(evento))&.nombre ||
+      codigo_modulo_evento(evento).to_s.humanize
+  end
+
+  def icono_actividad_usuario(evento)
+    case evento.event_type.to_s
+    when /login|logout|sesion/ then "logout"
+    when /created/ then "user-role"
+    when /permission|permiso/ then "shield-outline"
+    when /role|rol/ then "shield"
+    else "report"
+    end
+  end
+
+  def detalle_actividad_usuario(evento)
+    actor = evento.usuario&.nombre_completo
+    target = evento.subject.is_a?(Usuario) ? evento.subject.nombre_completo : nil
+    return "Realizado por #{actor}" if actor.present? && target.blank?
+    return "Afectó a #{target}" if target.present? && actor.blank?
+    return "Realizado por #{actor} sobre #{target}" if actor.present? && target.present? && actor != target
+
+    nil
+  end
+
+  def agregar_actividad_creacion_fallback
+    @actividad_items ||= []
+    return if @actividad_items.any? { |item| item[:label].to_s == "Usuario creado" }
+
+    @actividad_items << {
+      icon: "user-role",
+      module_name: "Usuarios",
+      label: "Usuario creado",
+      value: I18n.l(@usuario.created_at, format: :short),
+      detail: "Registro base del usuario"
+    }
   end
 end

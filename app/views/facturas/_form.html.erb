@@ -22,10 +22,18 @@
                 <div class="view-controller__badges">
                   <%= render "shared/badge", text: factura.activo? ? factura.estado.to_s.humanize : "Inactiva", tone: factura.activo? ? "success" : "warning" %>
                   <%= render "shared/badge", text: factura.serie.presence || "Sin serie", tone: "info" %>
+                  <% if factura.persisted? %>
+                    <% if factura.dte.present? %>
+                      <%= render "shared/badge", text: "DTE #{factura.dte.estado.humanize}", tone: factura.dte.certificado? ? "success" : (factura.dte.error? ? "danger" : "warning") %>
+                    <% else %>
+                      <%= render "shared/badge", text: "DTE pendiente", tone: "warning" %>
+                    <% end %>
+                  <% end %>
                 </div>
               </div>
               <div class="view-controller__meta">
                 <span><strong>Cliente:</strong> <%= factura.cliente_nombre.presence || "Pendiente de asignar" %></span>
+                <span><strong>Empresa:</strong> <%= factura.company&.commercial_name || factura.company&.legal_name || "Sin emisora" %></span>
                 <span><strong>Total actual:</strong> <%= factura.total_formateado %></span>
               </div>
             </div>
@@ -54,14 +62,14 @@
             <span class="view-controller__metric-note">Ayuda a priorizar cartera y cobranza.</span>
           </article>
           <article class="view-controller__metric">
-            <span class="view-controller__metric-label">Cliente</span>
-            <strong class="view-controller__metric-value"><%= factura.cliente_nombre.presence || "Sin cliente" %></strong>
-            <span class="view-controller__metric-note">Puede venir de catalogo o captura libre.</span>
+            <span class="view-controller__metric-label">Empresa</span>
+            <strong class="view-controller__metric-value"><%= factura.company&.commercial_name || factura.company&.legal_name || "Pendiente" %></strong>
+            <span class="view-controller__metric-note">Entidad emisora usada para certificacion y FEL.</span>
           </article>
         </div>
 
         <p class="view-controller__summary-note">
-          Captura primero la identidad del documento, luego define fechas, moneda y estado operativo, y deja las observaciones para el cierre.
+          Captura primero la identidad del documento y la empresa emisora, luego define fechas, moneda y estado operativo, y deja las observaciones para el cierre.
         </p>
       </header>
 
@@ -71,7 +79,7 @@
             <span class="module-tab__icon"><%= icon("invoice") %></span>
             <span class="module-tab__copy">
               <span class="module-tab__label">General</span>
-              <span class="module-tab__hint">Numero, serie y cliente</span>
+              <span class="module-tab__hint">Numero, serie, cliente y emisora</span>
             </span>
           </button>
           <button type="button" class="module-tab" id="tab-factura-control" role="tab" aria-selected="false" aria-controls="panel-factura-control" data-tabs-target="tab" data-tab-id="control" data-action="tabs#switch">
@@ -96,7 +104,7 @@
           <div class="panel-header">
             <div>
               <h2>Identificacion comercial</h2>
-              <p>Registra los datos base con los que esta factura sera localizada y conciliada.</p>
+              <p>Registra los datos base con los que esta factura sera localizada, conciliada y certificada.</p>
             </div>
           </div>
 
@@ -116,6 +124,13 @@
             <div class="field-group">
               <%= form.label :cliente_nombre, "Nombre del cliente" %>
               <%= form.text_field :cliente_nombre, class: "text-input" %>
+            </div>
+            <div class="field-group field-group-full">
+              <%= form.label :company_id, "Empresa emisora" %>
+              <%= form.select :company_id,
+                              options_from_collection_for_select(@companies, :id, :commercial_name, factura.company_id),
+                              { include_blank: "Seleccionar empresa emisora" },
+                              class: "text-input filter-select" %>
             </div>
           </div>
         </section>
