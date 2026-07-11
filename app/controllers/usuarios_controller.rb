@@ -121,7 +121,7 @@ class UsuariosController < ApplicationController
               .recientes
               .limit(80)
 
-    @actividad_grupos = grupos_actividad_usuario(eventos)
+    @actividad_items = eventos.map { |evento| item_actividad_usuario(evento) }
     agregar_actividad_creacion_fallback
   end
 
@@ -220,35 +220,6 @@ class UsuariosController < ApplicationController
     )
   end
 
-  def grupos_actividad_usuario(eventos)
-    eventos_por_grupo = eventos.group_by { |evento| codigo_modulo_evento(evento) }
-    grupos = grupos_logicos_actividad + ModuloSistema.activos.orden_admin.map do |modulo|
-      {
-        id: modulo.codigo.parameterize,
-        codigo: modulo.codigo,
-        title: modulo.nombre,
-        items: eventos_por_grupo.fetch(modulo.codigo, []).map { |evento| item_actividad_usuario(evento) }
-      }
-    end
-
-    grupos.map do |grupo|
-      next grupo unless grupo[:codigo] == "ACCESO"
-
-      grupo.merge(items: eventos_por_grupo.fetch("ACCESO", []).map { |evento| item_actividad_usuario(evento) })
-    end
-  end
-
-  def grupos_logicos_actividad
-    [
-      {
-        id: "acceso-seguridad",
-        codigo: "ACCESO",
-        title: "Acceso y seguridad",
-        items: []
-      }
-    ]
-  end
-
   def codigo_modulo_evento(evento)
     metadata_code = evento.metadata["module_code"].presence
     return metadata_code if metadata_code.present?
@@ -267,10 +238,17 @@ class UsuariosController < ApplicationController
   def item_actividad_usuario(evento)
     {
       icon: icono_actividad_usuario(evento),
+      module_name: nombre_modulo_evento(evento),
       label: evento.description,
       value: I18n.l(evento.created_at, format: :short),
       detail: detalle_actividad_usuario(evento)
     }
+  end
+
+  def nombre_modulo_evento(evento)
+    evento.metadata["module_name"].presence ||
+      ModuloSistema.find_by(codigo: codigo_modulo_evento(evento))&.nombre ||
+      codigo_modulo_evento(evento).to_s.humanize
   end
 
   def icono_actividad_usuario(evento)
@@ -294,12 +272,12 @@ class UsuariosController < ApplicationController
   end
 
   def agregar_actividad_creacion_fallback
-    usuarios_group = @actividad_grupos.find { |group| group[:codigo] == "USUARIOS" }
-    return unless usuarios_group
-    return if usuarios_group[:items].any? { |item| item[:label].to_s == "Usuario creado" }
+    @actividad_items ||= []
+    return if @actividad_items.any? { |item| item[:label].to_s == "Usuario creado" }
 
-    usuarios_group[:items] << {
+    @actividad_items << {
       icon: "user-role",
+      module_name: "Usuarios",
       label: "Usuario creado",
       value: I18n.l(@usuario.created_at, format: :short),
       detail: "Registro base del usuario"

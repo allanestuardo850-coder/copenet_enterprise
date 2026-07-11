@@ -70,7 +70,6 @@
       <span class="module-tab-icon"><%= icon("report") %></span>
       <span class="module-tab-copy">
         <strong>Actividad</strong>
-        <small>Eventos recientes</small>
       </span>
     </button>
 
@@ -78,7 +77,6 @@
       <span class="module-tab-icon"><%= icon("shield") %></span>
       <span class="module-tab-copy">
         <strong>Permisos</strong>
-        <small><%= @modulo_sistemas.size %> módulos configurables</small>
       </span>
     </button>
   </section>
@@ -86,77 +84,32 @@
   <section class="panel module-tab-panel user-show-activity-panel is-active" data-tabs-target="panel" data-tab-id="actividad">
     <div class="panel-header">
       <div>
-        <h2>Actividad por módulo</h2>
+        <h2>Actividad</h2>
       </div>
     </div>
 
-    <div data-controller="subtabs" data-subtabs-default-value="todas">
-      <div class="user-show-filter-tabs" role="tablist" aria-label="Filtros de actividad">
-        <button type="button" class="is-active" data-subtabs-target="tab" data-tab-id="todas" data-action="subtabs#switch" role="tab" aria-selected="true">Todos</button>
-        <% @actividad_grupos.each do |group| %>
-          <button type="button" data-subtabs-target="tab" data-tab-id="<%= group[:id] %>" data-action="subtabs#switch" role="tab" aria-selected="false"><%= group[:title] %></button>
+    <% if @actividad_items.any? %>
+      <div class="user-show-activity-list">
+        <% @actividad_items.each do |item| %>
+          <div class="user-show-activity-row">
+            <span class="user-show-activity-icon"><%= icon(item[:icon]) %></span>
+            <div class="user-show-activity-module"><%= item[:module_name] %></div>
+            <div class="user-show-activity-copy">
+              <strong><%= item[:label] %></strong>
+              <% if item[:detail].present? %>
+                <span><%= item[:detail] %></span>
+              <% end %>
+            </div>
+            <time><%= item[:value] %></time>
+          </div>
         <% end %>
       </div>
-
-      <section class="user-show-activity-tab-panel is-active" data-subtabs-target="panel" data-tab-id="todas">
-        <% visible_groups = @actividad_grupos.select { |group| group[:items].any? } %>
-        <% if visible_groups.any? %>
-          <div class="user-show-activity-list">
-            <% visible_groups.each do |group| %>
-              <section class="user-show-activity-group">
-                <h3><%= group[:title] %></h3>
-                <% group[:items].each do |item| %>
-                  <div class="user-show-activity-row">
-                    <span class="user-show-activity-icon"><%= icon(item[:icon]) %></span>
-                    <div class="user-show-activity-copy">
-                      <strong><%= item[:label] %></strong>
-                      <% if item[:detail].present? %>
-                        <span><%= item[:detail] %></span>
-                      <% end %>
-                    </div>
-                    <time><%= item[:value] %></time>
-                  </div>
-                <% end %>
-              </section>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="empty-inline-state user-show-empty-activity">
-            <strong>Sin actividad</strong>
-            <span>No hay eventos registrados para este usuario.</span>
-          </div>
-        <% end %>
-      </section>
-
-      <% @actividad_grupos.each do |group| %>
-        <section class="user-show-activity-tab-panel" data-subtabs-target="panel" data-tab-id="<%= group[:id] %>" hidden>
-          <% if group[:items].any? %>
-            <div class="user-show-activity-list">
-              <section class="user-show-activity-group">
-                <h3><%= group[:title] %></h3>
-                <% group[:items].each do |item| %>
-                  <div class="user-show-activity-row">
-                    <span class="user-show-activity-icon"><%= icon(item[:icon]) %></span>
-                    <div class="user-show-activity-copy">
-                      <strong><%= item[:label] %></strong>
-                      <% if item[:detail].present? %>
-                        <span><%= item[:detail] %></span>
-                      <% end %>
-                    </div>
-                    <time><%= item[:value] %></time>
-                  </div>
-                <% end %>
-              </section>
-            </div>
-          <% else %>
-            <div class="empty-inline-state user-show-empty-activity">
-              <strong>Sin actividad</strong>
-              <span>No hay eventos registrados en <%= group[:title].downcase %>.</span>
-            </div>
-          <% end %>
-        </section>
+    <% else %>
+      <div class="empty-inline-state user-show-empty-activity">
+        <strong>Sin actividad</strong>
+        <span>No hay eventos registrados para este usuario.</span>
+      </div>
       <% end %>
-    </div>
   </section>
 
   <section class="panel module-tab-panel user-permissions-panel" data-tabs-target="panel" data-tab-id="permisos" hidden>
@@ -165,18 +118,7 @@
         <div>
           <h2>Permisos del usuario</h2>
         </div>
-        <span class="permission-save-state" data-usuario-permisos-target="status" data-state="idle">Listo</span>
       </div>
-
-      <% if @usuario.root? %>
-        <section class="root-permissions-card">
-          <div class="root-permissions-icon"><%= icon("shield") %></div>
-          <div>
-            <h3>Acceso total habilitado</h3>
-            <p>Este usuario es root y nace con todos los permisos activos. Puedes ajustar permisos específicos desde esta tabla si necesitas registrar una configuración personalizada.</p>
-          </div>
-        </section>
-      <% end %>
 
       <% first_permission_tab = @modulo_sistemas_por_grupo.keys.first.to_s.parameterize.presence || "permisos" %>
       <div data-controller="subtabs" data-subtabs-default-value="<%= first_permission_tab %>">
@@ -230,7 +172,6 @@
                       <td>
                         <div class="permission-module-cell">
                           <strong><%= modulo.nombre %></strong>
-                          <span><%= modulo.descripcion.presence || "Módulo listo para administración y control de accesos." %></span>
                         </div>
                       </td>
                       <td><%= modulo.codigo %></td>
