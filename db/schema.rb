@@ -81,11 +81,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_11_042000) do
 
   create_table "clientes", force: :cascade do |t|
     t.boolean "activo", default: true, null: false
+    t.text "billing_address"
+    t.string "billing_name"
     t.string "client_type", default: "no_socio", null: false
     t.string "contacto_principal"
     t.datetime "created_at", null: false
-    t.text "billing_address"
-    t.string "billing_name"
     t.string "email"
     t.boolean "is_copenet_client", default: false, null: false
     t.string "nombre", null: false
@@ -300,19 +300,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_11_042000) do
     t.index ["producto_servicio_id"], name: "index_cotizaciones_on_producto_servicio_id"
   end
 
-  create_table "expediente_clientes", force: :cascade do |t|
-    t.bigint "cliente_id", null: false
-    t.datetime "created_at", null: false
-    t.string "estado", default: "activo", null: false
-    t.text "resumen"
-    t.string "titulo", null: false
-    t.datetime "updated_at", null: false
-    t.index ["cliente_id"], name: "index_expediente_clientes_on_cliente_id"
-  end
-
   create_table "dtes", force: :cascade do |t|
     t.string "certificador", default: "infile", null: false
     t.bigint "company_id", null: false
+    t.string "correo_receptor"
     t.datetime "created_at", null: false
     t.text "descripcion", null: false
     t.jsonb "errores_fel", default: {}, null: false
@@ -320,12 +311,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_11_042000) do
     t.bigint "factura_id", null: false
     t.datetime "fecha_certificacion"
     t.string "identificador", null: false
-    t.decimal "monto", precision: 14, scale: 2, default: "0.0", null: false
     t.string "moneda", default: "GTQ", null: false
+    t.decimal "monto", precision: 14, scale: 2, default: "0.0", null: false
     t.string "nit_receptor", default: "CF", null: false
     t.string "nombre_receptor", default: "Consumidor Final", null: false
     t.string "numero"
-    t.string "correo_receptor"
     t.jsonb "request_payload", default: {}, null: false
     t.jsonb "response_payload", default: {}, null: false
     t.string "serie"
@@ -340,6 +330,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_11_042000) do
     t.index ["factura_id"], name: "index_dtes_on_factura_id"
     t.index ["identificador"], name: "index_dtes_on_identificador", unique: true
     t.index ["uuid"], name: "index_dtes_on_uuid"
+  end
+
+  create_table "expediente_clientes", force: :cascade do |t|
+    t.bigint "cliente_id", null: false
+    t.datetime "created_at", null: false
+    t.string "estado", default: "activo", null: false
+    t.text "resumen"
+    t.string "titulo", null: false
+    t.datetime "updated_at", null: false
+    t.index ["cliente_id"], name: "index_expediente_clientes_on_cliente_id"
+  end
+
+  create_table "factura_detalles", force: :cascade do |t|
+    t.boolean "afecto_iva", default: true, null: false
+    t.decimal "cantidad", precision: 14, scale: 2, default: "1.0", null: false
+    t.datetime "created_at", null: false
+    t.string "descripcion", null: false
+    t.bigint "factura_id", null: false
+    t.decimal "precio_unitario", precision: 14, scale: 2, default: "0.0", null: false
+    t.bigint "producto_servicio_id"
+    t.bigint "producto_servicio_precio_id"
+    t.decimal "subtotal", precision: 14, scale: 2, default: "0.0", null: false
+    t.decimal "total", precision: 14, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["descripcion"], name: "index_factura_detalles_on_descripcion"
+    t.index ["factura_id"], name: "index_factura_detalles_on_factura_id"
+    t.index ["producto_servicio_id"], name: "index_factura_detalles_on_producto_servicio_id"
+    t.index ["producto_servicio_precio_id"], name: "index_factura_detalles_on_producto_servicio_precio_id"
   end
 
   create_table "facturas", force: :cascade do |t|
@@ -364,24 +382,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_11_042000) do
     t.index ["fecha_emision"], name: "index_facturas_on_fecha_emision"
     t.index ["moneda_id"], name: "index_facturas_on_moneda_id"
     t.index ["numero"], name: "index_facturas_on_numero", unique: true
-  end
-
-  create_table "factura_detalles", force: :cascade do |t|
-    t.boolean "afecto_iva", default: true, null: false
-    t.decimal "cantidad", precision: 14, scale: 2, default: "1.0", null: false
-    t.datetime "created_at", null: false
-    t.string "descripcion", null: false
-    t.bigint "factura_id", null: false
-    t.decimal "precio_unitario", precision: 14, scale: 2, default: "0.0", null: false
-    t.bigint "producto_servicio_id"
-    t.bigint "producto_servicio_precio_id"
-    t.decimal "subtotal", precision: 14, scale: 2, default: "0.0", null: false
-    t.decimal "total", precision: 14, scale: 2, default: "0.0", null: false
-    t.datetime "updated_at", null: false
-    t.index ["descripcion"], name: "index_factura_detalles_on_descripcion"
-    t.index ["factura_id"], name: "index_factura_detalles_on_factura_id"
-    t.index ["producto_servicio_id"], name: "index_factura_detalles_on_producto_servicio_id"
-    t.index ["producto_servicio_precio_id"], name: "index_factura_detalles_on_producto_servicio_precio_id"
   end
 
   create_table "modulo_sistemas", force: :cascade do |t|
@@ -633,14 +633,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_11_042000) do
   add_foreign_key "cotizacion_detalles", "producto_servicio_precios"
   add_foreign_key "cotizaciones", "clientes"
   add_foreign_key "cotizaciones", "producto_servicios"
-  add_foreign_key "dtes", "companies"
-  add_foreign_key "dtes", "facturas"
+  add_foreign_key "dtes", "companies", name: "fk_rails_dtes_company"
+  add_foreign_key "dtes", "facturas", name: "fk_rails_dtes_factura"
   add_foreign_key "expediente_clientes", "clientes"
-  add_foreign_key "factura_detalles", "facturas"
-  add_foreign_key "factura_detalles", "producto_servicio_precios"
-  add_foreign_key "factura_detalles", "producto_servicios"
+  add_foreign_key "factura_detalles", "facturas", name: "fk_rails_factura_detalles_facturas"
+  add_foreign_key "factura_detalles", "producto_servicio_precios", name: "fk_rails_factura_detalles_producto_servicio_precios"
+  add_foreign_key "factura_detalles", "producto_servicios", name: "fk_rails_factura_detalles_producto_servicios"
   add_foreign_key "facturas", "clientes"
-  add_foreign_key "facturas", "companies"
+  add_foreign_key "facturas", "companies", name: "fk_rails_facturas_company"
   add_foreign_key "facturas", "monedas"
   add_foreign_key "permisos", "modulo_sistemas"
   add_foreign_key "permisos", "roles"
