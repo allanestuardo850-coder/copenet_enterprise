@@ -1,38 +1,131 @@
-<section class="page-section company-show-page">
-  <section class="company-show-hero">
-    <div class="company-show-identity">
-      <div class="company-show-logo">FA</div>
-      <div class="company-show-copy">
-        <div class="company-show-title-row">
-          <strong class="company-show-title"><%= @factura.numero %></strong>
-          <div class="company-show-badges">
-            <%= render "shared/badge", text: @factura.activo? ? @factura.estado.humanize : "Inactiva", tone: @factura.activo? ? "success" : "warning" %>
+<section class="page-section">
+  <section class="view-controller view-controller--detail" data-controller="tabs" data-tabs-default-value="general">
+    <header class="view-controller__summary">
+      <div class="view-controller__summary-shell">
+        <div class="view-controller__identity">
+          <div class="view-controller__avatar">FA</div>
+          <div class="view-controller__copy">
+            <span class="view-controller__eyebrow">Facturacion operativa</span>
+            <div class="view-controller__title-row">
+              <h1 class="view-controller__title"><%= @factura.numero %></h1>
+              <div class="view-controller__badges">
+                <%= render "shared/badge", text: @factura.activo? ? @factura.estado.humanize : "Inactiva", tone: @factura.activo? ? "success" : "warning" %>
+                <%= render "shared/badge", text: @factura.serie.presence || "Sin serie", tone: "info" %>
+              </div>
+            </div>
+            <div class="view-controller__meta">
+              <span><strong>Cliente:</strong> <%= @factura.cliente_nombre %></span>
+              <span><strong>Moneda:</strong> <%= @factura.moneda&.nombre || "-" %></span>
+            </div>
           </div>
         </div>
-        <p><%= @factura.cliente_nombre %> · <%= @factura.total_formateado %></p>
-      </div>
-    </div>
-    <div class="company-show-actions" aria-label="Acciones de factura">
-      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, facturas_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
-      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_factura_path(@factura), class: "company-show-action-button company-show-action-primary", title: "Editar factura", aria: { label: "Editar factura" } %>
-    </div>
-  </section>
 
-  <section class="panel detail-section">
-    <div class="panel-header"><div><h2>Información de la factura</h2></div></div>
-    <div class="detail-grid">
-      <div class="detail-item"><span>Serie</span><strong><%= @factura.serie.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Cliente</span><strong><%= @factura.cliente_nombre %></strong></div>
-      <div class="detail-item"><span>Emisión</span><strong><%= @factura.fecha_emision || "-" %></strong></div>
-      <div class="detail-item"><span>Vencimiento</span><strong><%= @factura.fecha_vencimiento || "-" %></strong></div>
-      <div class="detail-item"><span>Total</span><strong><%= @factura.total_formateado %></strong></div>
-      <div class="detail-item"><span>Moneda</span><strong><%= @factura.moneda&.nombre || "-" %></strong></div>
-    </div>
-    <% if @factura.notas.present? %>
-      <div class="document-paragraph-card">
-        <strong>Notas</strong>
-        <p><%= @factura.notas %></p>
+        <div class="view-controller__actions" aria-label="Acciones de factura">
+          <%= link_to "Volver", facturas_path, class: "ui-button ui-button-secondary" %>
+          <%= link_to "Editar", edit_factura_path(@factura), class: "ui-button ui-button-primary" %>
+        </div>
       </div>
-    <% end %>
+
+      <div class="view-controller__metrics">
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Total</span>
+          <strong class="view-controller__metric-value"><%= @factura.total_formateado %></strong>
+          <span class="view-controller__metric-note">Monto consolidado del documento emitido.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Emision</span>
+          <strong class="view-controller__metric-value"><%= @factura.fecha_emision || "-" %></strong>
+          <span class="view-controller__metric-note">Fecha oficial de salida del documento.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Vencimiento</span>
+          <strong class="view-controller__metric-value"><%= @factura.fecha_vencimiento || "-" %></strong>
+          <span class="view-controller__metric-note">Ayuda al control de cartera y cobro.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Estado</span>
+          <strong class="view-controller__metric-value"><%= @factura.activo? ? @factura.estado.humanize : "Inactiva" %></strong>
+          <span class="view-controller__metric-note">Situacion operativa dentro del flujo comercial.</span>
+        </article>
+      </div>
+    </header>
+
+    <section class="panel product-tabs-panel view-controller__tabs">
+      <nav class="module-tabs" role="tablist" aria-label="Detalle de la factura">
+        <button type="button" class="module-tab is-active" id="tab-factura-detalle-general" role="tab" aria-selected="true" aria-controls="panel-factura-detalle-general" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("invoice") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">General</span>
+            <span class="module-tab__hint">Identidad del documento</span>
+          </span>
+        </button>
+        <button type="button" class="module-tab" id="tab-factura-detalle-control" role="tab" aria-selected="false" aria-controls="panel-factura-detalle-control" data-tabs-target="tab" data-tab-id="control" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("calendar") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">Control</span>
+            <span class="module-tab__hint">Fechas y estado</span>
+          </span>
+        </button>
+        <button type="button" class="module-tab" id="tab-factura-detalle-notas" role="tab" aria-selected="false" aria-controls="panel-factura-detalle-notas" data-tabs-target="tab" data-tab-id="notas" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("message") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">Notas</span>
+            <span class="module-tab__hint">Observaciones del documento</span>
+          </span>
+        </button>
+      </nav>
+    </section>
+
+    <div class="view-controller__content">
+      <section class="panel detail-section module-tab-panel is-active" id="panel-factura-detalle-general" role="tabpanel" aria-labelledby="tab-factura-detalle-general" data-tabs-target="panel" data-tab-panel-id="general">
+        <div class="panel-header">
+          <div>
+            <h2>Identidad del documento</h2>
+            <p>Datos principales para consulta, conciliacion y busqueda administrativa.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><span>Numero</span><strong><%= @factura.numero %></strong></div>
+          <div class="detail-item"><span>Serie</span><strong><%= @factura.serie.presence || "-" %></strong></div>
+          <div class="detail-item"><span>Cliente</span><strong><%= @factura.cliente_nombre %></strong></div>
+          <div class="detail-item"><span>Moneda</span><strong><%= @factura.moneda&.nombre || "-" %></strong></div>
+        </div>
+      </section>
+
+      <section class="panel detail-section module-tab-panel" id="panel-factura-detalle-control" role="tabpanel" aria-labelledby="tab-factura-detalle-control" data-tabs-target="panel" data-tab-panel-id="control" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>Control operativo</h2>
+            <p>Fechas, estado y monto para seguimiento financiero y de cartera.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><span>Emision</span><strong><%= @factura.fecha_emision || "-" %></strong></div>
+          <div class="detail-item"><span>Vencimiento</span><strong><%= @factura.fecha_vencimiento || "-" %></strong></div>
+          <div class="detail-item"><span>Total</span><strong><%= @factura.total_formateado %></strong></div>
+          <div class="detail-item"><span>Estado</span><strong><%= @factura.activo? ? @factura.estado.humanize : "Inactiva" %></strong></div>
+        </div>
+      </section>
+
+      <section class="panel detail-section module-tab-panel" id="panel-factura-detalle-notas" role="tabpanel" aria-labelledby="tab-factura-detalle-notas" data-tabs-target="panel" data-tab-panel-id="notas" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>Observaciones</h2>
+            <p>Notas visibles para soporte comercial, facturacion o seguimiento.</p>
+          </div>
+        </div>
+
+        <% if @factura.notas.present? %>
+          <div class="document-paragraph-card">
+            <strong>Notas</strong>
+            <p><%= @factura.notas %></p>
+          </div>
+        <% else %>
+          <%= render "shared/empty_state", title: "Sin notas registradas", description: "Esta factura no tiene observaciones adicionales por el momento." %>
+        <% end %>
+      </section>
+    </div>
   </section>
 </section>

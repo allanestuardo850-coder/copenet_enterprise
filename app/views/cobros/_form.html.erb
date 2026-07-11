@@ -1,78 +1,183 @@
 <%= form_with model: cobro, class: "company-form" do |form| %>
-  <% if cobro.errors.any? %>
-    <section class="panel form-errors">
-      <ul class="error-list">
-        <% cobro.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </section>
-  <% end %>
-
-  <section class="panel product-tabs-panel">
-    <div class="panel-header">
-      <div><h2>Configuración del cobro</h2></div>
-      <div class="form-actions company-form-header-actions">
-        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
-        <%= link_to "Cancelar", cobros_path, class: "ui-button ui-button-secondary" %>
-      </div>
-    </div>
-  </section>
-
-  <section class="panel form-section">
-    <div class="panel-header"><div><h2>Información general</h2></div></div>
-    <div class="form-grid">
-      <div class="field-group">
-        <%= form.label :referencia, "Referencia" %>
-        <%= form.text_field :referencia, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :cliente_id, "Cliente registrado" %>
-        <%= form.select :cliente_id, options_from_collection_for_select(@clientes, :id, :nombre, cobro.cliente_id), { include_blank: "Seleccionar cliente" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :cliente_nombre, "Nombre del cliente" %>
-        <%= form.text_field :cliente_nombre, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :gestor, "Gestor" %>
-        <%= form.text_field :gestor, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :fecha_vencimiento, "Fecha de vencimiento" %>
-        <%= form.date_field :fecha_vencimiento, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :fecha_pago, "Fecha de pago" %>
-        <%= form.date_field :fecha_pago, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :monto, "Monto" %>
-        <%= form.number_field :monto, class: "text-input", min: 0, step: "0.01" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :moneda_id, "Moneda" %>
-        <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, cobro.moneda_id), { include_blank: "Seleccionar moneda" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :estado, "Estado" %>
-        <%= form.select :estado, options_for_select(Cobro::ESTADOS.map { |estado| [estado.humanize, estado] }, cobro.estado), {}, class: "text-input filter-select" %>
-      </div>
-      <% if cobro.persisted? %>
-        <div class="field-group checkbox-group">
-          <label class="checkbox-label">
-            <%= hidden_field_tag "cobro[activo]", "1" %>
-            <%= check_box_tag "cobro[activo]", "0", !cobro.activo? %>
-            <span>Inactivar</span>
-          </label>
-        </div>
-      <% else %>
-        <%= form.hidden_field :activo, value: true %>
+  <section class="page-section">
+    <section class="view-controller view-controller--form" data-controller="tabs" data-tabs-default-value="general">
+      <% if cobro.errors.any? %>
+        <section class="panel form-errors">
+          <ul class="error-list">
+            <% cobro.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </section>
       <% end %>
-      <div class="field-group field-group-full">
-        <%= form.label :notas, "Notas" %>
-        <%= form.text_area :notas, rows: 4, class: "text-input text-area" %>
+
+      <header class="view-controller__summary">
+        <div class="view-controller__summary-shell">
+          <div class="view-controller__identity">
+            <div class="view-controller__avatar">CB</div>
+            <div class="view-controller__copy">
+              <span class="view-controller__eyebrow">Cobranza operativa</span>
+              <div class="view-controller__title-row">
+                <h1 class="view-controller__title"><%= cobro.persisted? ? cobro.referencia : "Nuevo cobro" %></h1>
+                <div class="view-controller__badges">
+                  <%= render "shared/badge", text: cobro.activo? ? cobro.estado.to_s.humanize : "Inactivo", tone: cobro.activo? ? "success" : "warning" %>
+                </div>
+              </div>
+              <div class="view-controller__meta">
+                <span><strong>Cliente:</strong> <%= cobro.cliente_nombre.presence || "Pendiente de asignar" %></span>
+                <span><strong>Monto:</strong> <%= cobro.monto_formateado %></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="view-controller__actions">
+            <%= link_to "Cancelar", cobros_path, class: "ui-button ui-button-secondary" %>
+            <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+          </div>
+        </div>
+
+        <div class="view-controller__metrics">
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Monto</span>
+            <strong class="view-controller__metric-value"><%= cobro.monto_formateado %></strong>
+            <span class="view-controller__metric-note">Valor esperado dentro del flujo de cobranza.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Vencimiento</span>
+            <strong class="view-controller__metric-value"><%= cobro.fecha_vencimiento || "Por definir" %></strong>
+            <span class="view-controller__metric-note">Fecha clave para priorizar seguimiento.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Pago</span>
+            <strong class="view-controller__metric-value"><%= cobro.fecha_pago || "No registrado" %></strong>
+            <span class="view-controller__metric-note">Se actualiza cuando el cobro fue aplicado.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Gestor</span>
+            <strong class="view-controller__metric-value"><%= cobro.gestor.presence || "Sin asignar" %></strong>
+            <span class="view-controller__metric-note">Responsable del seguimiento comercial.</span>
+          </article>
+        </div>
+
+        <p class="view-controller__summary-note">
+          Primero define la referencia y el cliente, luego completa el seguimiento financiero y deja las notas para trazabilidad del caso.
+        </p>
+      </header>
+
+      <section class="panel product-tabs-panel view-controller__tabs">
+        <nav class="module-tabs" role="tablist" aria-label="Secciones del cobro">
+          <button type="button" class="module-tab is-active" id="tab-cobro-general" role="tab" aria-selected="true" aria-controls="panel-cobro-general" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("receipt") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">General</span>
+              <span class="module-tab__hint">Referencia, cliente y gestor</span>
+            </span>
+          </button>
+          <button type="button" class="module-tab" id="tab-cobro-control" role="tab" aria-selected="false" aria-controls="panel-cobro-control" data-tabs-target="tab" data-tab-id="control" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("calendar") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Seguimiento</span>
+              <span class="module-tab__hint">Fechas, monto y estado</span>
+            </span>
+          </button>
+          <button type="button" class="module-tab" id="tab-cobro-notas" role="tab" aria-selected="false" aria-controls="panel-cobro-notas" data-tabs-target="tab" data-tab-id="notas" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("message") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Notas</span>
+              <span class="module-tab__hint">Promesas y observaciones</span>
+            </span>
+          </button>
+        </nav>
+      </section>
+
+      <div class="view-controller__content">
+        <section class="panel form-section module-tab-panel is-active" id="panel-cobro-general" role="tabpanel" aria-labelledby="tab-cobro-general" data-tabs-target="panel" data-tab-panel-id="general">
+          <div class="panel-header">
+            <div>
+              <h2>Identificacion del caso</h2>
+              <p>Registra la referencia operativa y los datos del cliente asociados al cobro.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <%= form.label :referencia, "Referencia" %>
+              <%= form.text_field :referencia, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :cliente_id, "Cliente registrado" %>
+              <%= form.select :cliente_id, options_from_collection_for_select(@clientes, :id, :nombre, cobro.cliente_id), { include_blank: "Seleccionar cliente" }, class: "text-input filter-select" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :cliente_nombre, "Nombre del cliente" %>
+              <%= form.text_field :cliente_nombre, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :gestor, "Gestor" %>
+              <%= form.text_field :gestor, class: "text-input" %>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel form-section module-tab-panel" id="panel-cobro-control" role="tabpanel" aria-labelledby="tab-cobro-control" data-tabs-target="panel" data-tab-panel-id="control" hidden>
+          <div class="panel-header">
+            <div>
+              <h2>Seguimiento financiero</h2>
+              <p>Define fechas clave, importe, moneda y el estado operativo actual de la gestion.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <%= form.label :fecha_vencimiento, "Fecha de vencimiento" %>
+              <%= form.date_field :fecha_vencimiento, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :fecha_pago, "Fecha de pago" %>
+              <%= form.date_field :fecha_pago, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :monto, "Monto" %>
+              <%= form.number_field :monto, class: "text-input", min: 0, step: "0.01" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :moneda_id, "Moneda" %>
+              <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, cobro.moneda_id), { include_blank: "Seleccionar moneda" }, class: "text-input filter-select" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :estado, "Estado" %>
+              <%= form.select :estado, options_for_select(Cobro::ESTADOS.map { |estado| [estado.humanize, estado] }, cobro.estado), {}, class: "text-input filter-select" %>
+            </div>
+            <% if cobro.persisted? %>
+              <div class="field-group checkbox-group">
+                <label class="checkbox-label">
+                  <%= hidden_field_tag "cobro[activo]", "1" %>
+                  <%= check_box_tag "cobro[activo]", "0", !cobro.activo? %>
+                  <span>Inactivar</span>
+                </label>
+              </div>
+            <% else %>
+              <%= form.hidden_field :activo, value: true %>
+            <% end %>
+          </div>
+        </section>
+
+        <section class="panel form-section module-tab-panel" id="panel-cobro-notas" role="tabpanel" aria-labelledby="tab-cobro-notas" data-tabs-target="panel" data-tab-panel-id="notas" hidden>
+          <div class="panel-header">
+            <div>
+              <h2>Observaciones del caso</h2>
+              <p>Documenta acuerdos, promesas de pago o cualquier contexto que ayude al equipo.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group field-group-full">
+              <%= form.label :notas, "Notas" %>
+              <%= form.text_area :notas, rows: 5, class: "text-input text-area" %>
+            </div>
+          </div>
+        </section>
       </div>
-    </div>
+    </section>
   </section>
 <% end %>

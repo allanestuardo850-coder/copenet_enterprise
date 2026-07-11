@@ -1,78 +1,184 @@
 <%= form_with model: factura, class: "company-form" do |form| %>
-  <% if factura.errors.any? %>
-    <section class="panel form-errors">
-      <ul class="error-list">
-        <% factura.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </section>
-  <% end %>
-
-  <section class="panel product-tabs-panel">
-    <div class="panel-header">
-      <div><h2>Configuración de la factura</h2></div>
-      <div class="form-actions company-form-header-actions">
-        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
-        <%= link_to "Cancelar", facturas_path, class: "ui-button ui-button-secondary" %>
-      </div>
-    </div>
-  </section>
-
-  <section class="panel form-section">
-    <div class="panel-header"><div><h2>Información general</h2></div></div>
-    <div class="form-grid">
-      <div class="field-group">
-        <%= form.label :numero, "Número" %>
-        <%= form.text_field :numero, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :serie, "Serie" %>
-        <%= form.text_field :serie, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :cliente_id, "Cliente registrado" %>
-        <%= form.select :cliente_id, options_from_collection_for_select(@clientes, :id, :nombre, factura.cliente_id), { include_blank: "Seleccionar cliente" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :cliente_nombre, "Nombre del cliente" %>
-        <%= form.text_field :cliente_nombre, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :fecha_emision, "Fecha de emisión" %>
-        <%= form.date_field :fecha_emision, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :fecha_vencimiento, "Fecha de vencimiento" %>
-        <%= form.date_field :fecha_vencimiento, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :total, "Total" %>
-        <%= form.number_field :total, class: "text-input", min: 0, step: "0.01" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :moneda_id, "Moneda" %>
-        <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, factura.moneda_id), { include_blank: "Seleccionar moneda" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :estado, "Estado" %>
-        <%= form.select :estado, options_for_select(Factura::ESTADOS.map { |estado| [estado.humanize, estado] }, factura.estado), {}, class: "text-input filter-select" %>
-      </div>
-      <% if factura.persisted? %>
-        <div class="field-group checkbox-group">
-          <label class="checkbox-label">
-            <%= hidden_field_tag "factura[activo]", "1" %>
-            <%= check_box_tag "factura[activo]", "0", !factura.activo? %>
-            <span>Inactivar</span>
-          </label>
-        </div>
-      <% else %>
-        <%= form.hidden_field :activo, value: true %>
+  <section class="page-section">
+    <section class="view-controller view-controller--form" data-controller="tabs" data-tabs-default-value="general">
+      <% if factura.errors.any? %>
+        <section class="panel form-errors">
+          <ul class="error-list">
+            <% factura.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </section>
       <% end %>
-      <div class="field-group field-group-full">
-        <%= form.label :notas, "Notas" %>
-        <%= form.text_area :notas, rows: 4, class: "text-input text-area" %>
+
+      <header class="view-controller__summary">
+        <div class="view-controller__summary-shell">
+          <div class="view-controller__identity">
+            <div class="view-controller__avatar">FA</div>
+            <div class="view-controller__copy">
+              <span class="view-controller__eyebrow">Facturacion operativa</span>
+              <div class="view-controller__title-row">
+                <h1 class="view-controller__title"><%= factura.persisted? ? factura.numero : "Nueva factura" %></h1>
+                <div class="view-controller__badges">
+                  <%= render "shared/badge", text: factura.activo? ? factura.estado.to_s.humanize : "Inactiva", tone: factura.activo? ? "success" : "warning" %>
+                  <%= render "shared/badge", text: factura.serie.presence || "Sin serie", tone: "info" %>
+                </div>
+              </div>
+              <div class="view-controller__meta">
+                <span><strong>Cliente:</strong> <%= factura.cliente_nombre.presence || "Pendiente de asignar" %></span>
+                <span><strong>Total actual:</strong> <%= factura.total_formateado %></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="view-controller__actions">
+            <%= link_to "Cancelar", facturas_path, class: "ui-button ui-button-secondary" %>
+            <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+          </div>
+        </div>
+
+        <div class="view-controller__metrics">
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Total</span>
+            <strong class="view-controller__metric-value"><%= factura.total_formateado %></strong>
+            <span class="view-controller__metric-note">Importe consolidado del documento.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Emision</span>
+            <strong class="view-controller__metric-value"><%= factura.fecha_emision || "Pendiente" %></strong>
+            <span class="view-controller__metric-note">Fecha base para control y vencimiento.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Vencimiento</span>
+            <strong class="view-controller__metric-value"><%= factura.fecha_vencimiento || "Por definir" %></strong>
+            <span class="view-controller__metric-note">Ayuda a priorizar cartera y cobranza.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Cliente</span>
+            <strong class="view-controller__metric-value"><%= factura.cliente_nombre.presence || "Sin cliente" %></strong>
+            <span class="view-controller__metric-note">Puede venir de catalogo o captura libre.</span>
+          </article>
+        </div>
+
+        <p class="view-controller__summary-note">
+          Captura primero la identidad del documento, luego define fechas, moneda y estado operativo, y deja las observaciones para el cierre.
+        </p>
+      </header>
+
+      <section class="panel product-tabs-panel view-controller__tabs">
+        <nav class="module-tabs" role="tablist" aria-label="Secciones de la factura">
+          <button type="button" class="module-tab is-active" id="tab-factura-general" role="tab" aria-selected="true" aria-controls="panel-factura-general" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("invoice") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">General</span>
+              <span class="module-tab__hint">Numero, serie y cliente</span>
+            </span>
+          </button>
+          <button type="button" class="module-tab" id="tab-factura-control" role="tab" aria-selected="false" aria-controls="panel-factura-control" data-tabs-target="tab" data-tab-id="control" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("calendar") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Control</span>
+              <span class="module-tab__hint">Fechas, total y estado</span>
+            </span>
+          </button>
+          <button type="button" class="module-tab" id="tab-factura-notas" role="tab" aria-selected="false" aria-controls="panel-factura-notas" data-tabs-target="tab" data-tab-id="notas" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("message") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Notas</span>
+              <span class="module-tab__hint">Contexto y observaciones</span>
+            </span>
+          </button>
+        </nav>
+      </section>
+
+      <div class="view-controller__content">
+        <section class="panel form-section module-tab-panel is-active" id="panel-factura-general" role="tabpanel" aria-labelledby="tab-factura-general" data-tabs-target="panel" data-tab-panel-id="general">
+          <div class="panel-header">
+            <div>
+              <h2>Identificacion comercial</h2>
+              <p>Registra los datos base con los que esta factura sera localizada y conciliada.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <%= form.label :numero, "Numero" %>
+              <%= form.text_field :numero, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :serie, "Serie" %>
+              <%= form.text_field :serie, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :cliente_id, "Cliente registrado" %>
+              <%= form.select :cliente_id, options_from_collection_for_select(@clientes, :id, :nombre, factura.cliente_id), { include_blank: "Seleccionar cliente" }, class: "text-input filter-select" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :cliente_nombre, "Nombre del cliente" %>
+              <%= form.text_field :cliente_nombre, class: "text-input" %>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel form-section module-tab-panel" id="panel-factura-control" role="tabpanel" aria-labelledby="tab-factura-control" data-tabs-target="panel" data-tab-panel-id="control" hidden>
+          <div class="panel-header">
+            <div>
+              <h2>Control financiero</h2>
+              <p>Define fechas operativas, monto total, moneda y situacion actual del documento.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <%= form.label :fecha_emision, "Fecha de emision" %>
+              <%= form.date_field :fecha_emision, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :fecha_vencimiento, "Fecha de vencimiento" %>
+              <%= form.date_field :fecha_vencimiento, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :total, "Total" %>
+              <%= form.number_field :total, class: "text-input", min: 0, step: "0.01" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :moneda_id, "Moneda" %>
+              <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, factura.moneda_id), { include_blank: "Seleccionar moneda" }, class: "text-input filter-select" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :estado, "Estado" %>
+              <%= form.select :estado, options_for_select(Factura::ESTADOS.map { |estado| [estado.humanize, estado] }, factura.estado), {}, class: "text-input filter-select" %>
+            </div>
+            <% if factura.persisted? %>
+              <div class="field-group checkbox-group">
+                <label class="checkbox-label">
+                  <%= hidden_field_tag "factura[activo]", "1" %>
+                  <%= check_box_tag "factura[activo]", "0", !factura.activo? %>
+                  <span>Inactivar</span>
+                </label>
+              </div>
+            <% else %>
+              <%= form.hidden_field :activo, value: true %>
+            <% end %>
+          </div>
+        </section>
+
+        <section class="panel form-section module-tab-panel" id="panel-factura-notas" role="tabpanel" aria-labelledby="tab-factura-notas" data-tabs-target="panel" data-tab-panel-id="notas" hidden>
+          <div class="panel-header">
+            <div>
+              <h2>Observaciones</h2>
+              <p>Documenta aclaraciones, acuerdos comerciales o detalles utiles para seguimiento.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group field-group-full">
+              <%= form.label :notas, "Notas" %>
+              <%= form.text_area :notas, rows: 5, class: "text-input text-area" %>
+            </div>
+          </div>
+        </section>
       </div>
-    </div>
+    </section>
   </section>
 <% end %>

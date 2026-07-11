@@ -1,82 +1,188 @@
 <%= form_with model: contrato, class: "company-form" do |form| %>
-  <% if contrato.errors.any? %>
-    <section class="panel form-errors">
-      <ul class="error-list">
-        <% contrato.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </section>
-  <% end %>
-
-  <section class="panel product-tabs-panel">
-    <div class="panel-header">
-      <div><h2>Configuración del contrato</h2></div>
-      <div class="form-actions company-form-header-actions">
-        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
-        <%= link_to "Cancelar", contratos_path, class: "ui-button ui-button-secondary" %>
-      </div>
-    </div>
-  </section>
-
-  <section class="panel form-section">
-    <div class="panel-header"><div><h2>Información general</h2></div></div>
-    <div class="form-grid">
-      <div class="field-group">
-        <%= form.label :codigo, "Código" %>
-        <%= form.text_field :codigo, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :cliente_id, "Cliente registrado" %>
-        <%= form.select :cliente_id, options_from_collection_for_select(@clientes, :id, :nombre, contrato.cliente_id), { include_blank: "Seleccionar cliente" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :cliente_nombre, "Nombre del cliente" %>
-        <%= form.text_field :cliente_nombre, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :tipo_contrato, "Tipo de contrato" %>
-        <%= form.select :tipo_contrato, options_for_select(Contrato::TIPOS, contrato.tipo_contrato), { include_blank: "Seleccionar tipo" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :fecha_inicio, "Fecha de inicio" %>
-        <%= form.date_field :fecha_inicio, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :fecha_fin, "Fecha de fin" %>
-        <%= form.date_field :fecha_fin, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :valor, "Valor" %>
-        <%= form.number_field :valor, class: "text-input", min: 0, step: "0.01" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :moneda_id, "Moneda" %>
-        <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, contrato.moneda_id), { include_blank: "Seleccionar moneda" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :estado, "Estado" %>
-        <%= form.select :estado, options_for_select(Contrato::ESTADOS.map { |estado| [estado.humanize, estado] }, contrato.estado), {}, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :responsable, "Responsable" %>
-        <%= form.text_field :responsable, class: "text-input" %>
-      </div>
-      <% if contrato.persisted? %>
-        <div class="field-group checkbox-group">
-          <label class="checkbox-label">
-            <%= hidden_field_tag "contrato[activo]", "1" %>
-            <%= check_box_tag "contrato[activo]", "0", !contrato.activo? %>
-            <span>Inactivar</span>
-          </label>
-        </div>
-      <% else %>
-        <%= form.hidden_field :activo, value: true %>
+  <section class="page-section">
+    <section class="view-controller view-controller--form" data-controller="tabs" data-tabs-default-value="general">
+      <% if contrato.errors.any? %>
+        <section class="panel form-errors">
+          <ul class="error-list">
+            <% contrato.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </section>
       <% end %>
-      <div class="field-group field-group-full">
-        <%= form.label :notas, "Notas" %>
-        <%= form.text_area :notas, rows: 4, class: "text-input text-area" %>
+
+      <header class="view-controller__summary">
+        <div class="view-controller__summary-shell">
+          <div class="view-controller__identity">
+            <div class="view-controller__avatar">CT</div>
+            <div class="view-controller__copy">
+              <span class="view-controller__eyebrow">Gestion contractual</span>
+              <div class="view-controller__title-row">
+                <h1 class="view-controller__title"><%= contrato.persisted? ? contrato.codigo : "Nuevo contrato" %></h1>
+                <div class="view-controller__badges">
+                  <%= render "shared/badge", text: contrato.activo? ? contrato.estado.to_s.humanize : "Inactivo", tone: contrato.activo? ? "success" : "warning" %>
+                  <%= render "shared/badge", text: contrato.tipo_contrato.presence || "Sin tipo", tone: "info" %>
+                </div>
+              </div>
+              <div class="view-controller__meta">
+                <span><strong>Cliente:</strong> <%= contrato.cliente_nombre.presence || "Pendiente de asignar" %></span>
+                <span><strong>Valor:</strong> <%= contrato.valor_formateado %></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="view-controller__actions">
+            <%= link_to "Cancelar", contratos_path, class: "ui-button ui-button-secondary" %>
+            <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+          </div>
+        </div>
+
+        <div class="view-controller__metrics">
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Valor</span>
+            <strong class="view-controller__metric-value"><%= contrato.valor_formateado %></strong>
+            <span class="view-controller__metric-note">Importe asociado al acuerdo vigente.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Inicio</span>
+            <strong class="view-controller__metric-value"><%= contrato.fecha_inicio || "Pendiente" %></strong>
+            <span class="view-controller__metric-note">Fecha de activacion del servicio.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Fin</span>
+            <strong class="view-controller__metric-value"><%= contrato.fecha_fin || "Sin cierre" %></strong>
+            <span class="view-controller__metric-note">Marca renovacion o vencimiento.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Responsable</span>
+            <strong class="view-controller__metric-value"><%= contrato.responsable.presence || "Sin asignar" %></strong>
+            <span class="view-controller__metric-note">Seguimiento comercial del contrato.</span>
+          </article>
+        </div>
+
+        <p class="view-controller__summary-note">
+          Captura primero la identidad contractual, luego define vigencias y condiciones operativas, y usa observaciones para anexar contexto comercial.
+        </p>
+      </header>
+
+      <section class="panel product-tabs-panel view-controller__tabs">
+        <nav class="module-tabs" role="tablist" aria-label="Secciones del contrato">
+          <button type="button" class="module-tab is-active" id="tab-contrato-general" role="tab" aria-selected="true" aria-controls="panel-contrato-general" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("contract") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">General</span>
+              <span class="module-tab__hint">Codigo, cliente y tipo</span>
+            </span>
+          </button>
+          <button type="button" class="module-tab" id="tab-contrato-control" role="tab" aria-selected="false" aria-controls="panel-contrato-control" data-tabs-target="tab" data-tab-id="control" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("calendar") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Vigencia</span>
+              <span class="module-tab__hint">Fechas, valor y estado</span>
+            </span>
+          </button>
+          <button type="button" class="module-tab" id="tab-contrato-notas" role="tab" aria-selected="false" aria-controls="panel-contrato-notas" data-tabs-target="tab" data-tab-id="notas" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("message") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Notas</span>
+              <span class="module-tab__hint">Clausulas y observaciones</span>
+            </span>
+          </button>
+        </nav>
+      </section>
+
+      <div class="view-controller__content">
+        <section class="panel form-section module-tab-panel is-active" id="panel-contrato-general" role="tabpanel" aria-labelledby="tab-contrato-general" data-tabs-target="panel" data-tab-panel-id="general">
+          <div class="panel-header">
+            <div>
+              <h2>Identidad del acuerdo</h2>
+              <p>Registra los datos base del contrato y la relacion principal con el cliente.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <%= form.label :codigo, "Codigo" %>
+              <%= form.text_field :codigo, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :cliente_id, "Cliente registrado" %>
+              <%= form.select :cliente_id, options_from_collection_for_select(@clientes, :id, :nombre, contrato.cliente_id), { include_blank: "Seleccionar cliente" }, class: "text-input filter-select" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :cliente_nombre, "Nombre del cliente" %>
+              <%= form.text_field :cliente_nombre, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :tipo_contrato, "Tipo de contrato" %>
+              <%= form.select :tipo_contrato, options_for_select(Contrato::TIPOS, contrato.tipo_contrato), { include_blank: "Seleccionar tipo" }, class: "text-input filter-select" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :responsable, "Responsable" %>
+              <%= form.text_field :responsable, class: "text-input" %>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel form-section module-tab-panel" id="panel-contrato-control" role="tabpanel" aria-labelledby="tab-contrato-control" data-tabs-target="panel" data-tab-panel-id="control" hidden>
+          <div class="panel-header">
+            <div>
+              <h2>Condiciones de vigencia</h2>
+              <p>Define el periodo del acuerdo, importe, moneda y estado operativo del contrato.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <%= form.label :fecha_inicio, "Fecha de inicio" %>
+              <%= form.date_field :fecha_inicio, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :fecha_fin, "Fecha de fin" %>
+              <%= form.date_field :fecha_fin, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :valor, "Valor" %>
+              <%= form.number_field :valor, class: "text-input", min: 0, step: "0.01" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :moneda_id, "Moneda" %>
+              <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, contrato.moneda_id), { include_blank: "Seleccionar moneda" }, class: "text-input filter-select" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :estado, "Estado" %>
+              <%= form.select :estado, options_for_select(Contrato::ESTADOS.map { |estado| [estado.humanize, estado] }, contrato.estado), {}, class: "text-input filter-select" %>
+            </div>
+            <% if contrato.persisted? %>
+              <div class="field-group checkbox-group">
+                <label class="checkbox-label">
+                  <%= hidden_field_tag "contrato[activo]", "1" %>
+                  <%= check_box_tag "contrato[activo]", "0", !contrato.activo? %>
+                  <span>Inactivar</span>
+                </label>
+              </div>
+            <% else %>
+              <%= form.hidden_field :activo, value: true %>
+            <% end %>
+          </div>
+        </section>
+
+        <section class="panel form-section module-tab-panel" id="panel-contrato-notas" role="tabpanel" aria-labelledby="tab-contrato-notas" data-tabs-target="panel" data-tab-panel-id="notas" hidden>
+          <div class="panel-header">
+            <div>
+              <h2>Observaciones</h2>
+              <p>Incluye acuerdos, restricciones o contexto util para futuras renovaciones.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group field-group-full">
+              <%= form.label :notas, "Notas" %>
+              <%= form.text_area :notas, rows: 5, class: "text-input text-area" %>
+            </div>
+          </div>
+        </section>
       </div>
-    </div>
+    </section>
   </section>
 <% end %>

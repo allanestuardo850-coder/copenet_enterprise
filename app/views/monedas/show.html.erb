@@ -1,41 +1,96 @@
-<section class="page-section company-show-page">
-  <section class="company-show-hero">
-    <div class="company-show-identity">
-      <div class="company-show-logo">
-        <%= @moneda.simbolo.presence || @moneda.nombre.to_s.first(2).upcase %>
-      </div>
-
-      <div class="company-show-copy">
-        <div class="company-show-title-row">
-          <strong class="company-show-title"><%= @moneda.nombre %></strong>
-
-          <div class="company-show-badges">
-            <%= render "shared/badge", text: @moneda.activo? ? "Activa" : "Inactiva", tone: @moneda.activo? ? "success" : "warning" %>
+<section class="page-section">
+  <section class="view-controller view-controller--detail" data-controller="tabs" data-tabs-default-value="general">
+    <header class="view-controller__summary">
+      <div class="view-controller__summary-shell">
+        <div class="view-controller__identity">
+          <div class="view-controller__avatar"><%= @moneda.simbolo.presence || @moneda.nombre.to_s.first(2).upcase %></div>
+          <div class="view-controller__copy">
+            <span class="view-controller__eyebrow">Catalogo financiero</span>
+            <div class="view-controller__title-row">
+              <h1 class="view-controller__title"><%= @moneda.nombre %></h1>
+              <div class="view-controller__badges">
+                <%= render "shared/badge", text: @moneda.activo? ? "Activa" : "Inactiva", tone: @moneda.activo? ? "success" : "warning" %>
+              </div>
+            </div>
+            <div class="view-controller__meta">
+              <span><strong>Codigo:</strong> <%= @moneda.codigo %></span>
+              <span><strong>Simbolo:</strong> <%= @moneda.simbolo.presence || "-" %></span>
+            </div>
           </div>
         </div>
 
-        <p><%= @moneda.simbolo %> · Código <%= @moneda.codigo %></p>
+        <div class="view-controller__actions" aria-label="Acciones de moneda">
+          <%= link_to "Volver", monedas_path, class: "ui-button ui-button-secondary" %>
+          <%= link_to "Editar", edit_moneda_path(@moneda), class: "ui-button ui-button-primary" %>
+        </div>
       </div>
-    </div>
 
-    <div class="company-show-actions" aria-label="Acciones de moneda">
-      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, monedas_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
-      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_moneda_path(@moneda), class: "company-show-action-button company-show-action-primary", title: "Editar moneda", aria: { label: "Editar moneda" } %>
-    </div>
-  </section>
-
-  <section class="panel detail-section">
-    <div class="panel-header">
-      <div>
-        <h2>Información de la moneda</h2>
+      <div class="view-controller__metrics">
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Codigo</span>
+          <strong class="view-controller__metric-value"><%= @moneda.codigo %></strong>
+          <span class="view-controller__metric-note">Referencia numerica del catalogo.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Nombre</span>
+          <strong class="view-controller__metric-value"><%= @moneda.nombre %></strong>
+          <span class="view-controller__metric-note">Valor visible en operaciones y reportes.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Simbolo</span>
+          <strong class="view-controller__metric-value"><%= @moneda.simbolo.presence || "-" %></strong>
+          <span class="view-controller__metric-note">Prefijo utilizado al mostrar importes.</span>
+        </article>
       </div>
-    </div>
+    </header>
 
-    <div class="detail-grid">
-      <div class="detail-item"><span>Código</span><strong><%= @moneda.codigo %></strong></div>
-      <div class="detail-item"><span>Nombre</span><strong><%= @moneda.nombre %></strong></div>
-      <div class="detail-item"><span>Símbolo</span><strong><%= @moneda.simbolo %></strong></div>
-      <div class="detail-item"><span>Estado</span><strong><%= @moneda.activo? ? "Activa" : "Inactiva" %></strong></div>
+    <section class="panel product-tabs-panel view-controller__tabs">
+      <nav class="module-tabs" role="tablist" aria-label="Detalle de la moneda">
+        <button type="button" class="module-tab is-active" id="tab-moneda-detalle-general" role="tab" aria-selected="true" aria-controls="panel-moneda-detalle-general" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("coins") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">General</span>
+            <span class="module-tab__hint">Identidad financiera</span>
+          </span>
+        </button>
+        <button type="button" class="module-tab" id="tab-moneda-detalle-estado" role="tab" aria-selected="false" aria-controls="panel-moneda-detalle-estado" data-tabs-target="tab" data-tab-id="estado" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("shield") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">Estado</span>
+            <span class="module-tab__hint">Disponibilidad del catalogo</span>
+          </span>
+        </button>
+      </nav>
+    </section>
+
+    <div class="view-controller__content">
+      <section class="panel detail-section module-tab-panel is-active" id="panel-moneda-detalle-general" role="tabpanel" aria-labelledby="tab-moneda-detalle-general" data-tabs-target="panel" data-tab-panel-id="general">
+        <div class="panel-header">
+          <div>
+            <h2>Identidad financiera</h2>
+            <p>Datos principales con los que esta moneda participa en el sistema.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><span>Codigo</span><strong><%= @moneda.codigo %></strong></div>
+          <div class="detail-item"><span>Nombre</span><strong><%= @moneda.nombre %></strong></div>
+          <div class="detail-item"><span>Simbolo</span><strong><%= @moneda.simbolo.presence || "-" %></strong></div>
+        </div>
+      </section>
+
+      <section class="panel detail-section module-tab-panel" id="panel-moneda-detalle-estado" role="tabpanel" aria-labelledby="tab-moneda-detalle-estado" data-tabs-target="panel" data-tab-panel-id="estado" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>Estado del catalogo</h2>
+            <p>Controla si la moneda continua disponible para nuevas operaciones.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><span>Estado</span><strong><%= @moneda.activo? ? "Activa" : "Inactiva" %></strong></div>
+        </div>
+      </section>
     </div>
   </section>
 </section>

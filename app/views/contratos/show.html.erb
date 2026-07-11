@@ -1,39 +1,131 @@
-<section class="page-section company-show-page">
-  <section class="company-show-hero">
-    <div class="company-show-identity">
-      <div class="company-show-logo">CT</div>
-      <div class="company-show-copy">
-        <div class="company-show-title-row">
-          <strong class="company-show-title"><%= @contrato.codigo %></strong>
-          <div class="company-show-badges">
-            <%= render "shared/badge", text: @contrato.activo? ? @contrato.estado.humanize : "Inactivo", tone: @contrato.activo? ? "success" : "warning" %>
-            <%= render "shared/badge", text: @contrato.tipo_contrato.presence || "Sin tipo", tone: "primary" %>
+<section class="page-section">
+  <section class="view-controller view-controller--detail" data-controller="tabs" data-tabs-default-value="general">
+    <header class="view-controller__summary">
+      <div class="view-controller__summary-shell">
+        <div class="view-controller__identity">
+          <div class="view-controller__avatar">CT</div>
+          <div class="view-controller__copy">
+            <span class="view-controller__eyebrow">Gestion contractual</span>
+            <div class="view-controller__title-row">
+              <h1 class="view-controller__title"><%= @contrato.codigo %></h1>
+              <div class="view-controller__badges">
+                <%= render "shared/badge", text: @contrato.activo? ? @contrato.estado.humanize : "Inactivo", tone: @contrato.activo? ? "success" : "warning" %>
+                <%= render "shared/badge", text: @contrato.tipo_contrato.presence || "Sin tipo", tone: "info" %>
+              </div>
+            </div>
+            <div class="view-controller__meta">
+              <span><strong>Cliente:</strong> <%= @contrato.cliente_nombre %></span>
+              <span><strong>Responsable:</strong> <%= @contrato.responsable.presence || "Sin asignar" %></span>
+            </div>
           </div>
         </div>
-        <p><%= @contrato.cliente_nombre %> · <%= @contrato.valor_formateado %></p>
-      </div>
-    </div>
-    <div class="company-show-actions" aria-label="Acciones de contrato">
-      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, contratos_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
-      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_contrato_path(@contrato), class: "company-show-action-button company-show-action-primary", title: "Editar contrato", aria: { label: "Editar contrato" } %>
-    </div>
-  </section>
 
-  <section class="panel detail-section">
-    <div class="panel-header"><div><h2>Información del contrato</h2></div></div>
-    <div class="detail-grid">
-      <div class="detail-item"><span>Cliente</span><strong><%= @contrato.cliente_nombre %></strong></div>
-      <div class="detail-item"><span>Tipo</span><strong><%= @contrato.tipo_contrato.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Inicio</span><strong><%= @contrato.fecha_inicio || "-" %></strong></div>
-      <div class="detail-item"><span>Fin</span><strong><%= @contrato.fecha_fin || "-" %></strong></div>
-      <div class="detail-item"><span>Valor</span><strong><%= @contrato.valor_formateado %></strong></div>
-      <div class="detail-item"><span>Responsable</span><strong><%= @contrato.responsable.presence || "-" %></strong></div>
-    </div>
-    <% if @contrato.notas.present? %>
-      <div class="document-paragraph-card">
-        <strong>Notas</strong>
-        <p><%= @contrato.notas %></p>
+        <div class="view-controller__actions" aria-label="Acciones de contrato">
+          <%= link_to "Volver", contratos_path, class: "ui-button ui-button-secondary" %>
+          <%= link_to "Editar", edit_contrato_path(@contrato), class: "ui-button ui-button-primary" %>
+        </div>
       </div>
-    <% end %>
+
+      <div class="view-controller__metrics">
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Valor</span>
+          <strong class="view-controller__metric-value"><%= @contrato.valor_formateado %></strong>
+          <span class="view-controller__metric-note">Compromiso economico del acuerdo actual.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Inicio</span>
+          <strong class="view-controller__metric-value"><%= @contrato.fecha_inicio || "-" %></strong>
+          <span class="view-controller__metric-note">Activa el periodo contractual principal.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Fin</span>
+          <strong class="view-controller__metric-value"><%= @contrato.fecha_fin || "-" %></strong>
+          <span class="view-controller__metric-note">Marca renovacion o cierre del compromiso.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Estado</span>
+          <strong class="view-controller__metric-value"><%= @contrato.activo? ? @contrato.estado.humanize : "Inactivo" %></strong>
+          <span class="view-controller__metric-note">Situacion operativa del contrato en el sistema.</span>
+        </article>
+      </div>
+    </header>
+
+    <section class="panel product-tabs-panel view-controller__tabs">
+      <nav class="module-tabs" role="tablist" aria-label="Detalle del contrato">
+        <button type="button" class="module-tab is-active" id="tab-contrato-detalle-general" role="tab" aria-selected="true" aria-controls="panel-contrato-detalle-general" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("contract") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">General</span>
+            <span class="module-tab__hint">Identidad y cliente</span>
+          </span>
+        </button>
+        <button type="button" class="module-tab" id="tab-contrato-detalle-control" role="tab" aria-selected="false" aria-controls="panel-contrato-detalle-control" data-tabs-target="tab" data-tab-id="control" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("calendar") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">Vigencia</span>
+            <span class="module-tab__hint">Fechas, valor y estado</span>
+          </span>
+        </button>
+        <button type="button" class="module-tab" id="tab-contrato-detalle-notas" role="tab" aria-selected="false" aria-controls="panel-contrato-detalle-notas" data-tabs-target="tab" data-tab-id="notas" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("message") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">Notas</span>
+            <span class="module-tab__hint">Contexto del acuerdo</span>
+          </span>
+        </button>
+      </nav>
+    </section>
+
+    <div class="view-controller__content">
+      <section class="panel detail-section module-tab-panel is-active" id="panel-contrato-detalle-general" role="tabpanel" aria-labelledby="tab-contrato-detalle-general" data-tabs-target="panel" data-tab-panel-id="general">
+        <div class="panel-header">
+          <div>
+            <h2>Identidad contractual</h2>
+            <p>Datos base del acuerdo para consulta ejecutiva y operativa.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><span>Codigo</span><strong><%= @contrato.codigo %></strong></div>
+          <div class="detail-item"><span>Cliente</span><strong><%= @contrato.cliente_nombre %></strong></div>
+          <div class="detail-item"><span>Tipo</span><strong><%= @contrato.tipo_contrato.presence || "-" %></strong></div>
+          <div class="detail-item"><span>Responsable</span><strong><%= @contrato.responsable.presence || "-" %></strong></div>
+        </div>
+      </section>
+
+      <section class="panel detail-section module-tab-panel" id="panel-contrato-detalle-control" role="tabpanel" aria-labelledby="tab-contrato-detalle-control" data-tabs-target="panel" data-tab-panel-id="control" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>Condiciones de vigencia</h2>
+            <p>Seguimiento del periodo contractual y sus valores asociados.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><span>Inicio</span><strong><%= @contrato.fecha_inicio || "-" %></strong></div>
+          <div class="detail-item"><span>Fin</span><strong><%= @contrato.fecha_fin || "-" %></strong></div>
+          <div class="detail-item"><span>Valor</span><strong><%= @contrato.valor_formateado %></strong></div>
+          <div class="detail-item"><span>Estado</span><strong><%= @contrato.activo? ? @contrato.estado.humanize : "Inactivo" %></strong></div>
+        </div>
+      </section>
+
+      <section class="panel detail-section module-tab-panel" id="panel-contrato-detalle-notas" role="tabpanel" aria-labelledby="tab-contrato-detalle-notas" data-tabs-target="panel" data-tab-panel-id="notas" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>Observaciones</h2>
+            <p>Detalle adicional, clausulas operativas o recordatorios para renovacion.</p>
+          </div>
+        </div>
+
+        <% if @contrato.notas.present? %>
+          <div class="document-paragraph-card">
+            <strong>Notas</strong>
+            <p><%= @contrato.notas %></p>
+          </div>
+        <% else %>
+          <%= render "shared/empty_state", title: "Sin notas registradas", description: "Este contrato aun no tiene observaciones adicionales." %>
+        <% end %>
+      </section>
+    </div>
   </section>
 </section>

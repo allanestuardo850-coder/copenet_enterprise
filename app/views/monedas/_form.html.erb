@@ -1,60 +1,135 @@
 <%= form_with model: moneda, class: "company-form" do |form| %>
-  <% if moneda.errors.any? %>
-    <section class="panel form-errors">
-      <ul class="error-list">
-        <% moneda.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </section>
-  <% end %>
-
-  <section class="panel product-tabs-panel">
-    <div class="panel-header">
-      <div>
-        <h2>Configuración de la moneda</h2>
-      </div>
-      <div class="form-actions company-form-header-actions">
-        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
-        <%= link_to "Cancelar", monedas_path, class: "ui-button ui-button-secondary" %>
-      </div>
-    </div>
-  </section>
-
-  <section class="panel form-section">
-    <div class="panel-header">
-      <div>
-        <h2>Información de la moneda</h2>
-      </div>
-    </div>
-
-    <div class="form-grid">
-      <div class="field-group">
-        <%= form.label :codigo, "Código" %>
-        <%= form.number_field :codigo, class: "text-input", min: 1, step: 1, placeholder: "320" %>
-      </div>
-
-      <div class="field-group">
-        <%= form.label :nombre, "Nombre" %>
-        <%= form.text_field :nombre, class: "text-input", placeholder: "Quetzal" %>
-      </div>
-
-      <div class="field-group">
-        <%= form.label :simbolo, "Símbolo" %>
-        <%= form.text_field :simbolo, class: "text-input", placeholder: "Q" %>
-      </div>
-
-      <% if moneda.persisted? %>
-        <div class="field-group checkbox-group">
-          <label class="checkbox-label">
-            <%= hidden_field_tag "moneda[activo]", "1" %>
-            <%= check_box_tag "moneda[activo]", "0", !moneda.activo? %>
-            <span>Inactivar</span>
-          </label>
-        </div>
-      <% else %>
-        <%= form.hidden_field :activo, value: true %>
+  <section class="page-section">
+    <section class="view-controller view-controller--form" data-controller="tabs" data-tabs-default-value="general">
+      <% if moneda.errors.any? %>
+        <section class="panel form-errors">
+          <ul class="error-list">
+            <% moneda.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </section>
       <% end %>
-    </div>
+
+      <header class="view-controller__summary">
+        <div class="view-controller__summary-shell">
+          <div class="view-controller__identity">
+            <div class="view-controller__avatar"><%= moneda.simbolo.presence || "MO" %></div>
+            <div class="view-controller__copy">
+              <span class="view-controller__eyebrow">Catalogo financiero</span>
+              <div class="view-controller__title-row">
+                <h1 class="view-controller__title"><%= moneda.persisted? ? moneda.nombre : "Nueva moneda" %></h1>
+                <div class="view-controller__badges">
+                  <%= render "shared/badge", text: moneda.activo? ? "Activa" : "Inactiva", tone: moneda.activo? ? "success" : "warning" %>
+                </div>
+              </div>
+              <div class="view-controller__meta">
+                <span><strong>Codigo:</strong> <%= moneda.codigo || "Pendiente" %></span>
+                <span><strong>Simbolo:</strong> <%= moneda.simbolo.presence || "Sin simbolo" %></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="view-controller__actions">
+            <%= link_to "Cancelar", monedas_path, class: "ui-button ui-button-secondary" %>
+            <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+          </div>
+        </div>
+
+        <div class="view-controller__metrics">
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Codigo</span>
+            <strong class="view-controller__metric-value"><%= moneda.codigo || "Pendiente" %></strong>
+            <span class="view-controller__metric-note">Identificador usado por catalogos y transacciones.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Nombre</span>
+            <strong class="view-controller__metric-value"><%= moneda.nombre.presence || "Sin nombre" %></strong>
+            <span class="view-controller__metric-note">Texto visible dentro de listas y formularios.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Simbolo</span>
+            <strong class="view-controller__metric-value"><%= moneda.simbolo.presence || "-" %></strong>
+            <span class="view-controller__metric-note">Prefijo para importes y reportes.</span>
+          </article>
+        </div>
+
+        <p class="view-controller__summary-note">
+          Mantén este catálogo compacto: identidad arriba, estado al centro y persistencia del registro sin duplicar acciones.
+        </p>
+      </header>
+
+      <section class="panel product-tabs-panel view-controller__tabs">
+        <nav class="module-tabs" role="tablist" aria-label="Secciones de la moneda">
+          <button type="button" class="module-tab is-active" id="tab-moneda-general" role="tab" aria-selected="true" aria-controls="panel-moneda-general" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("coins") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Identidad</span>
+              <span class="module-tab__hint">Codigo, nombre y simbolo</span>
+            </span>
+          </button>
+          <button type="button" class="module-tab" id="tab-moneda-estado" role="tab" aria-selected="false" aria-controls="panel-moneda-estado" data-tabs-target="tab" data-tab-id="estado" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("shield") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Estado</span>
+              <span class="module-tab__hint">Visibilidad del catalogo</span>
+            </span>
+          </button>
+        </nav>
+      </section>
+
+      <div class="view-controller__content">
+        <section class="panel form-section module-tab-panel is-active" id="panel-moneda-general" role="tabpanel" aria-labelledby="tab-moneda-general" data-tabs-target="panel" data-tab-panel-id="general">
+          <div class="panel-header">
+            <div>
+              <h2>Identidad financiera</h2>
+              <p>Define el codigo y nombre con el que la moneda sera utilizada en el sistema.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <%= form.label :codigo, "Codigo" %>
+              <%= form.number_field :codigo, class: "text-input", min: 1, step: 1, placeholder: "320" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :nombre, "Nombre" %>
+              <%= form.text_field :nombre, class: "text-input", placeholder: "Quetzal" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :simbolo, "Simbolo" %>
+              <%= form.text_field :simbolo, class: "text-input", placeholder: "Q" %>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel form-section module-tab-panel" id="panel-moneda-estado" role="tabpanel" aria-labelledby="tab-moneda-estado" data-tabs-target="panel" data-tab-panel-id="estado" hidden>
+          <div class="panel-header">
+            <div>
+              <h2>Disponibilidad del registro</h2>
+              <p>Activa o inactiva la moneda sin perder su trazabilidad historica.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <% if moneda.persisted? %>
+              <div class="field-group checkbox-group">
+                <label class="checkbox-label">
+                  <%= hidden_field_tag "moneda[activo]", "1" %>
+                  <%= check_box_tag "moneda[activo]", "0", !moneda.activo? %>
+                  <span>Inactivar</span>
+                </label>
+              </div>
+            <% else %>
+              <%= form.hidden_field :activo, value: true %>
+              <div class="field-group">
+                <label>Estado inicial</label>
+                <input type="text" class="text-input" value="Activa" readonly>
+              </div>
+            <% end %>
+          </div>
+        </section>
+      </div>
+    </section>
   </section>
 <% end %>
