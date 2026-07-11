@@ -1,105 +1,139 @@
-<section class="page-section my-profile-page">
-  <%= form_with model: @usuario, url: perfil_path, method: :patch, class: "my-profile-form", multipart: true do |form| %>
-    <section class="panel my-profile-hero">
-      <div class="my-profile-identity">
-        <div class="my-profile-avatar" data-controller="company-logo">
-          <div class="my-profile-avatar-preview" data-company-logo-target="preview">
-            <% if @usuario.fotografia.attached? %>
-              <%= image_tag @usuario.fotografia, alt: "Fotografía de perfil", class: "my-profile-avatar-image" %>
-            <% else %>
-              <span><%= @usuario.nombre.to_s.first&.upcase %><%= @usuario.apellido.to_s.first&.upcase %></span>
+<section class="page-section">
+  <%= form_with model: @usuario, url: perfil_path, method: :patch, class: "company-form", multipart: true do |form| %>
+    <section class="view-controller view-controller--form" data-controller="tabs" data-tabs-default-value="cuenta">
+      <% if @usuario.errors.any? %>
+        <section class="panel form-errors-panel">
+          <strong>Revisa la informacion ingresada.</strong>
+          <ul>
+            <% @usuario.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
             <% end %>
+          </ul>
+        </section>
+      <% end %>
+
+      <header class="view-controller__summary">
+        <div class="view-controller__summary-shell">
+          <div class="view-controller__identity">
+            <div class="my-profile-avatar" data-controller="company-logo">
+              <div class="view-controller__avatar" data-company-logo-target="preview">
+                <% if @usuario.fotografia.attached? %>
+                  <%= image_tag @usuario.fotografia, alt: "Fotografia de perfil" %>
+                <% else %>
+                  <span><%= @usuario.nombre.to_s.first&.upcase %><%= @usuario.apellido.to_s.first&.upcase %></span>
+                <% end %>
+              </div>
+
+              <div class="view-controller__copy">
+                <span class="view-controller__eyebrow">Mi perfil</span>
+                <div class="view-controller__title-row">
+                  <h1 class="view-controller__title"><%= @usuario.nombre_completo.presence || "Usuario" %></h1>
+                  <div class="view-controller__badges">
+                    <%= render "shared/badge", text: @usuario.activo? ? "Activo" : "Inactivo", tone: @usuario.activo? ? "success" : "warning" %>
+                    <%= render "shared/badge", text: @usuario.root? ? "Root" : @usuario.roles.map(&:nombre).join(", ").presence || "Sin rol", tone: @usuario.root? ? "primary" : "info" %>
+                  </div>
+                </div>
+
+                <div class="view-controller__meta">
+                  <span><strong>Email:</strong> <%= @usuario.email %></span>
+                </div>
+
+                <label class="my-profile-photo-button">
+                  <%= icon("upload") %>
+                  <span>Subir fotografia</span>
+                  <%= form.file_field :fotografia, class: "company-logo-input", accept: "image/png,image/jpeg", data: { company_logo_target: "input", action: "change->company-logo#preview" } %>
+                </label>
+              </div>
+            </div>
           </div>
 
-          <label class="my-profile-photo-button">
-            <%= icon("upload") %>
-            <span>Subir fotografía</span>
-            <%= form.file_field :fotografia, class: "company-logo-input", accept: "image/png,image/jpeg", data: { company_logo_target: "input", action: "change->company-logo#preview" } %>
-          </label>
-        </div>
-
-        <div class="my-profile-heading">
-          <span class="section-kicker">Mi perfil</span>
-          <h1><%= @usuario.nombre_completo.presence || "Usuario" %></h1>
-          <p><%= @usuario.email %></p>
-
-          <div class="my-profile-badges">
-            <%= render "shared/badge", text: @usuario.activo? ? "Activo" : "Inactivo", tone: @usuario.activo? ? "success" : "warning" %>
-            <%= render "shared/badge", text: @usuario.root? ? "Root" : @usuario.roles.map(&:nombre).join(", ").presence || "Sin rol", tone: @usuario.root? ? "primary" : "info" %>
+          <div class="view-controller__actions">
+            <%= form.submit "Guardar cambios", class: "ui-button ui-button-primary" %>
           </div>
         </div>
-      </div>
 
-      <div class="my-profile-actions">
-        <%= form.submit "Guardar cambios", class: "ui-button ui-button-primary" %>
-      </div>
-    </section>
+        <div class="view-controller__metrics">
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Estado</span>
+            <strong class="view-controller__metric-value"><%= @usuario.activo? ? "Activo" : "Inactivo" %></strong>
+            <span class="view-controller__metric-note">Disponibilidad actual de la cuenta.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Rol principal</span>
+            <strong class="view-controller__metric-value"><%= @usuario.root? ? "Root" : @usuario.roles.map(&:nombre).first.presence || "Sin rol" %></strong>
+            <span class="view-controller__metric-note">Permiso dominante asignado a la sesion.</span>
+          </article>
+        </div>
+      </header>
 
-    <% if @usuario.errors.any? %>
-      <section class="panel form-errors-panel">
-        <strong>Revisa la información ingresada.</strong>
-        <ul>
-          <% @usuario.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
+      <section class="panel product-tabs-panel view-controller__tabs">
+        <nav class="module-tabs" role="tablist" aria-label="Secciones del perfil">
+          <button type="button" class="module-tab is-active" id="tab-perfil-cuenta" role="tab" aria-selected="true" aria-controls="panel-perfil-cuenta" data-tabs-target="tab" data-tab-id="cuenta" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("user") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Cuenta</span>
+              <span class="module-tab__hint">Datos administrados</span>
+            </span>
+          </button>
+          <button type="button" class="module-tab" id="tab-perfil-seguridad" role="tab" aria-selected="false" aria-controls="panel-perfil-seguridad" data-tabs-target="tab" data-tab-id="seguridad" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("shield-outline") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Seguridad</span>
+              <span class="module-tab__hint">Cambio de contrasena</span>
+            </span>
+          </button>
+        </nav>
       </section>
-    <% end %>
 
-    <section class="my-profile-grid">
-      <article class="panel my-profile-card">
-        <div class="company-card-heading">
-          <span class="company-card-icon"><%= icon("user") %></span>
-          <div>
-            <h2>Información del usuario</h2>
-            <p>Datos definidos por administración.</p>
-          </div>
-        </div>
-
-        <div class="my-profile-readonly-grid">
-          <div class="field-group">
-            <label>Nombre</label>
-            <input class="text-input" type="text" value="<%= @usuario.nombre %>" readonly>
+      <div class="view-controller__content">
+        <section class="panel module-tab-panel is-active" id="panel-perfil-cuenta" role="tabpanel" aria-labelledby="tab-perfil-cuenta" data-tabs-target="panel" data-tab-panel-id="cuenta">
+          <div class="panel-header">
+            <div>
+              <h2>Informacion del usuario</h2>
+              <p>Estos datos se mantienen desde administracion y sirven como referencia de acceso.</p>
+            </div>
           </div>
 
-          <div class="field-group">
-            <label>Apellido</label>
-            <input class="text-input" type="text" value="<%= @usuario.apellido %>" readonly>
+          <div class="my-profile-readonly-grid">
+            <div class="field-group">
+              <label>Nombre</label>
+              <input class="text-input" type="text" value="<%= @usuario.nombre %>" readonly>
+            </div>
+            <div class="field-group">
+              <label>Apellido</label>
+              <input class="text-input" type="text" value="<%= @usuario.apellido %>" readonly>
+            </div>
+            <div class="field-group">
+              <label>Correo electronico</label>
+              <input class="text-input" type="email" value="<%= @usuario.email %>" readonly>
+            </div>
+            <div class="field-group">
+              <label>Rol asignado</label>
+              <input class="text-input" type="text" value="<%= @usuario.root? ? "Root" : @usuario.roles.map(&:nombre).join(", ").presence || "Sin rol" %>" readonly>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel module-tab-panel" id="panel-perfil-seguridad" role="tabpanel" aria-labelledby="tab-perfil-seguridad" data-tabs-target="panel" data-tab-panel-id="seguridad" hidden>
+          <div class="panel-header">
+            <div>
+              <h2>Cambiar contrasena</h2>
+              <p>Deja ambos campos vacios si deseas conservar la contrasena actual.</p>
+            </div>
           </div>
 
-          <div class="field-group">
-            <label>Correo electrónico</label>
-            <input class="text-input" type="email" value="<%= @usuario.email %>" readonly>
+          <div class="my-profile-password-grid">
+            <div class="field-group">
+              <%= form.label :password, "Nueva contrasena" %>
+              <%= form.password_field :password, class: "text-input", autocomplete: "new-password", placeholder: "Escribe la nueva contrasena" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :password_confirmation, "Confirmar contrasena" %>
+              <%= form.password_field :password_confirmation, class: "text-input", autocomplete: "new-password", placeholder: "Repite la nueva contrasena" %>
+            </div>
           </div>
-
-          <div class="field-group">
-            <label>Rol asignado</label>
-            <input class="text-input" type="text" value="<%= @usuario.root? ? "Root" : @usuario.roles.map(&:nombre).join(", ").presence || "Sin rol" %>" readonly>
-          </div>
-        </div>
-      </article>
-
-      <article class="panel my-profile-card">
-        <div class="company-card-heading">
-          <span class="company-card-icon"><%= icon("shield-outline") %></span>
-          <div>
-            <h2>Cambiar contraseña</h2>
-            <p>Déjalo vacío si deseas conservar la contraseña actual.</p>
-          </div>
-        </div>
-
-        <div class="my-profile-password-grid">
-          <div class="field-group">
-            <%= form.label :password, "Nueva contraseña" %>
-            <%= form.password_field :password, class: "text-input", autocomplete: "new-password", placeholder: "Escribe la nueva contraseña" %>
-          </div>
-
-          <div class="field-group">
-            <%= form.label :password_confirmation, "Confirmar contraseña" %>
-            <%= form.password_field :password_confirmation, class: "text-input", autocomplete: "new-password", placeholder: "Repite la nueva contraseña" %>
-          </div>
-        </div>
-      </article>
+        </section>
+      </div>
     </section>
   <% end %>
 </section>

@@ -1,38 +1,130 @@
-<section class="page-section company-show-page">
-  <section class="company-show-hero">
-    <div class="company-show-identity">
-      <div class="company-show-logo">CB</div>
-      <div class="company-show-copy">
-        <div class="company-show-title-row">
-          <strong class="company-show-title"><%= @cobro.referencia %></strong>
-          <div class="company-show-badges">
-            <%= render "shared/badge", text: @cobro.activo? ? @cobro.estado.humanize : "Inactivo", tone: @cobro.activo? ? "success" : "warning" %>
+<section class="page-section">
+  <section class="view-controller view-controller--detail" data-controller="tabs" data-tabs-default-value="general">
+    <header class="view-controller__summary">
+      <div class="view-controller__summary-shell">
+        <div class="view-controller__identity">
+          <div class="view-controller__avatar">CB</div>
+          <div class="view-controller__copy">
+            <span class="view-controller__eyebrow">Cobranza operativa</span>
+            <div class="view-controller__title-row">
+              <h1 class="view-controller__title"><%= @cobro.referencia %></h1>
+              <div class="view-controller__badges">
+                <%= render "shared/badge", text: @cobro.activo? ? @cobro.estado.humanize : "Inactivo", tone: @cobro.activo? ? "success" : "warning" %>
+              </div>
+            </div>
+            <div class="view-controller__meta">
+              <span><strong>Cliente:</strong> <%= @cobro.cliente_nombre %></span>
+              <span><strong>Gestor:</strong> <%= @cobro.gestor.presence || "Sin asignar" %></span>
+            </div>
           </div>
         </div>
-        <p><%= @cobro.cliente_nombre %> · <%= @cobro.monto_formateado %></p>
-      </div>
-    </div>
-    <div class="company-show-actions" aria-label="Acciones de cobro">
-      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, cobros_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
-      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_cobro_path(@cobro), class: "company-show-action-button company-show-action-primary", title: "Editar cobro", aria: { label: "Editar cobro" } %>
-    </div>
-  </section>
 
-  <section class="panel detail-section">
-    <div class="panel-header"><div><h2>Información del cobro</h2></div></div>
-    <div class="detail-grid">
-      <div class="detail-item"><span>Cliente</span><strong><%= @cobro.cliente_nombre %></strong></div>
-      <div class="detail-item"><span>Gestor</span><strong><%= @cobro.gestor.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Vencimiento</span><strong><%= @cobro.fecha_vencimiento || "-" %></strong></div>
-      <div class="detail-item"><span>Pago</span><strong><%= @cobro.fecha_pago || "-" %></strong></div>
-      <div class="detail-item"><span>Monto</span><strong><%= @cobro.monto_formateado %></strong></div>
-      <div class="detail-item"><span>Moneda</span><strong><%= @cobro.moneda&.nombre || "-" %></strong></div>
-    </div>
-    <% if @cobro.notas.present? %>
-      <div class="document-paragraph-card">
-        <strong>Notas</strong>
-        <p><%= @cobro.notas %></p>
+        <div class="view-controller__actions" aria-label="Acciones de cobro">
+          <%= link_to "Volver", cobros_path, class: "ui-button ui-button-secondary" %>
+          <%= link_to "Editar", edit_cobro_path(@cobro), class: "ui-button ui-button-primary" %>
+        </div>
       </div>
-    <% end %>
+
+      <div class="view-controller__metrics">
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Monto</span>
+          <strong class="view-controller__metric-value"><%= @cobro.monto_formateado %></strong>
+          <span class="view-controller__metric-note">Valor en seguimiento dentro de cartera.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Vencimiento</span>
+          <strong class="view-controller__metric-value"><%= @cobro.fecha_vencimiento || "-" %></strong>
+          <span class="view-controller__metric-note">Fecha objetivo para recuperacion del saldo.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Pago</span>
+          <strong class="view-controller__metric-value"><%= @cobro.fecha_pago || "No registrado" %></strong>
+          <span class="view-controller__metric-note">Se actualiza al aplicar el cobro.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Estado</span>
+          <strong class="view-controller__metric-value"><%= @cobro.activo? ? @cobro.estado.humanize : "Inactivo" %></strong>
+          <span class="view-controller__metric-note">Semaforo actual del caso de cobranza.</span>
+        </article>
+      </div>
+    </header>
+
+    <section class="panel product-tabs-panel view-controller__tabs">
+      <nav class="module-tabs" role="tablist" aria-label="Detalle del cobro">
+        <button type="button" class="module-tab is-active" id="tab-cobro-detalle-general" role="tab" aria-selected="true" aria-controls="panel-cobro-detalle-general" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("receipt") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">General</span>
+            <span class="module-tab__hint">Referencia y cliente</span>
+          </span>
+        </button>
+        <button type="button" class="module-tab" id="tab-cobro-detalle-control" role="tab" aria-selected="false" aria-controls="panel-cobro-detalle-control" data-tabs-target="tab" data-tab-id="control" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("calendar") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">Seguimiento</span>
+            <span class="module-tab__hint">Fechas, monto y estado</span>
+          </span>
+        </button>
+        <button type="button" class="module-tab" id="tab-cobro-detalle-notas" role="tab" aria-selected="false" aria-controls="panel-cobro-detalle-notas" data-tabs-target="tab" data-tab-id="notas" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("message") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">Notas</span>
+            <span class="module-tab__hint">Contexto de gestion</span>
+          </span>
+        </button>
+      </nav>
+    </section>
+
+    <div class="view-controller__content">
+      <section class="panel detail-section module-tab-panel is-active" id="panel-cobro-detalle-general" role="tabpanel" aria-labelledby="tab-cobro-detalle-general" data-tabs-target="panel" data-tab-panel-id="general">
+        <div class="panel-header">
+          <div>
+            <h2>Identidad del caso</h2>
+            <p>Datos base para ubicar el cobro y su relacion principal con el cliente.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><span>Referencia</span><strong><%= @cobro.referencia %></strong></div>
+          <div class="detail-item"><span>Cliente</span><strong><%= @cobro.cliente_nombre %></strong></div>
+          <div class="detail-item"><span>Gestor</span><strong><%= @cobro.gestor.presence || "-" %></strong></div>
+          <div class="detail-item"><span>Moneda</span><strong><%= @cobro.moneda&.nombre || "-" %></strong></div>
+        </div>
+      </section>
+
+      <section class="panel detail-section module-tab-panel" id="panel-cobro-detalle-control" role="tabpanel" aria-labelledby="tab-cobro-detalle-control" data-tabs-target="panel" data-tab-panel-id="control" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>Seguimiento financiero</h2>
+            <p>Fechas clave, importe y estado para el control de la gestion de cobro.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><span>Vencimiento</span><strong><%= @cobro.fecha_vencimiento || "-" %></strong></div>
+          <div class="detail-item"><span>Pago</span><strong><%= @cobro.fecha_pago || "-" %></strong></div>
+          <div class="detail-item"><span>Monto</span><strong><%= @cobro.monto_formateado %></strong></div>
+          <div class="detail-item"><span>Estado</span><strong><%= @cobro.activo? ? @cobro.estado.humanize : "Inactivo" %></strong></div>
+        </div>
+      </section>
+
+      <section class="panel detail-section module-tab-panel" id="panel-cobro-detalle-notas" role="tabpanel" aria-labelledby="tab-cobro-detalle-notas" data-tabs-target="panel" data-tab-panel-id="notas" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>Observaciones</h2>
+            <p>Comentarios operativos, acuerdos de pago o contexto util para el equipo.</p>
+          </div>
+        </div>
+
+        <% if @cobro.notas.present? %>
+          <div class="document-paragraph-card">
+            <strong>Notas</strong>
+            <p><%= @cobro.notas %></p>
+          </div>
+        <% else %>
+          <%= render "shared/empty_state", title: "Sin notas registradas", description: "Este cobro aun no tiene observaciones adicionales." %>
+        <% end %>
+      </section>
+    </div>
   </section>
 </section>

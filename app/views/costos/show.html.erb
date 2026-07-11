@@ -1,40 +1,131 @@
-<section class="page-section company-show-page">
-  <section class="company-show-hero">
-    <div class="company-show-identity">
-      <div class="company-show-logo">CO</div>
-      <div class="company-show-copy">
-        <div class="company-show-title-row">
-          <strong class="company-show-title"><%= @costo.concepto %></strong>
-          <div class="company-show-badges">
-            <%= render "shared/badge", text: @costo.activo? ? @costo.estado.humanize : "Inactivo", tone: @costo.activo? ? "success" : "warning" %>
-            <%= render "shared/badge", text: @costo.clasificacion.presence || "Sin clasificar", tone: "primary" %>
+<section class="page-section">
+  <section class="view-controller view-controller--detail" data-controller="tabs" data-tabs-default-value="general">
+    <header class="view-controller__summary">
+      <div class="view-controller__summary-shell">
+        <div class="view-controller__identity">
+          <div class="view-controller__avatar">CO</div>
+          <div class="view-controller__copy">
+            <span class="view-controller__eyebrow">Costos operativos</span>
+            <div class="view-controller__title-row">
+              <h1 class="view-controller__title"><%= @costo.concepto %></h1>
+              <div class="view-controller__badges">
+                <%= render "shared/badge", text: @costo.activo? ? @costo.estado.humanize : "Inactivo", tone: @costo.activo? ? "success" : "warning" %>
+                <%= render "shared/badge", text: @costo.clasificacion.presence || "Sin clasificar", tone: "info" %>
+              </div>
+            </div>
+            <div class="view-controller__meta">
+              <span><strong>Centro:</strong> <%= @costo.centro_costo.presence || "Sin centro" %></span>
+              <span><strong>Proveedor:</strong> <%= @costo.proveedor.presence || "No definido" %></span>
+            </div>
           </div>
         </div>
-        <p><%= @costo.monto_formateado %> · <%= @costo.periodo.presence || "Sin periodo" %></p>
-      </div>
-    </div>
 
-    <div class="company-show-actions" aria-label="Acciones de costo">
-      <%= link_to "#{icon("chevron")}<span>Volver</span>".html_safe, costos_path, class: "company-show-action-button company-show-back-button", data: { turbo: false }, title: "Volver al listado", aria: { label: "Volver al listado" } %>
-      <%= link_to "#{icon("pencil")}<span>Editar</span>".html_safe, edit_costo_path(@costo), class: "company-show-action-button company-show-action-primary", title: "Editar costo", aria: { label: "Editar costo" } %>
-    </div>
-  </section>
-
-  <section class="panel detail-section">
-    <div class="panel-header"><div><h2>Información del costo</h2></div></div>
-    <div class="detail-grid">
-      <div class="detail-item"><span>Centro de costo</span><strong><%= @costo.centro_costo.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Clasificación</span><strong><%= @costo.clasificacion.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Proveedor</span><strong><%= @costo.proveedor.presence || "-" %></strong></div>
-      <div class="detail-item"><span>Fecha</span><strong><%= @costo.fecha || "-" %></strong></div>
-      <div class="detail-item"><span>Monto</span><strong><%= @costo.monto_formateado %></strong></div>
-      <div class="detail-item"><span>Moneda</span><strong><%= @costo.moneda&.nombre || "-" %></strong></div>
-    </div>
-    <% if @costo.descripcion.present? %>
-      <div class="document-paragraph-card">
-        <strong>Descripción</strong>
-        <p><%= @costo.descripcion %></p>
+        <div class="view-controller__actions" aria-label="Acciones de costo">
+          <%= link_to "Volver", costos_path, class: "ui-button ui-button-secondary" %>
+          <%= link_to "Editar", edit_costo_path(@costo), class: "ui-button ui-button-primary" %>
+        </div>
       </div>
-    <% end %>
+
+      <div class="view-controller__metrics">
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Monto</span>
+          <strong class="view-controller__metric-value"><%= @costo.monto_formateado %></strong>
+          <span class="view-controller__metric-note">Impacto economico del registro operativo.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Periodo</span>
+          <strong class="view-controller__metric-value"><%= @costo.periodo.presence || "-" %></strong>
+          <span class="view-controller__metric-note">Ayuda a consolidar comparativos y cierres.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Fecha</span>
+          <strong class="view-controller__metric-value"><%= @costo.fecha || "-" %></strong>
+          <span class="view-controller__metric-note">Fecha efectiva del gasto registrado.</span>
+        </article>
+        <article class="view-controller__metric">
+          <span class="view-controller__metric-label">Estado</span>
+          <strong class="view-controller__metric-value"><%= @costo.activo? ? @costo.estado.humanize : "Inactivo" %></strong>
+          <span class="view-controller__metric-note">Situacion de aprobacion dentro del flujo.</span>
+        </article>
+      </div>
+    </header>
+
+    <section class="panel product-tabs-panel view-controller__tabs">
+      <nav class="module-tabs" role="tablist" aria-label="Detalle del costo">
+        <button type="button" class="module-tab is-active" id="tab-costo-detalle-general" role="tab" aria-selected="true" aria-controls="panel-costo-detalle-general" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("coins") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">General</span>
+            <span class="module-tab__hint">Concepto y clasificacion</span>
+          </span>
+        </button>
+        <button type="button" class="module-tab" id="tab-costo-detalle-control" role="tab" aria-selected="false" aria-controls="panel-costo-detalle-control" data-tabs-target="tab" data-tab-id="control" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("calendar") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">Control</span>
+            <span class="module-tab__hint">Periodo, monto y estado</span>
+          </span>
+        </button>
+        <button type="button" class="module-tab" id="tab-costo-detalle-notas" role="tab" aria-selected="false" aria-controls="panel-costo-detalle-notas" data-tabs-target="tab" data-tab-id="notas" data-action="tabs#switch">
+          <span class="module-tab__icon"><%= icon("message") %></span>
+          <span class="module-tab__copy">
+            <span class="module-tab__label">Descripcion</span>
+            <span class="module-tab__hint">Contexto ampliado del gasto</span>
+          </span>
+        </button>
+      </nav>
+    </section>
+
+    <div class="view-controller__content">
+      <section class="panel detail-section module-tab-panel is-active" id="panel-costo-detalle-general" role="tabpanel" aria-labelledby="tab-costo-detalle-general" data-tabs-target="panel" data-tab-panel-id="general">
+        <div class="panel-header">
+          <div>
+            <h2>Identidad del costo</h2>
+            <p>Clasificacion base del registro y sus responsables principales.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><span>Concepto</span><strong><%= @costo.concepto %></strong></div>
+          <div class="detail-item"><span>Centro de costo</span><strong><%= @costo.centro_costo.presence || "-" %></strong></div>
+          <div class="detail-item"><span>Clasificacion</span><strong><%= @costo.clasificacion.presence || "-" %></strong></div>
+          <div class="detail-item"><span>Proveedor</span><strong><%= @costo.proveedor.presence || "-" %></strong></div>
+        </div>
+      </section>
+
+      <section class="panel detail-section module-tab-panel" id="panel-costo-detalle-control" role="tabpanel" aria-labelledby="tab-costo-detalle-control" data-tabs-target="panel" data-tab-panel-id="control" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>Control del registro</h2>
+            <p>Datos temporales y monetarios usados para seguimiento financiero interno.</p>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-item"><span>Periodo</span><strong><%= @costo.periodo.presence || "-" %></strong></div>
+          <div class="detail-item"><span>Fecha</span><strong><%= @costo.fecha || "-" %></strong></div>
+          <div class="detail-item"><span>Monto</span><strong><%= @costo.monto_formateado %></strong></div>
+          <div class="detail-item"><span>Moneda</span><strong><%= @costo.moneda&.nombre || "-" %></strong></div>
+        </div>
+      </section>
+
+      <section class="panel detail-section module-tab-panel" id="panel-costo-detalle-notas" role="tabpanel" aria-labelledby="tab-costo-detalle-notas" data-tabs-target="panel" data-tab-panel-id="notas" hidden>
+        <div class="panel-header">
+          <div>
+            <h2>Descripcion ampliada</h2>
+            <p>Detalle adicional para auditoria, soporte o conciliacion del gasto.</p>
+          </div>
+        </div>
+
+        <% if @costo.descripcion.present? %>
+          <div class="document-paragraph-card">
+            <strong>Descripcion</strong>
+            <p><%= @costo.descripcion %></p>
+          </div>
+        <% else %>
+          <%= render "shared/empty_state", title: "Sin descripcion registrada", description: "Este costo aun no tiene una descripcion ampliada." %>
+        <% end %>
+      </section>
+    </div>
   </section>
 </section>

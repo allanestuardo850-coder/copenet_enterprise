@@ -1,85 +1,184 @@
 <%= form_with model: costo, class: "company-form" do |form| %>
-  <% if costo.errors.any? %>
-    <section class="panel form-errors">
-      <ul class="error-list">
-        <% costo.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </section>
-  <% end %>
-
-  <section class="panel product-tabs-panel">
-    <div class="panel-header">
-      <div>
-        <h2>Configuración del costo</h2>
-      </div>
-      <div class="form-actions company-form-header-actions">
-        <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
-        <%= link_to "Cancelar", costos_path, class: "ui-button ui-button-secondary" %>
-      </div>
-    </div>
-  </section>
-
-  <section class="panel form-section">
-    <div class="panel-header">
-      <div>
-        <h2>Información general</h2>
-      </div>
-    </div>
-
-    <div class="form-grid">
-      <div class="field-group">
-        <%= form.label :concepto, "Concepto" %>
-        <%= form.text_field :concepto, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :centro_costo, "Centro de costo" %>
-        <%= form.text_field :centro_costo, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :clasificacion, "Clasificación" %>
-        <%= form.select :clasificacion, options_for_select(Costo::CLASIFICACIONES, costo.clasificacion), { include_blank: "Seleccionar clasificación" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :periodo, "Periodo" %>
-        <%= form.text_field :periodo, class: "text-input", placeholder: "Julio 2026" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :fecha, "Fecha" %>
-        <%= form.date_field :fecha, class: "text-input" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :monto, "Monto" %>
-        <%= form.number_field :monto, class: "text-input", min: 0, step: "0.01" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :moneda_id, "Moneda" %>
-        <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, costo.moneda_id), { include_blank: "Seleccionar moneda" }, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :estado, "Estado" %>
-        <%= form.select :estado, options_for_select(Costo::ESTADOS.map { |estado| [estado.humanize, estado] }, costo.estado), {}, class: "text-input filter-select" %>
-      </div>
-      <div class="field-group">
-        <%= form.label :proveedor, "Proveedor" %>
-        <%= form.text_field :proveedor, class: "text-input" %>
-      </div>
-      <% if costo.persisted? %>
-        <div class="field-group checkbox-group">
-          <label class="checkbox-label">
-            <%= hidden_field_tag "costo[activo]", "1" %>
-            <%= check_box_tag "costo[activo]", "0", !costo.activo? %>
-            <span>Inactivar</span>
-          </label>
-        </div>
-      <% else %>
-        <%= form.hidden_field :activo, value: true %>
+  <section class="page-section">
+    <section class="view-controller view-controller--form" data-controller="tabs" data-tabs-default-value="general">
+      <% if costo.errors.any? %>
+        <section class="panel form-errors">
+          <ul class="error-list">
+            <% costo.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </section>
       <% end %>
-      <div class="field-group field-group-full">
-        <%= form.label :descripcion, "Descripción" %>
-        <%= form.text_area :descripcion, rows: 4, class: "text-input text-area" %>
+
+      <header class="view-controller__summary">
+        <div class="view-controller__summary-shell">
+          <div class="view-controller__identity">
+            <div class="view-controller__avatar">CO</div>
+            <div class="view-controller__copy">
+              <span class="view-controller__eyebrow">Costos operativos</span>
+              <div class="view-controller__title-row">
+                <h1 class="view-controller__title"><%= costo.persisted? ? costo.concepto : "Nuevo costo" %></h1>
+                <div class="view-controller__badges">
+                  <%= render "shared/badge", text: costo.activo? ? costo.estado.to_s.humanize : "Inactivo", tone: costo.activo? ? "success" : "warning" %>
+                  <%= render "shared/badge", text: costo.clasificacion.presence || "Sin clasificar", tone: "info" %>
+                </div>
+              </div>
+              <div class="view-controller__meta">
+                <span><strong>Proveedor:</strong> <%= costo.proveedor.presence || "No definido" %></span>
+                <span><strong>Monto:</strong> <%= costo.monto_formateado %></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="view-controller__actions">
+            <%= link_to "Cancelar", costos_path, class: "ui-button ui-button-secondary" %>
+            <%= form.submit "Guardar", class: "ui-button ui-button-primary submit-button" %>
+          </div>
+        </div>
+
+        <div class="view-controller__metrics">
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Monto</span>
+            <strong class="view-controller__metric-value"><%= costo.monto_formateado %></strong>
+            <span class="view-controller__metric-note">Costo reportado para el periodo activo.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Periodo</span>
+            <strong class="view-controller__metric-value"><%= costo.periodo.presence || "Pendiente" %></strong>
+            <span class="view-controller__metric-note">Ayuda a consolidar cierres y comparativos.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Centro</span>
+            <strong class="view-controller__metric-value"><%= costo.centro_costo.presence || "Sin centro" %></strong>
+            <span class="view-controller__metric-note">Clasifica el impacto dentro de la operacion.</span>
+          </article>
+          <article class="view-controller__metric">
+            <span class="view-controller__metric-label">Fecha</span>
+            <strong class="view-controller__metric-value"><%= costo.fecha || "Por definir" %></strong>
+            <span class="view-controller__metric-note">Momento efectivo del registro contable.</span>
+          </article>
+        </div>
+
+        <p class="view-controller__summary-note">
+          Documenta el concepto y su clasificacion primero, luego define monto, moneda y estado antes de guardar la descripcion ampliada.
+        </p>
+      </header>
+
+      <section class="panel product-tabs-panel view-controller__tabs">
+        <nav class="module-tabs" role="tablist" aria-label="Secciones del costo">
+          <button type="button" class="module-tab is-active" id="tab-costo-general" role="tab" aria-selected="true" aria-controls="panel-costo-general" data-tabs-target="tab" data-tab-id="general" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("coins") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">General</span>
+              <span class="module-tab__hint">Concepto, centro y proveedor</span>
+            </span>
+          </button>
+          <button type="button" class="module-tab" id="tab-costo-control" role="tab" aria-selected="false" aria-controls="panel-costo-control" data-tabs-target="tab" data-tab-id="control" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("calendar") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Control</span>
+              <span class="module-tab__hint">Periodo, monto y estado</span>
+            </span>
+          </button>
+          <button type="button" class="module-tab" id="tab-costo-notas" role="tab" aria-selected="false" aria-controls="panel-costo-notas" data-tabs-target="tab" data-tab-id="notas" data-action="tabs#switch">
+            <span class="module-tab__icon"><%= icon("message") %></span>
+            <span class="module-tab__copy">
+              <span class="module-tab__label">Descripcion</span>
+              <span class="module-tab__hint">Contexto ampliado del gasto</span>
+            </span>
+          </button>
+        </nav>
+      </section>
+
+      <div class="view-controller__content">
+        <section class="panel form-section module-tab-panel is-active" id="panel-costo-general" role="tabpanel" aria-labelledby="tab-costo-general" data-tabs-target="panel" data-tab-panel-id="general">
+          <div class="panel-header">
+            <div>
+              <h2>Clasificacion del costo</h2>
+              <p>Ubica el concepto dentro del centro responsable y el proveedor involucrado.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <%= form.label :concepto, "Concepto" %>
+              <%= form.text_field :concepto, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :centro_costo, "Centro de costo" %>
+              <%= form.text_field :centro_costo, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :clasificacion, "Clasificacion" %>
+              <%= form.select :clasificacion, options_for_select(Costo::CLASIFICACIONES, costo.clasificacion), { include_blank: "Seleccionar clasificacion" }, class: "text-input filter-select" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :proveedor, "Proveedor" %>
+              <%= form.text_field :proveedor, class: "text-input" %>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel form-section module-tab-panel" id="panel-costo-control" role="tabpanel" aria-labelledby="tab-costo-control" data-tabs-target="panel" data-tab-panel-id="control" hidden>
+          <div class="panel-header">
+            <div>
+              <h2>Control del registro</h2>
+              <p>Define periodo, fecha, importe, moneda y estado operativo del costo.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group">
+              <%= form.label :periodo, "Periodo" %>
+              <%= form.text_field :periodo, class: "text-input", placeholder: "Julio 2026" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :fecha, "Fecha" %>
+              <%= form.date_field :fecha, class: "text-input" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :monto, "Monto" %>
+              <%= form.number_field :monto, class: "text-input", min: 0, step: "0.01" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :moneda_id, "Moneda" %>
+              <%= form.select :moneda_id, options_from_collection_for_select(@monedas, :id, :nombre, costo.moneda_id), { include_blank: "Seleccionar moneda" }, class: "text-input filter-select" %>
+            </div>
+            <div class="field-group">
+              <%= form.label :estado, "Estado" %>
+              <%= form.select :estado, options_for_select(Costo::ESTADOS.map { |estado| [estado.humanize, estado] }, costo.estado), {}, class: "text-input filter-select" %>
+            </div>
+            <% if costo.persisted? %>
+              <div class="field-group checkbox-group">
+                <label class="checkbox-label">
+                  <%= hidden_field_tag "costo[activo]", "1" %>
+                  <%= check_box_tag "costo[activo]", "0", !costo.activo? %>
+                  <span>Inactivar</span>
+                </label>
+              </div>
+            <% else %>
+              <%= form.hidden_field :activo, value: true %>
+            <% end %>
+          </div>
+        </section>
+
+        <section class="panel form-section module-tab-panel" id="panel-costo-notas" role="tabpanel" aria-labelledby="tab-costo-notas" data-tabs-target="panel" data-tab-panel-id="notas" hidden>
+          <div class="panel-header">
+            <div>
+              <h2>Descripcion ampliada</h2>
+              <p>Agrega detalle suficiente para auditoria, control interno o contexto operativo.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field-group field-group-full">
+              <%= form.label :descripcion, "Descripcion" %>
+              <%= form.text_area :descripcion, rows: 5, class: "text-input text-area" %>
+            </div>
+          </div>
+        </section>
       </div>
-    </div>
+    </section>
   </section>
 <% end %>
